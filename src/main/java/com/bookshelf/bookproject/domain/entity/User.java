@@ -7,7 +7,7 @@ import lombok.*;
 @Table(name = "users", uniqueConstraints =
         @UniqueConstraint(name = "unique_email", columnNames = "email")
 )
-@DiscriminatorValue("USER")
+@DiscriminatorValue("U")
 @PrimaryKeyJoinColumn(name = "id", foreignKey = @ForeignKey(name = "fk_users_accounts"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -16,8 +16,9 @@ public class User extends Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50, nullable = false)
     private String email;
+
     @Column(length = 20)
     private String phone;
 
