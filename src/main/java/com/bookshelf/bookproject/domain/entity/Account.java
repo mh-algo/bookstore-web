@@ -31,7 +31,7 @@ public abstract class Account extends TimeStamp {
     private String password;
 
     @OneToMany(mappedBy = "account")
-    private final List<RoleManagement> roles = new ArrayList<>();
+    private final List<RoleManagement> roleManagements = new ArrayList<>();
 
     @Column(name = "account_status", columnDefinition = "varchar(10) default 'ACTIVE'")
     @Enumerated(EnumType.STRING)

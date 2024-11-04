@@ -1,21 +1,21 @@
 package com.bookshelf.bookproject.controller;
 
-import com.bookshelf.bookproject.domain.entity.AccountStatus;
-import com.bookshelf.bookproject.domain.entity.User;
-import com.bookshelf.bookproject.repository.UserRepository;
+import com.bookshelf.bookproject.domain.entity.Account;
+import com.bookshelf.bookproject.repository.AccountRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class indexController {
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final EntityManager em;
 
-    public indexController(UserRepository userRepository, EntityManager em) {
-        this.userRepository = userRepository;
+    public indexController(AccountRepository accountRepository, EntityManager em) {
+        this.accountRepository = accountRepository;
         this.em = em;
     }
 
@@ -23,7 +23,16 @@ public class indexController {
     @ResponseBody
     @Transactional
     public String index() {
-//        Users users = userRepository.findAll().get(0);
+        /*Account user = accountRepository.findByAccountId("userid");
+
+        System.out.println(
+                user.getName() +
+                user.getPassword() +
+                user.getAccountId() +
+                user.getStatus()
+        );*/
+
+
         /*User user = User.builder()
                 .name("이름")
                 .accountId("user")
