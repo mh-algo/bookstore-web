@@ -1,4 +1,4 @@
-package com.bookshelf.bookproject.domain.entity;
+package com.bookshelf.bookproject.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

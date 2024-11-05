@@ -1,24 +1,23 @@
 package com.bookshelf.bookproject.security.dto;
 
-import com.bookshelf.bookproject.domain.dto.AccountDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 
-import static com.bookshelf.bookproject.domain.entity.AccountStatus.ACTIVE;
+import static com.bookshelf.bookproject.domain.AccountStatus.ACTIVE;
 
 public class FormUser implements UserDetails {
-    private final AccountDto account;
+    private final AccountAuthDto account;
     private final List<GrantedAuthority> authorities;
 
-    public FormUser(AccountDto account, List<GrantedAuthority> authorities) {
+    public FormUser(AccountAuthDto account, List<GrantedAuthority> authorities) {
         this.account = account;
         this.authorities = authorities;
     }
 
-    public AccountDto getAccountDto() {
+    public AccountAuthDto getAccountDto() {
         return account;
     }
 

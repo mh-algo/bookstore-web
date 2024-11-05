@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static com.bookshelf.bookproject.domain.entity.QAccount.account;
-import static com.bookshelf.bookproject.domain.entity.QRole.role;
-import static com.bookshelf.bookproject.domain.entity.QRoleManagement.roleManagement;
+import static com.bookshelf.bookproject.domain.QAccount.account;
+import static com.bookshelf.bookproject.domain.QRole.role;
+import static com.bookshelf.bookproject.domain.QRoleManagement.roleManagement;
 
 @RequiredArgsConstructor
 public class CustomAccountRepositoryImpl implements CustomAccountRepository {

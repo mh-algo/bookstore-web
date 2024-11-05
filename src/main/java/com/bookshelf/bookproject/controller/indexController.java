@@ -1,6 +1,6 @@
 package com.bookshelf.bookproject.controller;
 
-import com.bookshelf.bookproject.domain.entity.Account;
+import com.bookshelf.bookproject.domain.Account;
 import com.bookshelf.bookproject.repository.AccountRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Controller;
