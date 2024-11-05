@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RepoConfig {
+public class RepositoryConfig {
     @Bean
     public JPAQueryFactory jpaQueryFactory(EntityManager em) {
         return new JPAQueryFactory(em);

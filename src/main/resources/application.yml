@@ -23,6 +23,9 @@ spring:
   thymeleaf:
     cache: false
 
+  messages:
+    basename: errors
+
 logging.level.org:
   hibernate:
     SQL: debug

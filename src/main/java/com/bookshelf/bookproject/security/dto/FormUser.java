@@ -6,7 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-import static com.bookshelf.bookproject.domain.AccountStatus.ACTIVE;
+import static com.bookshelf.bookproject.domain.AccountStatus.DELETED;
+import static com.bookshelf.bookproject.domain.AccountStatus.INACTIVE;
 
 public class FormUser implements UserDetails {
     private final AccountAuthDto account;
@@ -36,9 +37,14 @@ public class FormUser implements UserDetails {
         return account.getAccountId();
     }
 
-    // 계정 정지, 계정 탈퇴시 인증 x
+    // 계정 정지
     @Override
     public boolean isEnabled() {
-        return account.getStatus() == ACTIVE;
+        return account.getStatus() != INACTIVE;
+    }
+
+    // 계정 삭제
+    public boolean isDeleted() {
+        return account.getStatus() == DELETED;
     }
 }
