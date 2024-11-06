@@ -39,7 +39,7 @@ public class FormLoginProvider implements AuthenticationProvider {
         }
 
         if (loadedUser.isDeleted()) {
-            throw new AccountDeletedException(username);
+            throw new AccountDeletedException("Account is deleted");
         }
 
         // 비밀번호 암호화시 수정 필요 (현재 평문 저장)

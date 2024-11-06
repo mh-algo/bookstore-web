@@ -1,12 +1,8 @@
 package com.bookshelf.bookproject.controller.dto;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 
-@Getter
-@RequiredArgsConstructor
-@EqualsAndHashCode
+@Data
 public class FormLogin {
     private final String username;
     private final String password;

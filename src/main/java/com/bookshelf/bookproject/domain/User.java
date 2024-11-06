@@ -19,7 +19,7 @@ public class User extends Account {
     @Column(length = 50, nullable = false)
     private String email;
 
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String phone;
 
     @Builder

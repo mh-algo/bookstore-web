@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @Controller
 public class LoginController {
     @GetMapping("/login")
-    public String login(HttpServletRequest request, @ModelAttribute("formLogin") FormLogin formLogin,
+    public String login(HttpServletRequest request, @ModelAttribute FormLogin formLogin,
                         BindingResult bindingResult) {
         try {
             HttpSession session = request.getSession(false);
