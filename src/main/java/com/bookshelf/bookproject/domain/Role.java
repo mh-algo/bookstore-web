@@ -16,6 +16,9 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * 권한을 나타냄
+     */
     @Column(name = "role_type", length = 20, nullable = false)
     private String type;
 }

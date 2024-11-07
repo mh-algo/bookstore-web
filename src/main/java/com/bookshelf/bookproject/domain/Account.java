@@ -33,6 +33,11 @@ public abstract class Account extends TimeStamp {
     @OneToMany(mappedBy = "account")
     private final List<RoleManagement> roleManagements = new ArrayList<>();
 
+    /**
+     * 사용자의 계정 활성화 상태를 나타냄
+     * <p>기본 상태는 {@code ACTIVE}이며, 계정 비활성화 시 {@code INACTIVE}, 계정 삭제 시 {@code DELETED}로 설정됩니다.
+     * 이 필드는 {@link AccountStatus} Enum 타입으로, 계정의 상태를 관리합니다.
+     */
     @Column(name = "account_status", columnDefinition = "varchar(10) default 'ACTIVE'")
     @Enumerated(EnumType.STRING)
     private AccountStatus status;

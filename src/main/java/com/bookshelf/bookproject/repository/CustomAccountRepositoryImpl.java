@@ -13,6 +13,12 @@ import static com.bookshelf.bookproject.domain.QRoleManagement.roleManagement;
 public class CustomAccountRepositoryImpl implements CustomAccountRepository {
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * 주어진 사용자 아이디에 해당하는 권한 리스트를 반환
+     *
+     * @param accountId 사용자 아이디
+     * @return 주어진 사용자 아이디에 해당하는 권한 리스트
+     */
     @Override
     public List<String> findRolesByAccountId(String accountId) {
         return queryFactory

@@ -17,6 +17,13 @@ import java.io.IOException;
 
 @Slf4j
 public class FormAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+    /**
+     * 인증 실패 시 발생한 예외를 세션에 저장하고, 지정된 URI로 리다이렉션
+     *
+     * @param request 인증 시도 중 발생한 요청 객체
+     * @param response 응답 객체
+     * @param exception 인증 요청을 거부하게 된 예외
+     */
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         String error = exception.toString();
