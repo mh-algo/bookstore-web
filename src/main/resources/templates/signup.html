@@ -17,10 +17,13 @@
     <h2 class="text-center mb-4">회원가입</h2>
     <form th:action="@{/signup}" th:object="${signup}" method="post">
         <!-- 아이디 입력 -->
-        <div class="form-group row">
+
+        <div class="form-group row" id="user">
             <div class="col-sm-8" style="padding-right: 0">
                 <label for="username">아이디</label>
-                <input type="text" class="form-control" id="username" th:field="*{username}" placeholder="아이디 입력">
+                <label for="username" class="field-error" th:errors="*{username}">아이디 검증 메시지</label>
+                <input type="text" class="form-control" id="username" maxlength="20"
+                       th:field="*{username}" th:errorclass="field-error"  placeholder="아이디 입력">
             </div>
             <div class="col-sm-4 align-self-end">
                 <button type="button" class="btn btn-secondary btn-block">중복확인</button>
@@ -30,25 +33,41 @@
         <!-- 비밀번호 입력 -->
         <div class="form-group">
             <label for="password">비밀번호</label>
-            <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="비밀번호 입력">
+            <label for="password" class="field-error" th:errors="*{password}">비밀번호 검증 메시지</label>
+            <input type="password" class="form-control" id="password" maxlength="20"
+                   th:field="*{password}" th:errorclass="field-error" placeholder="비밀번호 입력">
         </div>
 
         <!-- 비밀번호 확인 -->
         <div class="form-group">
-            <label for="passwordChk">비밀번호 확인</label>
-            <input type="password" class="form-control" id="passwordChk" th:field="*{passwordChk}" placeholder="비밀번호 확인">
+            <label for="passwordConfirm">비밀번호 확인</label>
+            <label for="passwordConfirm" class="field-error" th:errors="*{passwordConfirm}">비밀번호 확인 검증 메시지</label>
+            <label for="passwordConfirm" class="field-error" th:each="err:${#fields.globalErrors()}"
+                   th:if="${err} == #{FieldsMatch.signup}" th:text="${err}">비밀번호 일치 검증 메시지</label>
+            <input type="password" class="form-control" id="passwordConfirm" maxlength="20"
+                   th:field="*{passwordConfirm}" th:errorclass="field-error" placeholder="비밀번호 확인">
         </div>
 
         <!-- 이름 입력 -->
         <div class="form-group">
             <label for="name">이름</label>
-            <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="이름 입력">
+            <label for="name" class="field-error" th:errors="*{name}">이름 검증 메시지</label>
+            <input type="text" class="form-control" id="name" maxlength="10" th:field="*{name}"
+                   th:errorclass="field-error" placeholder="이름 입력">
         </div>
 
         <!-- 휴대전화 번호 입력 -->
-        <div class="form-group row align-items-end justify-content-between">
+
+        <label for="phone">휴대전화</label>
+        <th:block th:if="${#fields.hasErrors('phoneMiddle') && #fields.hasErrors('phoneLast')}">
+            <label for="phone" class="field-error" th:errors="*{phoneMiddle}">휴대전화 검증 메시지</label>
+        </th:block>
+        <th:block th:unless="${#fields.hasErrors('phoneMiddle') && #fields.hasErrors('phoneLast')}">
+            <label for="phone" class="field-error" th:errors="*{phoneMiddle}">중간번호 검증 메시지</label>
+            <label for="phone" class="field-error" th:errors="*{phoneLast}">끝번호 검증 메시지</label>
+        </th:block>
+        <div class="form-group row align-items-end justify-content-between" id="phone">
             <div class="col-sm-3">
-                <label for="phonePrefix">휴대전화</label>
                 <select class="form-control" id="phonePrefix" th:field="*{phonePrefix}">
                     <option th:each="phonePrefix : ${phonePrefixType}" th:value="${phonePrefix.title}"
                             th:text="${phonePrefix.title}">휴대전화 앞번호</option>
@@ -58,27 +77,34 @@
                 <span class="col-sm-1 text-center pb-2">-</span>
             </div>
             <div class="col-sm-4">
-                <input type="text" class="form-control" id="phoneMiddle" th:field="*{phoneMiddle}">
+                <input type="text" class="form-control" id="phoneMiddle" maxlength="4" th:field="*{phoneMiddle}"
+                       th:errorclass="field-error">
             </div>
             <div class="row align-items-end">
                 <span class="col-sm-1 text-center pb-2">-</span>
             </div>
             <div class="col-sm-4">
-                <input type="text" class="form-control" id="phoneLast" th:field="*{phoneLast}">
+                <input type="text" class="form-control" id="phoneLast" maxlength="4"  th:field="*{phoneLast}"
+                       th:errorclass="field-error">
             </div>
         </div>
 
         <!-- 이메일 입력 -->
-        <div class="form-group row align-items-end">
+        <label for="email">이메일</label>
+        <label for="email" class="field-error" th:each="err:${#fields.globalErrors()}"
+               th:if="${err} == #{EmailCheck}" th:text="${err}">이메일 형식 검증 메시지</label>
+
+        <div class="form-group row align-items-end" id="email">
             <div class="col-sm-4 justify-content-start">
-                <label for="emailId">이메일</label>
-                <input type="text" class="form-control" id="emailId" th:field="*{emailId}" placeholder="이메일">
+                <input type="text" class="form-control" id="emailId" maxlength="20" th:field="*{emailId}"
+                       th:errorclass="field-error" placeholder="이메일">
             </div>
 
 
             <span class="col-sm-1 pb-2" style="padding-left: 0">@</span>
 
-            <input type="text" class="form-control col-sm" id="emailAddress" th:field="*{emailAddress}" readonly>
+            <input type="text" class="form-control col-sm" id="emailAddress" maxlength="20" th:field="*{emailAddress}"
+                   th:errorclass="field-error" readonly>
 
             <div class="col-sm-3">
                 <select class="form-control" id="addressSelect" onchange="updateEmailAddressInput()">
