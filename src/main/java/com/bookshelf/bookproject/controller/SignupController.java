@@ -1,6 +1,6 @@
 package com.bookshelf.bookproject.controller;
 
-import com.bookshelf.bookproject.controller.dto.Signup;
+import com.bookshelf.bookproject.controller.dto.SignupUser;
 import com.bookshelf.bookproject.controller.enums.EnumMapper;
 import com.bookshelf.bookproject.controller.enums.EnumMapperValue;
 import jakarta.validation.Valid;
@@ -8,13 +8,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/signup")
 @RequiredArgsConstructor
 public class SignupController {
     private final EnumMapper enumMapper;
@@ -46,15 +45,15 @@ public class SignupController {
 
     /**
      * 회원가입 페이지에 대한 GET 요청 처리
-     * <p> 새로운 사용자 등록을 위한 빈 {@link Signup} 객체를 모델에 추가합니다.
+     * <p> 새로운 사용자 등록을 위한 빈 {@link SignupUser} 객체를 모델에 추가합니다.
      *
      * @param model 뷰에 전달할 데이터를 추가하기 위한 {@link Model} 객체
      * @return 회원가입 페이지
      */
-    @GetMapping("/signup")
-    public String signup(Model model) {
-        model.addAttribute("signup", new Signup());
-        return "signup";
+    @GetMapping("/user")
+    public String signupUser(Model model) {
+        model.addAttribute("signupUser", new SignupUser());
+        return "user/signup";
     }
 
     /**
@@ -63,15 +62,15 @@ public class SignupController {
      * 문제가 있는 경우 회원가입 페이지로 다시 반환하고,
      * 문제가 없는 경우 메인 페이지로 리다이렉트합니다.
      *
-     * @param signup 입력받은 회원 정보
+     * @param signupUser 입력받은 회원 정보
      * @param bindingResult 유효성 검사 결과를 담고 있는 {@link BindingResult} 객체
      * @return 유효성 검사가 실패하면 회원가입 페이지, 성공하면 메인 페이지로 리다이렉트
      */
-    @PostMapping("/signup")
-    public String saveAccount(@Valid @ModelAttribute("signup") Signup signup, BindingResult bindingResult) {
-        System.out.println("signup = " + signup);
+    @PostMapping("/user")
+    public String saveAccount(@Valid @ModelAttribute SignupUser signupUser, BindingResult bindingResult) {
+        System.out.println("signupUser = " + signupUser);
         if (bindingResult.hasErrors()) {
-            return "signup";
+            return "user/signup";
         }
 
         return "redirect:/index";

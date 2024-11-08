@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 @FieldsMatch(first = "password", second = "passwordConfirm")
 @EmailCheck(emailId = "emailId", emailAddress = "emailAddress")
-public class Signup {
+public class SignupUser {
     @Pattern(regexp = "^[a-zA-Z0-9]{6,20}$")
     private String username;
 //    private String usernameChk;

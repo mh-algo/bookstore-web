@@ -15,7 +15,7 @@
 <body>
 <div class="container mt-5">
     <h2 class="text-center mb-4">회원가입</h2>
-    <form th:action="@{/signup}" th:object="${signup}" method="post">
+    <form th:action="@{/signup/user}" th:object="${signupUser}" method="post">
         <!-- 아이디 입력 -->
 
         <div class="form-group row" id="user">
@@ -43,7 +43,7 @@
             <label for="passwordConfirm">비밀번호 확인</label>
             <label for="passwordConfirm" class="field-error" th:errors="*{passwordConfirm}">비밀번호 확인 검증 메시지</label>
             <label for="passwordConfirm" class="field-error" th:each="err:${#fields.globalErrors()}"
-                   th:if="${err} == #{FieldsMatch.signup}" th:text="${err}">비밀번호 일치 검증 메시지</label>
+                   th:if="${err} == #{FieldsMatch.signupUser}" th:text="${err}">비밀번호 일치 검증 메시지</label>
             <input type="password" class="form-control" id="passwordConfirm" maxlength="20"
                    th:field="*{passwordConfirm}" th:errorclass="field-error" placeholder="비밀번호 확인">
         </div>
