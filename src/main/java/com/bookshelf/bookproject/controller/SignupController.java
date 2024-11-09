@@ -81,6 +81,15 @@ public class SignupController {
         return "redirect:/index";
     }
 
+    /**
+     * 아이디 사용 가능 여부 확인
+     * <p> 아이디 검증에 통과하면 200 OK 상태 코드를 전달하고,
+     * 실패하면 400 Bad Request 상태 코드와 함께 에러 메시지를 반환합니다.
+     *
+     * @param username 검증할 {@code username} 필드를 담고 있는 {@link Username} 객체
+     * @param bindingResult 유효성 검사 결과를 담고 있는 {@link BindingResult} 객체
+     * @return 검증 통과 시 200 OK, 실패 시 400 Bad Request와 에러 메시지를 담은 {@code ResponseEntity}
+     */
     @PostMapping("/user/check-username")
     public ResponseEntity<Map<String, String>> checkUsername(@Valid @RequestBody Username username, BindingResult bindingResult) {
         Map<String, String> response = new LinkedHashMap<>();
