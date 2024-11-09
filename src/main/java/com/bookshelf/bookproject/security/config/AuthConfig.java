@@ -25,8 +25,8 @@ public class AuthConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
-        return new FormLoginProvider(userDetailsService);
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+        return new FormLoginProvider(userDetailsService, passwordEncoder);
     }
 
     @Bean

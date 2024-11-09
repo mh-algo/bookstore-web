@@ -11,12 +11,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class FormLoginProvider implements AuthenticationProvider {
     private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
-    public FormLoginProvider(UserDetailsService userDetailsService) {
+    public FormLoginProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
         this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -54,8 +57,8 @@ public class FormLoginProvider implements AuthenticationProvider {
             throw new AccountDeletedException("Account is deleted");
         }
 
-        // 비밀번호 암호화시 수정 필요 (현재 평문 저장)
-        if (!password.equals(loadedUser.getPassword())) {
+        boolean passwordMatch = passwordEncoder.matches(password, loadedUser.getPassword());
+        if (!passwordMatch) {
             throw new BadCredentialsException("Bad credentials");
         }
 
