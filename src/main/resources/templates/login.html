@@ -14,15 +14,15 @@
         <form th:action="@{/login}" th:object="${formLogin}" method="POST">
             <div class="form-group">
                 <label for="username">아이디</label>
-                <label for="username" class="field-error" th:errors="*{username}">아이디 인증 실패 메시지</label>
+                <p for="username" class="field-error" th:errors="*{username}">아이디 인증 실패 메시지</p>
                 <th:block th:if="${#fields.hasGlobalErrors()}">
-                    <label for="username"  class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">전체 인증 실패 메시지</label>
+                    <p for="username"  class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">전체 인증 실패 메시지</p>
                 </th:block >
                 <input type="text" class="form-control" id="username" th:field="*{username}" th:errorclass="field-error" placeholder="아이디">
             </div>
             <div class="form-group">
                 <label for="password">비밀번호</label>
-                <label class="field-error" th:errors="*{password}">비밀번호 인증 실패 메시지</label>
+                <p class="field-error" th:errors="*{password}">비밀번호 인증 실패 메시지</p>
                 <input type="password" class="form-control" id="password" th:field="*{password}" th:errorclass="field-error" placeholder="비밀번호">
             </div>
             <button type="submit" class="btn btn-primary btn-block">로그인</button>
