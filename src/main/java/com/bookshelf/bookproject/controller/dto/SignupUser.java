@@ -25,7 +25,7 @@ public class SignupUser {
     private String name;
 
     @NotBlank
-    @Size(max = 3)
+    @Size(min = 3, max = 3)
     private String phonePrefix;
 
     @Pattern(regexp = "^[0-9]{4}$")
@@ -35,10 +35,10 @@ public class SignupUser {
     private String phoneLast;
 
     @NotBlank
-    @Size(max = 20)
+    @Size(min = 1, max = 20)
     private String emailId;
 
     @NotBlank
-    @Size(max = 20)
+    @Size(min = 4, max = 20)
     private String emailAddress;
 }

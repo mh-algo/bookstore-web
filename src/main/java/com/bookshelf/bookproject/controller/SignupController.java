@@ -4,6 +4,7 @@ import com.bookshelf.bookproject.controller.dto.SignupUser;
 import com.bookshelf.bookproject.controller.dto.Username;
 import com.bookshelf.bookproject.controller.enums.EnumMapper;
 import com.bookshelf.bookproject.controller.enums.EnumMapperValue;
+import com.bookshelf.bookproject.service.SignupService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class SignupController {
 
     private static final String EMAIL_ADDRESS_TYPE = "emailAddressType";
     private static final String PHONE_PREFIX_TYPE = "phonePrefixType";
+    private final SignupService signupService;
 
     /**
      * 이메일 주소에 대한 Enum 값을 모델에 추가
@@ -62,10 +64,11 @@ public class SignupController {
     }
 
     /**
-     * 회원가입 요청을 처리하고, 유효성 검사 수행
+     * 회원가입 페이지에 대한 Post 요청을 처리하고, 유효성 검사 수행
      * <p> 사용자가 입력한 회원가입 데이터를 받아 유효성 검사를 진행합니다.
-     * 문제가 있는 경우 회원가입 페이지로 다시 반환하고,
-     * 문제가 없는 경우 메인 페이지로 리다이렉트합니다.
+     * <p> 문제가 있는 경우 회원가입 페이지로 다시 반환하고,
+     * 문제가 없는 경우 {@link SignupUser} 객체를 저장한 후
+     * 메인 페이지로 리다이렉트합니다.
      *
      * @param signupUser 입력받은 회원 정보
      * @param bindingResult 유효성 검사 결과를 담고 있는 {@link BindingResult} 객체
@@ -77,6 +80,7 @@ public class SignupController {
         if (bindingResult.hasErrors()) {
             return "user/signup";
         }
+        signupService.saveUserAccount(signupUser);
 
         return "redirect:/index";
     }
