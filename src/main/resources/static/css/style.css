@@ -1,8 +1,8 @@
 .field-error {
-    border-color: #e81c31;
+    border-color: red;
 }
 
-label.field-error {
-    padding-left: 10px;
-    color: #e81c31;
+p.field-error {
+    /*padding-left: 10px;*/
+    color: red;
 }

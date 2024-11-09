@@ -2,6 +2,7 @@ package com.bookshelf.bookproject.controller.dto;
 
 import com.bookshelf.bookproject.controller.validator.EmailCheck;
 import com.bookshelf.bookproject.controller.validator.FieldsMatch;
+import com.bookshelf.bookproject.controller.validator.ValidUsername;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -11,9 +12,8 @@ import lombok.Data;
 @FieldsMatch(first = "password", second = "passwordConfirm")
 @EmailCheck(emailId = "emailId", emailAddress = "emailAddress")
 public class SignupUser {
-    @Pattern(regexp = "^[a-zA-Z0-9]{6,20}$")
+    @ValidUsername
     private String username;
-//    private String usernameChk;
 
     @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,20}")
     private String password;

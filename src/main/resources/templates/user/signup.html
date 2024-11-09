@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,19 +23,20 @@
         <div class="form-group row" id="user">
             <div class="col-sm-8" style="padding-right: 0">
                 <label for="username">아이디</label>
-                <label for="username" class="field-error" th:errors="*{username}">아이디 검증 메시지</label>
+                <p id="username-valid" class="field-error" th:errors="*{username}">아이디 검증 메시지</p>
+                <p id="username-check" style="display: none"></p>
                 <input type="text" class="form-control" id="username" maxlength="20"
                        th:field="*{username}" th:errorclass="field-error"  placeholder="아이디 입력">
             </div>
             <div class="col-sm-4 align-self-end">
-                <button type="button" class="btn btn-secondary btn-block">중복확인</button>
+                <button type="button" class="btn btn-secondary btn-block" onclick="checkUsername()">중복확인</button>
             </div>
         </div>
 
         <!-- 비밀번호 입력 -->
         <div class="form-group">
             <label for="password">비밀번호</label>
-            <label for="password" class="field-error" th:errors="*{password}">비밀번호 검증 메시지</label>
+            <p class="field-error" th:errors="*{password}">비밀번호 검증 메시지</p>
             <input type="password" class="form-control" id="password" maxlength="20"
                    th:field="*{password}" th:errorclass="field-error" placeholder="비밀번호 입력">
         </div>
@@ -41,7 +44,7 @@
         <!-- 비밀번호 확인 -->
         <div class="form-group">
             <label for="passwordConfirm">비밀번호 확인</label>
-            <label for="passwordConfirm" class="field-error" th:errors="*{passwordConfirm}">비밀번호 확인 검증 메시지</label>
+            <p class="field-error" th:errors="*{passwordConfirm}">비밀번호 확인 검증 메시지</p>
             <label for="passwordConfirm" class="field-error" th:each="err:${#fields.globalErrors()}"
                    th:if="${err} == #{FieldsMatch.signupUser}" th:text="${err}">비밀번호 일치 검증 메시지</label>
             <input type="password" class="form-control" id="passwordConfirm" maxlength="20"
@@ -51,7 +54,7 @@
         <!-- 이름 입력 -->
         <div class="form-group">
             <label for="name">이름</label>
-            <label for="name" class="field-error" th:errors="*{name}">이름 검증 메시지</label>
+            <p class="field-error" th:errors="*{name}">이름 검증 메시지</p>
             <input type="text" class="form-control" id="name" maxlength="10" th:field="*{name}"
                    th:errorclass="field-error" placeholder="이름 입력">
         </div>
@@ -60,11 +63,11 @@
 
         <label for="phone">휴대전화</label>
         <th:block th:if="${#fields.hasErrors('phoneMiddle') && #fields.hasErrors('phoneLast')}">
-            <label for="phone" class="field-error" th:errors="*{phoneMiddle}">휴대전화 검증 메시지</label>
+            <p class="field-error" th:errors="*{phoneMiddle}">휴대전화 검증 메시지</p>
         </th:block>
         <th:block th:unless="${#fields.hasErrors('phoneMiddle') && #fields.hasErrors('phoneLast')}">
-            <label for="phone" class="field-error" th:errors="*{phoneMiddle}">중간번호 검증 메시지</label>
-            <label for="phone" class="field-error" th:errors="*{phoneLast}">끝번호 검증 메시지</label>
+            <p class="field-error" th:errors="*{phoneMiddle}">중간번호 검증 메시지</p>
+            <p class="field-error" th:errors="*{phoneLast}">끝번호 검증 메시지</p>
         </th:block>
         <div class="form-group row align-items-end justify-content-between" id="phone">
             <div class="col-sm-3">
@@ -91,8 +94,8 @@
 
         <!-- 이메일 입력 -->
         <label for="email">이메일</label>
-        <label for="email" class="field-error" th:each="err:${#fields.globalErrors()}"
-               th:if="${err} == #{EmailCheck}" th:text="${err}">이메일 형식 검증 메시지</label>
+        <p class="field-error" th:each="err:${#fields.globalErrors()}"
+               th:if="${err} == #{EmailCheck}" th:text="${err}">이메일 형식 검증 메시지</p>
 
         <div class="form-group row align-items-end" id="email">
             <div class="col-sm-4 justify-content-start">

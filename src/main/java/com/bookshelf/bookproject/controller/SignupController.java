@@ -1,16 +1,21 @@
 package com.bookshelf.bookproject.controller;
 
 import com.bookshelf.bookproject.controller.dto.SignupUser;
+import com.bookshelf.bookproject.controller.dto.Username;
 import com.bookshelf.bookproject.controller.enums.EnumMapper;
 import com.bookshelf.bookproject.controller.enums.EnumMapperValue;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/signup")
@@ -74,5 +79,17 @@ public class SignupController {
         }
 
         return "redirect:/index";
+    }
+
+    @PostMapping("/user/check-username")
+    public ResponseEntity<Map<String, String>> checkUsername(@Valid @RequestBody Username username, BindingResult bindingResult) {
+        Map<String, String> response = new LinkedHashMap<>();
+
+        if (bindingResult.hasErrors()) {
+            String errorMessage = Objects.requireNonNull(bindingResult.getFieldError("username")).getDefaultMessage();
+            response.put("error", errorMessage);
+            return ResponseEntity.badRequest().body(response);
+        }
+        return ResponseEntity.ok(response);
     }
 }
