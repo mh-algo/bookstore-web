@@ -1,8 +1,7 @@
 package com.bookshelf.bookproject.security.service;
 
-import com.bookshelf.bookproject.security.dto.AccountAuthDto;
+import com.bookshelf.bookproject.security.dto.AccountAuth;
 import com.bookshelf.bookproject.domain.Account;
-import com.bookshelf.bookproject.util.mapper.AccountMapper;
 import com.bookshelf.bookproject.repository.AccountRepository;
 import com.bookshelf.bookproject.security.dto.FormUser;
 import org.springframework.security.core.GrantedAuthority;
@@ -38,12 +37,27 @@ public class FormLoginService implements UserDetailsService {
             throw new UsernameNotFoundException("Failed to find user '" + username + "'");
         }
 
-        AccountAuthDto accountDto = AccountMapper.toAccountAuthDto(user);
+        AccountAuth accountAuth = toAccountAuth(user);
 
         List<String> roles = accountRepository.findRolesByAccountId(username);
         List<GrantedAuthority> authorities = roles.stream()
                 .map(role -> (GrantedAuthority) new SimpleGrantedAuthority(role)).toList();
 
-        return new FormUser(accountDto, authorities);
+        return new FormUser(accountAuth, authorities);
+    }
+
+    /**
+     * {@link Account}를 {@link AccountAuth}로 변환
+     *
+     * @param account 변환할 {@link Account} 객체
+     * @return 변환된 {@link AccountAuth} 객체
+     */
+    private static AccountAuth toAccountAuth(Account account) {
+        return AccountAuth.builder()
+                .name(account.getName())
+                .accountId(account.getAccountId())
+                .password(account.getPassword())
+                .status(account.getStatus())
+                .build();
     }
 }

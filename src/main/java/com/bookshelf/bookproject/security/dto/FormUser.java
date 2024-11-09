@@ -10,22 +10,22 @@ import static com.bookshelf.bookproject.domain.AccountStatus.DELETED;
 import static com.bookshelf.bookproject.domain.AccountStatus.INACTIVE;
 
 public class FormUser implements UserDetails {
-    private final AccountAuthDto account;
+    private final AccountAuth account;
     private final List<GrantedAuthority> authorities;
 
     /**
      * {@link UserDetails} 인터페이스를 구현한 FormUser 객체를 생성합니다.
      * <p>주어진 사용자 정보와 권한 리스트를 기반으로 객체가 생성됩니다.
      *
-     * @param account 조회된 사용자의 정보를 담은 {@link AccountAuthDto} 객체
+     * @param account 조회된 사용자의 정보를 담은 {@link AccountAuth} 객체
      * @param authorities 사용자에게 부여된 권한 목록
      */
-    public FormUser(AccountAuthDto account, List<GrantedAuthority> authorities) {
+    public FormUser(AccountAuth account, List<GrantedAuthority> authorities) {
         this.account = account;
         this.authorities = authorities;
     }
 
-    public AccountAuthDto getAccountDto() {
+    public AccountAuth getAccountAuth() {
         return account;
     }
 

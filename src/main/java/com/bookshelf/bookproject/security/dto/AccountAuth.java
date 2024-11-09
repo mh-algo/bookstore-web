@@ -4,21 +4,19 @@ import com.bookshelf.bookproject.domain.AccountStatus;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.springframework.security.core.CredentialsContainer;
 
 @Builder
 @EqualsAndHashCode
 @Getter
-public class AccountAuthDto {
+public class AccountAuth implements CredentialsContainer {
     private final String name;
     private final String accountId;
-    private final String password;
+    private String password;
     private final AccountStatus status;
 
-    public AccountAuthDto clearPassword() {
-        return AccountAuthDto.builder()
-                .name(this.name)
-                .accountId(this.accountId)
-                .status(this.status)
-                .build();
+    @Override
+    public void eraseCredentials() {
+        password = null;
     }
 }

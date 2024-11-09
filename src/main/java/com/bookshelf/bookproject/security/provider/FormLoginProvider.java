@@ -59,7 +59,7 @@ public class FormLoginProvider implements AuthenticationProvider {
             throw new BadCredentialsException("Bad credentials");
         }
 
-        return new UsernamePasswordAuthenticationToken(loadedUser.getAccountDto().clearPassword(), null, loadedUser.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(loadedUser.getAccountAuth(), null, loadedUser.getAuthorities());
     }
 
     @Override
