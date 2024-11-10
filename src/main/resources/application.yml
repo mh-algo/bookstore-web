@@ -1,14 +1,9 @@
 spring:
   datasource:
-    # docker
-#    url: jdbc:mysql://localhost:3307/bookdb
-#    username: user
-#    password: password
-
-    # local
-    url: jdbc:mysql://localhost:3306/test_db
-    username: root
-    password: root123!@#
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_URL:localhost}:${DB_PORT:3306}/${DB_NAME:test_db}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root123!@#}
 
   jpa:
     hibernate:
@@ -18,7 +13,6 @@ spring:
 #        show_sql: true
         format_sql: true
         use_sql_comments: true
-#        dialect: org.hibernate.dialect.MySQLDialect
 
   thymeleaf:
     cache: false
