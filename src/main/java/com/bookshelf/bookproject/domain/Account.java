@@ -29,7 +29,7 @@ public abstract class Account extends TimeStamp {
     @Column(name = "account_id", length = 20, nullable = false)
     private String accountId;
 
-    @Column(name = "pwd", length = 65, nullable = false)
+    @Column(name = "pwd", length = 70, nullable = false)
     private String password;
 
     @OneToMany(mappedBy = "account")
