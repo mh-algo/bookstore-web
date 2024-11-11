@@ -82,7 +82,7 @@ public class SignupController {
         }
         signupService.saveUserAccount(signupUser);
 
-        return "redirect:/index";
+        return "redirect:/";
     }
 
     /**
