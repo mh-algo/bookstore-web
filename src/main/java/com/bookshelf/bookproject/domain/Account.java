@@ -51,6 +51,10 @@ public abstract class Account extends TimeStamp {
         }
     }
 
+    public void addRoleManagement(RoleManagement  roleManagement) {
+        roleManagements.add(roleManagement);
+    }
+
     public Account(String name, String accountId, String password, AccountStatus status) {
         this.name = name;
         this.accountId = accountId;
