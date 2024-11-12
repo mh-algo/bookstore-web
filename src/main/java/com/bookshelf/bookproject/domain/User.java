@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "users", uniqueConstraints =
-        @UniqueConstraint(name = "unique_email", columnNames = "email")
-)
+@Table(name = "users")
 @DiscriminatorValue("U")
 @PrimaryKeyJoinColumn(name = "id", foreignKey = @ForeignKey(name = "fk_users_accounts"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
