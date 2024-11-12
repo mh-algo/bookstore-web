@@ -1,6 +1,5 @@
 package com.bookshelf.bookproject.controller.dto;
 
-import com.bookshelf.bookproject.controller.validator.EmailCheck;
 import com.bookshelf.bookproject.controller.validator.FieldsMatch;
 import com.bookshelf.bookproject.controller.validator.ValidUsername;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +9,6 @@ import lombok.Data;
 
 @Data
 @FieldsMatch(first = "password", second = "passwordConfirm")
-@EmailCheck(emailId = "emailId", emailAddress = "emailAddress")
 public class SignupUser {
     @ValidUsername
     private String username;
@@ -34,11 +32,14 @@ public class SignupUser {
     @Pattern(regexp = "^[0-9]{4}$")
     private String phoneLast;
 
-    @NotBlank
-    @Size(min = 1, max = 20)
+    @Pattern(regexp = "^[A-Za-z0-9._%+-]{3,20}$")
     private String emailId;
 
-    @NotBlank
-    @Size(min = 4, max = 20)
+    @Pattern(regexp = "^(?=.{4,20}$)[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")
     private String emailAddress;
+
+    /**
+     * select 태그 선택창 저장
+     */
+    private String selectEmail = "";
 }
