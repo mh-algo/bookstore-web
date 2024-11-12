@@ -41,8 +41,8 @@ public class SignupService {
     public void saveUserAccount(SignupUser signupUser) {
         Role roleUser = getRoleByType("ROLE_USER");
         User user = toUser(signupUser);
-        assignRoleToUser(roleUser, user);
         userRepository.save(user);
+        assignRoleToUser(roleUser, user);
     }
 
     /**

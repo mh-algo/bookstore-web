@@ -19,6 +19,6 @@ public class Role {
     /**
      * 권한을 나타냄
      */
-    @Column(name = "role_type", length = 20, nullable = false)
+    @Column(name = "role_type", length = 20, nullable = false, insertable = false, updatable = false)
     private String type;
 }

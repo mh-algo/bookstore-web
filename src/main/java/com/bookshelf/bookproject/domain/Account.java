@@ -26,13 +26,13 @@ public abstract class Account extends TimeStamp {
     @Column(name = "account_name", length = 20, nullable = false)
     private String name;
 
-    @Column(name = "account_id", length = 20, nullable = false)
+    @Column(name = "account_id", length = 20, nullable = false, updatable = false)
     private String accountId;
 
     @Column(name = "pwd", length = 70, nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<RoleManagement> roleManagements = new ArrayList<>();
 
     /**

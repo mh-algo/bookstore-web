@@ -19,7 +19,8 @@ public class RoleManagement {
     private Role role;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", nullable = false, foreignKey = @ForeignKey(name="fk_role_management_accounts"))
+    @JoinColumn(name = "account_id", nullable = false, updatable = false,
+            foreignKey = @ForeignKey(name="fk_role_management_accounts"))
     private Account account;
 
     public RoleManagement(Role role, Account account) {
