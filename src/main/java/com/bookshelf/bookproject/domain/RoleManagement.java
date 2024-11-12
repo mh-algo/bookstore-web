@@ -15,11 +15,11 @@ public class RoleManagement {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id", foreignKey = @ForeignKey(name="fk_role_management_roles"))
+    @JoinColumn(name = "role_id", nullable = false, foreignKey = @ForeignKey(name="fk_role_management_roles"))
     private Role role;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", foreignKey = @ForeignKey(name="fk_role_management_accounts"))
+    @JoinColumn(name = "account_id", nullable = false, foreignKey = @ForeignKey(name="fk_role_management_accounts"))
     private Account account;
 
     public RoleManagement(Role role, Account account) {
