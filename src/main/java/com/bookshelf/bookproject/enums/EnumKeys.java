@@ -1,4 +1,4 @@
-package com.bookshelf.bookproject.controller.enums;
+package com.bookshelf.bookproject.enums;
 
 public class EnumKeys {
     public static final String PHONE_PREFIX_TYPE = "phonePrefixType";

@@ -1,10 +1,13 @@
-package com.bookshelf.bookproject.controller.config;
+package com.bookshelf.bookproject.config;
 
-import com.bookshelf.bookproject.controller.enums.*;
+import com.bookshelf.bookproject.enums.EmailAddressType;
+import com.bookshelf.bookproject.enums.EnumMapper;
+import com.bookshelf.bookproject.enums.LocalNumberType;
+import com.bookshelf.bookproject.enums.PhonePrefixType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.bookshelf.bookproject.controller.enums.EnumKeys.*;
+import static com.bookshelf.bookproject.enums.EnumKeys.*;
 
 @Configuration
 public class EnumConfig {

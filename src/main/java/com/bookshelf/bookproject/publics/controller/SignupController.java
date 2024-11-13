@@ -1,11 +1,11 @@
-package com.bookshelf.bookproject.controller;
+package com.bookshelf.bookproject.publics.controller;
 
-import com.bookshelf.bookproject.controller.dto.Signup;
-import com.bookshelf.bookproject.controller.dto.SignupSeller;
-import com.bookshelf.bookproject.controller.dto.Username;
-import com.bookshelf.bookproject.controller.enums.EnumMapper;
-import com.bookshelf.bookproject.controller.enums.EnumMapperValue;
-import com.bookshelf.bookproject.service.SignupService;
+import com.bookshelf.bookproject.publics.controller.dto.signup.Signup;
+import com.bookshelf.bookproject.publics.controller.dto.signup.SignupSeller;
+import com.bookshelf.bookproject.publics.controller.dto.signup.Username;
+import com.bookshelf.bookproject.enums.EnumMapper;
+import com.bookshelf.bookproject.enums.EnumMapperValue;
+import com.bookshelf.bookproject.publics.service.SignupService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static com.bookshelf.bookproject.controller.enums.EnumKeys.*;
+import static com.bookshelf.bookproject.enums.EnumKeys.*;
 
 @Controller
 @RequestMapping("/signup")

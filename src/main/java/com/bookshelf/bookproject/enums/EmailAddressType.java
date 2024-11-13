@@ -1,4 +1,4 @@
-package com.bookshelf.bookproject.controller.enums;
+package com.bookshelf.bookproject.enums;
 
 public enum EmailAddressType implements EnumType {
     GMAIL("gmail.com"),

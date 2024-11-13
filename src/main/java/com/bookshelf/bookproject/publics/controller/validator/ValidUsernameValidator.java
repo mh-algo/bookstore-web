@@ -1,6 +1,6 @@
-package com.bookshelf.bookproject.controller.validator;
+package com.bookshelf.bookproject.publics.controller.validator;
 
-import com.bookshelf.bookproject.service.SignupService;
+import com.bookshelf.bookproject.publics.service.SignupService;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.stereotype.Component;

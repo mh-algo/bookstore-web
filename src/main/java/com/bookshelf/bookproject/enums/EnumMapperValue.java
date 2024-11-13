@@ -1,4 +1,4 @@
-package com.bookshelf.bookproject.controller.enums;
+package com.bookshelf.bookproject.enums;
 
 public class EnumMapperValue {
     private final String code;

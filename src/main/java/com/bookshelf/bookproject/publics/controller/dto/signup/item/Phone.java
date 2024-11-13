@@ -1,4 +1,4 @@
-package com.bookshelf.bookproject.controller.dto;
+package com.bookshelf.bookproject.publics.controller.dto.signup.item;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

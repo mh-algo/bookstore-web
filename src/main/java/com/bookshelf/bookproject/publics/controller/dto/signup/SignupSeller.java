@@ -1,7 +1,8 @@
-package com.bookshelf.bookproject.controller.dto;
+package com.bookshelf.bookproject.publics.controller.dto.signup;
 
+import com.bookshelf.bookproject.publics.controller.dto.signup.item.BankInfo;
+import com.bookshelf.bookproject.publics.controller.dto.signup.item.CsPhone;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data

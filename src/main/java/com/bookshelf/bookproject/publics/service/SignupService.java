@@ -1,9 +1,9 @@
-package com.bookshelf.bookproject.service;
+package com.bookshelf.bookproject.publics.service;
 
-import com.bookshelf.bookproject.controller.dto.BankInfo;
-import com.bookshelf.bookproject.controller.dto.SignupSeller;
-import com.bookshelf.bookproject.controller.dto.Signup;
 import com.bookshelf.bookproject.domain.*;
+import com.bookshelf.bookproject.publics.controller.dto.signup.Signup;
+import com.bookshelf.bookproject.publics.controller.dto.signup.SignupSeller;
+import com.bookshelf.bookproject.publics.controller.dto.signup.item.BankInfo;
 import com.bookshelf.bookproject.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

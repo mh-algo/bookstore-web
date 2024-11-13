@@ -1,7 +1,9 @@
-package com.bookshelf.bookproject.controller.dto;
+package com.bookshelf.bookproject.publics.controller.dto.signup;
 
-import com.bookshelf.bookproject.controller.validator.FieldsMatch;
-import com.bookshelf.bookproject.controller.validator.ValidUsername;
+import com.bookshelf.bookproject.publics.controller.dto.signup.item.Email;
+import com.bookshelf.bookproject.publics.controller.dto.signup.item.Phone;
+import com.bookshelf.bookproject.publics.controller.validator.FieldsMatch;
+import com.bookshelf.bookproject.publics.controller.validator.ValidUsername;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

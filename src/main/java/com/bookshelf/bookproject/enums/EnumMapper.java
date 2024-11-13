@@ -1,4 +1,4 @@
-package com.bookshelf.bookproject.controller.enums;
+package com.bookshelf.bookproject.enums;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;

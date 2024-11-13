@@ -1,4 +1,4 @@
-package com.bookshelf.bookproject.controller.dto;
+package com.bookshelf.bookproject.publics.controller.dto;
 
 import lombok.Data;
 

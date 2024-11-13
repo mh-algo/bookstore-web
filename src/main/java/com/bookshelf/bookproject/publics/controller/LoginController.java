@@ -1,6 +1,6 @@
-package com.bookshelf.bookproject.controller;
+package com.bookshelf.bookproject.publics.controller;
 
-import com.bookshelf.bookproject.controller.dto.FormLogin;
+import com.bookshelf.bookproject.publics.controller.dto.FormLogin;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;

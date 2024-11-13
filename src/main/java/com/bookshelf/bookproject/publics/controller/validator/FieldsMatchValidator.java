@@ -1,4 +1,4 @@
-package com.bookshelf.bookproject.controller.validator;
+package com.bookshelf.bookproject.publics.controller.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
