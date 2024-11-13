@@ -1,13 +1,12 @@
 package com.bookshelf.bookproject.controller;
 
+import com.bookshelf.bookproject.controller.dto.Signup;
 import com.bookshelf.bookproject.controller.dto.SignupSeller;
-import com.bookshelf.bookproject.controller.dto.SignupUser;
 import com.bookshelf.bookproject.controller.dto.Username;
 import com.bookshelf.bookproject.controller.enums.EnumMapper;
 import com.bookshelf.bookproject.controller.enums.EnumMapperValue;
 import com.bookshelf.bookproject.service.SignupService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,10 +20,18 @@ import static com.bookshelf.bookproject.controller.enums.EnumKeys.*;
 
 @Controller
 @RequestMapping("/signup")
-@RequiredArgsConstructor
 public class SignupController {
-    private final EnumMapper enumMapper;
     private final SignupService signupService;
+    private final List<EnumMapperValue> emailAddressList;
+    private final List<EnumMapperValue> phonePrefixList;
+    private final List<EnumMapperValue> localNumberList;
+
+    public SignupController(EnumMapper enumMapper, SignupService signupService) {
+        this.signupService = signupService;
+        this.emailAddressList = enumMapper.get(EMAIL_ADDRESS_TYPE);
+        this.phonePrefixList = enumMapper.get(PHONE_PREFIX_TYPE);
+        this.localNumberList = enumMapper.get(LOCAL_NUMBER_TYPE);
+    }
 
     /**
      * 이메일 주소에 대한 Enum 값을 모델에 추가
@@ -34,7 +41,7 @@ public class SignupController {
      */
     @ModelAttribute(EMAIL_ADDRESS_TYPE)
     public List<EnumMapperValue> emailAddressType() {
-        return enumMapper.get(EMAIL_ADDRESS_TYPE);
+        return emailAddressList;
     }
 
     /**
@@ -45,7 +52,7 @@ public class SignupController {
      */
     @ModelAttribute(PHONE_PREFIX_TYPE)
     public List<EnumMapperValue> phonePrefixType() {
-        return enumMapper.get(PHONE_PREFIX_TYPE);
+        return phonePrefixList;
     }
 
     @GetMapping
@@ -56,11 +63,11 @@ public class SignupController {
     /**
      * 회원가입 페이지에 대한 GET 요청 처리
      *
-     * @param signupUser 새로운 사용자 등록을 위한 빈 {@link SignupUser} 객체
+     * @param signup 새로운 사용자 등록을 위한 빈 {@link Signup} 객체
      * @return 회원가입 페이지
      */
     @GetMapping("/user")
-    public String signupUser(@ModelAttribute SignupUser signupUser) {
+    public String signupUser(@ModelAttribute Signup signup) {
         return "user/signup";
     }
 
@@ -68,19 +75,19 @@ public class SignupController {
      * 회원가입 페이지에 대한 Post 요청을 처리하고, 유효성 검사 수행
      * <p> 사용자가 입력한 회원가입 데이터를 받아 유효성 검사를 진행합니다.
      * <p> 문제가 있는 경우 회원가입 페이지로 다시 반환하고,
-     * 문제가 없는 경우 {@link SignupUser} 객체를 저장한 후
+     * 문제가 없는 경우 {@link Signup} 객체를 저장한 후
      * 메인 페이지로 리다이렉트합니다.
      *
-     * @param signupUser 입력받은 회원 정보
+     * @param signup 입력받은 회원 정보
      * @param bindingResult 유효성 검사 결과를 담고 있는 {@link BindingResult} 객체
      * @return 유효성 검사가 실패하면 회원가입 페이지, 성공하면 메인 페이지로 리다이렉트
      */
     @PostMapping("/user")
-    public String saveUserAccount(@Valid @ModelAttribute SignupUser signupUser, BindingResult bindingResult) {
+    public String saveUserAccount(@Valid @ModelAttribute Signup signup, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "user/signup";
         }
-        signupService.saveUserAccount(signupUser);
+        signupService.saveUserAccount(signup);
 
         return "redirect:/";
     }
@@ -130,11 +137,7 @@ public class SignupController {
     }
 
     private void addLocalNumberValue(Model model) {
-        List<EnumMapperValue> localNumberValues = enumMapper.get(LOCAL_NUMBER_TYPE);
-        List<EnumMapperValue> phonePrefixValues = enumMapper.get(PHONE_PREFIX_TYPE);
-
-        List<EnumMapperValue> allNumberType = Stream.concat(localNumberValues.stream(), phonePrefixValues.stream()).toList();
-
-        model.addAttribute("allNumberType", allNumberType);
+        List<EnumMapperValue> allNumberList = Stream.concat(localNumberList.stream(), phonePrefixList.stream()).toList();
+        model.addAttribute("allNumberType", allNumberList);
     }
 }

@@ -45,8 +45,8 @@
         <div class="form-group">
             <label for="passwordConfirm">비밀번호 확인</label>
             <p class="field-error" th:errors="*{passwordConfirm}">비밀번호 확인 검증 메시지</p>
-            <label for="passwordConfirm" class="field-error" th:each="err:${#fields.globalErrors()}"
-                   th:if="${err} == #{FieldsMatch.signupUser}" th:text="${err}">비밀번호 일치 검증 메시지</label>
+            <p for="passwordConfirm" class="field-error" th:each="err:${#fields.globalErrors()}"
+                   th:if="${err} == #{FieldsMatch.signupSeller}" th:text="${err}">비밀번호 일치 검증 메시지</p>
             <input type="password" class="form-control" id="passwordConfirm" maxlength="20"
                    th:field="*{passwordConfirm}" th:errorclass="field-error" placeholder="비밀번호 확인">
         </div>

@@ -44,6 +44,13 @@ public abstract class Account extends TimeStamp {
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
 
+    protected Account(String name, String accountId, String password, AccountStatus status) {
+        this.name = name;
+        this.accountId = accountId;
+        this.password = password;
+        this.status = status;
+    }
+
     @PrePersist
     public void setDefaultStatus() {
         if (this.status == null) {
@@ -53,12 +60,5 @@ public abstract class Account extends TimeStamp {
 
     public void addRoleManagement(RoleManagement  roleManagement) {
         roleManagements.add(roleManagement);
-    }
-
-    public Account(String name, String accountId, String password, AccountStatus status) {
-        this.name = name;
-        this.accountId = accountId;
-        this.password = password;
-        this.status = status;
     }
 }

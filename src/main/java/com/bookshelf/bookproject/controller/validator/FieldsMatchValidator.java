@@ -3,7 +3,8 @@ package com.bookshelf.bookproject.controller.validator;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Objects;
 
 public class FieldsMatchValidator implements ConstraintValidator<FieldsMatch, Object> {
@@ -45,17 +46,39 @@ public class FieldsMatchValidator implements ConstraintValidator<FieldsMatch, Ob
 
     /**
      * 객체에서 지정된 필드의 값을 반환
-     * <p> 주어진 객체에서 주어진 필드 이름에 해당하는 필드 값을 찾아 반환합니다.
+     * <p> 주어진 객체에서 필드 이름을 기반으로 getter 메서드를 찾아 호출하여 값을 반환합니다.
+     * <p> 객체에 필드의 getter 메서드가 {@code public}이 아닌 경우,
+     * {@code setAccessible(true)}로 접근 권한을 설정한 후 메서드를 호출하여 값을 반환합니다.
+     * <p> 주어진 객체에 선언된 메서드가 존재하지 않는 경우, 상속받은 클래스의 {@code public} 메서드 중 해당되는 메서드를 찾습니다.
+     * 메서드가 존재할 경우 호출하여 값을 반환합니다.
      *
-     * @param object 필드 값을 가져올 대상 객체
+     * @param object 값을 가져올 대상 객체
      * @param fieldName 값을 가져올 필드의 이름
      * @return 지정된 필드 이름에 해당하는 필드의 값
-     * @throws NoSuchFieldException 지정된 필드 이름이 존재하지 않을 때 발생
-     * @throws IllegalAccessException 필드에 접근할 수 없는 경우 발생
+     * @throws IllegalAccessException 메서드에 접근할 수 없는 경우 발생
+     * @throws NoSuchMethodException 해당 이름의 getter 메서드가 존재하지 않을 때 발생
+     * @throws InvocationTargetException 메서드 호출 중 예외가 발생할 때 발생
      */
-    private Object getFieldValue(Object object, String fieldName) throws NoSuchFieldException, IllegalAccessException {
-        Field field = object.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return field.get(object);
+    private Object getFieldValue(Object object, String fieldName) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        String methodName = getMethodName(fieldName);
+        try {
+            Method declaredMethod = object.getClass().getDeclaredMethod(methodName);
+            declaredMethod.setAccessible(true);
+            return declaredMethod.invoke(object);
+        } catch (NoSuchMethodException e) {
+            Method publicMethod = object.getClass().getMethod(methodName);
+            return publicMethod.invoke(object);
+        }
+    }
+
+    /**
+     * 주어진 필드 이름에 해당하는 getter 메서드의 이름 반환
+     * <p> 필드 이름의 첫 글자를 대문자로 변환한 후 "get" 접두사를 추가하여 getter 메서드 이름을 생성합니다.
+     *
+     * @param fieldName getter 메서드 이름을 생성할 필드 이름
+     * @return 주어진 필드 이름에 대응하는 getter 메서드 이름
+     */
+    private static String getMethodName(String fieldName) {
+        return "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
     }
 }

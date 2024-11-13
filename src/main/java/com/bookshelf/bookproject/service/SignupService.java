@@ -1,9 +1,8 @@
 package com.bookshelf.bookproject.service;
 
-import com.bookshelf.bookproject.controller.dto.SignupUser;
-import com.bookshelf.bookproject.domain.Role;
-import com.bookshelf.bookproject.domain.RoleManagement;
-import com.bookshelf.bookproject.domain.User;
+import com.bookshelf.bookproject.controller.dto.SignupSeller;
+import com.bookshelf.bookproject.controller.dto.Signup;
+import com.bookshelf.bookproject.domain.*;
 import com.bookshelf.bookproject.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,37 +30,37 @@ public class SignupService {
     }
 
     /**
-     * 주어진 {@link SignupUser} 객체를 저장하고 {@code ROLE_USER} 권한을 부여합니다.
-     * <p> 이 메서드는 {@link SignupUser} 객체를 {@link User} 엔티티로 변환한 후,
+     * 주어진 {@link Signup} 객체를 저장하고 {@code ROLE_USER} 권한을 부여합니다.
+     * <p> 이 메서드는 {@link Signup} 객체를 {@link User} 엔티티로 변환한 후,
      * 해당 사용자에게 {@code ROLE_USER} 권한을 부여하고 저장합니다.
      * 권한 부여 과정은 {@link Role} 엔티티를 통해 {@link User} 엔티티에 연결됩니다.
      *
-     * @param signupUser 저장할 {@link SignupUser} 객체
+     * @param signup 저장할 {@link Signup} 객체
      *                   <p> {@code SignupUser} 객체는 사용자 가입을 위한 DTO로,
      *                   {@link User} 엔티티에 변환되어 저장됩니다.
      */
     @Transactional
-    public void saveUserAccount(SignupUser signupUser) {
+    public void saveUserAccount(Signup signup) {
         Role roleUser = getRoleByType("ROLE_USER");
-        User user = toUser(signupUser);
+        User user = toUser(signup);
         userRepository.save(user);
-        assignRoleToUser(roleUser, user);
+        assignRoleToAccount(roleUser, user);
     }
 
     /**
-     * 주어진 {@link User} 객체와 {@link Role} 객체 간의 관계를 매핑하고,
+     * 주어진 {@link Account} 객체와 {@link Role} 객체 간의 관계를 매핑하고,
      * 이를 {@link RoleManagement} 객체를 통해 저장합니다.
-     * <p> 이 메서드는 {@link RoleManagement} 객체를 생성하여 {@link User}와 {@link Role} 간의
-     * 관계를 나타내는 연결 정보를 저장합니다. {@link RoleManagement} 객체는 {@link User}와
-     * {@link Role} 간의 중간 엔티티 역할을 하며, 이후 {@link User} 객체에 해당 관계를 추가합니다.
+     * <p> 이 메서드는 {@link RoleManagement} 객체를 생성하여 {@link Account}와 {@link Role} 간의
+     * 관계를 나타내는 연결 정보를 저장합니다. {@link RoleManagement} 객체는 {@link Account}와
+     * {@link Role} 간의 중간 엔티티 역할을 하며, 이후 {@link Account} 객체에 해당 관계를 추가합니다.
      *
      * @param role {@link Role} 객체로, 사용자에게 부여할 역할 정보
-     * @param user {@link User} 객체로, 역할을 부여할 사용자
+     * @param account {@link Account} 객체로, 역할을 부여할 사용자
      */
-    private void assignRoleToUser(Role role, User user) {
-        RoleManagement roleManagement = new RoleManagement(role, user);
+    private void assignRoleToAccount(Role role, Account account) {
+        RoleManagement roleManagement = new RoleManagement(role, account);
         roleManagementRepository.save(roleManagement);
-        user.addRoleManagement(roleManagement);
+        account.addRoleManagement(roleManagement);
     }
 
     /**
@@ -77,29 +76,33 @@ public class SignupService {
     }
 
     /**
-     * 주어진 {@link SignupUser} 객체를 {@link User} 엔티티로 변환하여 반환
-     * <p> 주어진 {@link SignupUser} 객체를 {@link User} 엔티티로 변환하며,
+     * 주어진 {@link Signup} 객체를 {@link User} 엔티티로 변환하여 반환
+     * <p> 주어진 {@link Signup} 객체를 {@link User} 엔티티로 변환하며,
      * {@code password}는 암호화하여 {@link User} 엔티티로 변환합니다.
      *
-     * @param signupUser 변환할 {@link SignupUser} 객체
+     * @param signup 변환할 {@link Signup} 객체
      * @return 변환된 {@link User} 엔티티
      */
-    private User toUser(SignupUser signupUser) {
+    private User toUser(Signup signup) {
         return User.builder()
-                .name(signupUser.getName())
-                .accountId(signupUser.getUsername())
-                .password(passwordEncoder.encode(signupUser.getPassword()))
-                .email(getEmail(signupUser))
-                .phone(getPhoneNumber(signupUser))
+                .name(signup.getName())
+                .accountId(signup.getUsername())
+                .password(passwordEncoder.encode(signup.getPassword()))
+                .email(getEmail(signup))
+                .phone(getPhoneNumber(signup))
                 .build();
     }
 
-    private static String getEmail(SignupUser signupUser) {
-        return signupUser.getEmailId() + "@" + signupUser.getEmailAddress();
+    private static String getEmail(Signup signup) {
+        return signup.getEmailId() + "@" + signup.getEmailAddress();
     }
 
-    private static String getPhoneNumber(SignupUser signupUser) {
-        return signupUser.getPhonePrefix() + "-" + signupUser.getPhoneMiddle() + "-" + signupUser.getPhoneLast();
+    private static String getPhoneNumber(Signup signup) {
+        return formatPhoneNumber(signup.getPhonePrefix(), signup.getPhoneMiddle(), signup.getPhoneLast());
+    }
+
+    private static String formatPhoneNumber(String phonePrefix, String phoneMiddle, String phoneLast) {
+        return phonePrefix + "-" + phoneMiddle + "-" + phoneLast;
     }
 
     @Cacheable("bankNames")

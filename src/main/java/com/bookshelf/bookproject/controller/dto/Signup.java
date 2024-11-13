@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 @FieldsMatch(first = "password", second = "passwordConfirm")
-public class SignupUser {
+public class Signup {
     @ValidUsername
     private String username;
 
