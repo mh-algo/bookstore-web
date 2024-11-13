@@ -8,7 +8,7 @@ public enum PhonePrefixType implements EnumType {
     EIGHT("018"),
     NINE("019");
 
-    private String number;
+    private final String number;
 
     PhonePrefixType(String num) {
         this.number = num;

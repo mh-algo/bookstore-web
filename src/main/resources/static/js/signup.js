@@ -20,7 +20,7 @@ function checkUsername() {
     const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
     const csrfToken = $('meta[name="_csrf"]').attr('content');
 
-    fetch("/signup/user/check-username", {
+    fetch("/signup/check-username", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

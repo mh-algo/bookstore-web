@@ -1,5 +1,6 @@
 package com.bookshelf.bookproject.controller;
 
+import com.bookshelf.bookproject.controller.dto.SignupSeller;
 import com.bookshelf.bookproject.controller.dto.SignupUser;
 import com.bookshelf.bookproject.controller.dto.Username;
 import com.bookshelf.bookproject.controller.enums.EnumMapper;
@@ -13,19 +14,16 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Stream;
+
+import static com.bookshelf.bookproject.controller.enums.EnumKeys.*;
 
 @Controller
 @RequestMapping("/signup")
 @RequiredArgsConstructor
 public class SignupController {
     private final EnumMapper enumMapper;
-
-    private static final String EMAIL_ADDRESS_TYPE = "emailAddressType";
-    private static final String PHONE_PREFIX_TYPE = "phonePrefixType";
     private final SignupService signupService;
 
     /**
@@ -50,16 +48,19 @@ public class SignupController {
         return enumMapper.get(PHONE_PREFIX_TYPE);
     }
 
+    @GetMapping
+    public String signup() {
+        return "signup";
+    }
+
     /**
      * 회원가입 페이지에 대한 GET 요청 처리
-     * <p> 새로운 사용자 등록을 위한 빈 {@link SignupUser} 객체를 모델에 추가합니다.
      *
-     * @param model 뷰에 전달할 데이터를 추가하기 위한 {@link Model} 객체
+     * @param signupUser 새로운 사용자 등록을 위한 빈 {@link SignupUser} 객체
      * @return 회원가입 페이지
      */
     @GetMapping("/user")
-    public String signupUser(Model model) {
-        model.addAttribute("signupUser", new SignupUser());
+    public String signupUser(@ModelAttribute SignupUser signupUser) {
         return "user/signup";
     }
 
@@ -75,8 +76,7 @@ public class SignupController {
      * @return 유효성 검사가 실패하면 회원가입 페이지, 성공하면 메인 페이지로 리다이렉트
      */
     @PostMapping("/user")
-    public String saveAccount(@Valid @ModelAttribute SignupUser signupUser, BindingResult bindingResult) {
-        System.out.println("signupUser = " + signupUser);
+    public String saveUserAccount(@Valid @ModelAttribute SignupUser signupUser, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "user/signup";
         }
@@ -94,7 +94,7 @@ public class SignupController {
      * @param bindingResult 유효성 검사 결과를 담고 있는 {@link BindingResult} 객체
      * @return 검증 통과 시 200 OK, 실패 시 400 Bad Request와 에러 메시지를 담은 {@code ResponseEntity}
      */
-    @PostMapping("/user/check-username")
+    @PostMapping("/check-username")
     public ResponseEntity<Map<String, String>> checkUsername(@Valid @RequestBody Username username, BindingResult bindingResult) {
         Map<String, String> response = new LinkedHashMap<>();
 
@@ -104,5 +104,37 @@ public class SignupController {
             return ResponseEntity.badRequest().body(response);
         }
         return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/seller")
+    public String signupSeller(@ModelAttribute("signupSeller") SignupSeller signupSeller, Model model) {
+        addBankNames(model);
+        addLocalNumberValue(model);
+        return "seller/signup";
+    }
+
+    @PostMapping("/seller")
+    public String saveSellerAccount(@Valid @ModelAttribute SignupSeller signupSeller, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            addBankNames(model);
+            addLocalNumberValue(model);
+            return "seller/signup";
+        }
+        return "redirect:/";
+    }
+
+    private void addBankNames(Model model) {
+        List<String> bankNames = signupService.getBankNames();
+        model.addAttribute("bankNames", bankNames);
+    }
+
+    private void addLocalNumberValue(Model model) {
+        List<EnumMapperValue> localNumberValues = enumMapper.get(LOCAL_NUMBER_TYPE);
+        List<EnumMapperValue> phonePrefixValues = enumMapper.get(PHONE_PREFIX_TYPE);
+
+        List<EnumMapperValue> allNumberType = Stream.concat(localNumberValues.stream(), phonePrefixValues.stream()).toList();
+
+        model.addAttribute("allNumberType", allNumberType);
     }
 }

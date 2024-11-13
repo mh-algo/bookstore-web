@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 @FieldsMatch(first = "password", second = "passwordConfirm")
-public class SignupUser {
+public class SignupSeller {
     @ValidUsername
     private String username;
 
@@ -32,6 +32,15 @@ public class SignupUser {
     @Pattern(regexp = "^[0-9]{4}$")
     private String phoneLast;
 
+    @Pattern(regexp = "^[0-9]{2,3}$")
+    private String csPhonePrefix;
+
+    @Pattern(regexp = "^[0-9]{3,4}$")
+    private String csPhoneMiddle;
+
+    @Pattern(regexp = "^[0-9]{4}$")
+    private String csPhoneLast;
+
     @Pattern(regexp = "^[A-Za-z0-9._%+-]{3,20}$")
     private String emailId;
 
@@ -42,4 +51,13 @@ public class SignupUser {
      * select 태그 선택창 저장하는 용도
      */
     private String selectEmail = "";
+
+    @Pattern(regexp = "^[가-힣a-zA-Z]{2,10}$")
+    private String bank = "";
+
+    @Pattern(regexp = "^[가-힣a-zA-Z0-9]{1,20}$")
+    private String depositor;
+
+    @Pattern(regexp = "^[0-9]{10,14}$")
+    private String accountNumber;
 }
