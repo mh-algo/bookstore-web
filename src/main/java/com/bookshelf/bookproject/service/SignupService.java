@@ -4,15 +4,17 @@ import com.bookshelf.bookproject.controller.dto.SignupUser;
 import com.bookshelf.bookproject.domain.Role;
 import com.bookshelf.bookproject.domain.RoleManagement;
 import com.bookshelf.bookproject.domain.User;
-import com.bookshelf.bookproject.repository.AccountRepository;
-import com.bookshelf.bookproject.repository.RoleManagementRepository;
-import com.bookshelf.bookproject.repository.RoleRepository;
-import com.bookshelf.bookproject.repository.UserRepository;
+import com.bookshelf.bookproject.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SignupService {
@@ -21,6 +23,7 @@ public class SignupService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final BankRepository bankRepository;
 
     @Transactional(readOnly = true)
     public boolean isEnableUsername(String username) {
@@ -97,5 +100,11 @@ public class SignupService {
 
     private static String getPhoneNumber(SignupUser signupUser) {
         return signupUser.getPhonePrefix() + "-" + signupUser.getPhoneMiddle() + "-" + signupUser.getPhoneLast();
+    }
+
+    @Cacheable("bankNames")
+    @Transactional(readOnly = true)
+    public List<String> getBankNames() {
+        return bankRepository.findAllBankNames();
     }
 }
