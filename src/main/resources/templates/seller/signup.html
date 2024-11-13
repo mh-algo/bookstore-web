@@ -18,8 +18,8 @@
 <div class="container mt-5">
     <h2 class="text-center mb-4">회원가입</h2>
     <form th:action="@{/signup/seller}" th:object="${signupSeller}" method="post">
-        <!-- 아이디 입력 -->
 
+        <!-- 아이디 입력 -->
         <div class="form-group row" id="user">
             <div class="col-sm-8" style="padding-right: 0">
                 <label for="username">아이디</label>
@@ -60,19 +60,14 @@
         </div>
 
         <!-- 휴대전화 번호 입력 -->
-
         <div class="form-group">
             <label for="phone">휴대전화</label>
-            <th:block th:if="${#fields.hasErrors('phoneMiddle') && #fields.hasErrors('phoneLast')}">
-                <p class="field-error" th:errors="*{phoneMiddle}">휴대전화 검증 메시지</p>
-            </th:block>
-            <th:block th:unless="${#fields.hasErrors('phoneMiddle') && #fields.hasErrors('phoneLast')}">
-                <p class="field-error" th:errors="*{phoneMiddle}">중간번호 검증 메시지</p>
-                <p class="field-error" th:errors="*{phoneLast}">끝번호 검증 메시지</p>
+            <th:block th:if="${#fields.hasErrors('phone.middle') || #fields.hasErrors('phone.last')}">
+                <p class="field-error" th:text="#{Pattern.phone}">휴대전화 검증 메시지</p>
             </th:block>
             <div class="row align-items-end justify-content-between" id="phone">
                 <div class="col-sm-3">
-                    <select class="form-control" id="phonePrefix" th:field="*{phonePrefix}">
+                    <select class="form-control" id="phonePrefix" th:field="*{phone.prefix}">
                         <option th:each="phonePrefix : ${phonePrefixType}" th:value="${phonePrefix.title}"
                                 th:text="${phonePrefix.title}">휴대전화 앞번호</option>
                     </select>
@@ -81,34 +76,28 @@
                     <span class="col-sm-1 text-center pb-2">-</span>
                 </div>
                 <div class="col-sm-4">
-                    <input type="text" class="form-control" id="phoneMiddle" maxlength="4" th:field="*{phoneMiddle}"
+                    <input type="text" class="form-control" id="phoneMiddle" maxlength="4" th:field="*{phone.middle}"
                            th:errorclass="field-error">
                 </div>
                 <div class="row align-items-end">
                     <span class="col-sm-1 text-center pb-2">-</span>
                 </div>
                 <div class="col-sm-4">
-                    <input type="text" class="form-control" id="phoneLast" maxlength="4"  th:field="*{phoneLast}"
+                    <input type="text" class="form-control" id="phoneLast" maxlength="4"  th:field="*{phone.last}"
                            th:errorclass="field-error">
                 </div>
             </div>
         </div>
 
         <!-- 고객센터 번호 입력 -->
-
-
         <div class="form-group">
             <label for="cs-phone">고객센터 번호</label>
-            <th:block th:if="${#fields.hasErrors('csPhoneMiddle') && #fields.hasErrors('csPhoneLast')}">
-                <p class="field-error" th:errors="*{csPhoneMiddle}">고객센터 번호 검증 메시지</p>
-            </th:block>
-            <th:block th:unless="${#fields.hasErrors('csPhoneMiddle') && #fields.hasErrors('csPhoneLast')}">
-                <p class="field-error" th:errors="*{csPhoneMiddle}">중간번호 검증 메시지</p>
-                <p class="field-error" th:errors="*{csPhoneLast}">끝번호 검증 메시지</p>
+            <th:block th:if="${#fields.hasErrors('csPhone.middle') || #fields.hasErrors('csPhone.last')}">
+                <p class="field-error" th:text="#{Pattern.csPhone}">고객센터 번호 검증 메시지</p>
             </th:block>
             <div class="row align-items-end justify-content-between" id="cs-phone">
                 <div class="col-sm-3">
-                    <select class="form-control" id="csPhonePrefix" th:field="*{csPhonePrefix}">
+                    <select class="form-control" id="csPhonePrefix" th:field="*{csPhone.prefix}">
                         <option th:each="allNumber : ${allNumberType}" th:value="${allNumber.title}"
                                 th:text="${allNumber.title}">고객센터 번호 앞번호</option>
                     </select>
@@ -117,14 +106,14 @@
                     <span class="col-sm-1 text-center pb-2">-</span>
                 </div>
                 <div class="col-sm-4">
-                    <input type="text" class="form-control" id="csPhoneMiddle" maxlength="4" th:field="*{csPhoneMiddle}"
+                    <input type="text" class="form-control" id="csPhoneMiddle" maxlength="4" th:field="*{csPhone.middle}"
                            th:errorclass="field-error">
                 </div>
                 <div class="row align-items-end">
                     <span class="col-sm-1 text-center pb-2">-</span>
                 </div>
                 <div class="col-sm-4">
-                    <input type="text" class="form-control" id="csPhoneLast" maxlength="4"  th:field="*{csPhoneLast}"
+                    <input type="text" class="form-control" id="csPhoneLast" maxlength="4"  th:field="*{csPhone.last}"
                            th:errorclass="field-error">
                 </div>
             </div>
@@ -133,28 +122,22 @@
         <!-- 이메일 입력 -->
         <div class="form-group">
             <label for="email">이메일</label>
-            <th:block th:if="${#fields.hasErrors('emailId') && #fields.hasErrors('emailAddress')}">
-                <p class="field-error" th:errors="*{emailId}">이메일 검증 메시지</p>
+            <th:block th:if="${#fields.hasErrors('email.id') || #fields.hasErrors('email.address')}">
+                <p class="field-error" th:text="#{Pattern.email}">이메일 검증 메시지</p>
             </th:block>
-
-            <th:block th:unless="${#fields.hasErrors('emailId') && #fields.hasErrors('emailAddress')}">
-                <p class="field-error" th:errors="*{emailId}">이메일 아이디 검증 메시지</p>
-                <p class="field-error" th:errors="*{emailAddress}">이메일 주소 검증 메시지</p>
-            </th:block>
-
             <div class="row align-items-end" id="email">
                 <div class="col-sm-4 justify-content-start">
-                    <input type="text" class="form-control" id="emailId" maxlength="20" th:field="*{emailId}"
+                    <input type="text" class="form-control" id="emailId" maxlength="20" th:field="*{email.id}"
                            th:errorclass="field-error" placeholder="이메일">
                 </div>
 
                 <span class="col-sm-1 pb-2" style="padding-left: 0">@</span>
 
-                <input type="text" class="form-control col-sm" id="emailAddress" maxlength="20" th:field="*{emailAddress}"
-                       th:errorclass="field-error" th:readonly="*{selectEmail != 'custom'}">
+                <input type="text" class="form-control col-sm" id="emailAddress" maxlength="20" th:field="*{email.address}"
+                       th:errorclass="field-error" th:readonly="*{email.select != 'custom'}">
 
                 <div class="col-sm-3">
-                    <select class="form-control" id="addressSelect" th:field="*{selectEmail}" onchange="updateEmailAddressInput()">
+                    <select class="form-control" id="addressSelect" th:field="*{email.select}" onchange="updateEmailAddressInput()">
                         <option disabled selected value="">이메일을 선택하세요</option>
                         <option th:each="emailAddress : ${emailAddressType}" th:value="${emailAddress.title}"
                                 th:text="${emailAddress.title}">이메일 주소</option>
@@ -164,21 +147,23 @@
             </div>
         </div>
 
+        <!-- 계좌 입력 -->
         <div class="form-group">
             <label for="bank-details">정산대금 입금계좌</label>
-            <div th:if="${#fields.hasErrors('bankName') or #fields.hasErrors('depositor') or #fields.hasErrors('accountNumber')}">
-                <p class="field-error" th:text="#{Pattern.bankName}"></p>
+            <div th:if="${#fields.hasErrors('bankInfo.name') || #fields.hasErrors('bankInfo.depositor')||
+            #fields.hasErrors('bankInfo.accountNumber')}">
+                <p class="field-error" th:text="#{Pattern.bankInfo}">계좌 검증 메시지</p>
             </div>
             <div class="input-group" id="bank-details">
-                <select class="form-control col-6" id="bank-name" th:field="*{bankName}" th:errorclass="field-error">
+                <select class="form-control col-6" id="bank-name" th:field="*{bankInfo.name}" th:errorclass="field-error">
                     <option disabled selected value="">은행을 선택하세요</option>
                     <option th:each="bankName:${bankNames}" th:value="${bankName}" th:text="${bankName}">은행 이름</option>
                 </select>
             </div>
             <div class="input-group mt-2">
-                <input type="text" class="form-control col-4" th:field="*{depositor}" th:errorclass="field-error"
+                <input type="text" class="form-control col-4" th:field="*{bankInfo.depositor}" th:errorclass="field-error"
                        placeholder="예금주 명" style="margin-right: 10px">
-                <input type="text" class="form-control col-8" th:field="*{accountNumber}" th:errorclass="field-error"
+                <input type="text" class="form-control col-8" th:field="*{bankInfo.accountNumber}" th:errorclass="field-error"
                        placeholder="계좌번호 (숫자만 입력)">
             </div>
         </div>

@@ -1,5 +1,6 @@
 package com.bookshelf.bookproject.service;
 
+import com.bookshelf.bookproject.controller.dto.BankInfo;
 import com.bookshelf.bookproject.controller.dto.SignupSeller;
 import com.bookshelf.bookproject.controller.dto.Signup;
 import com.bookshelf.bookproject.domain.*;
@@ -49,14 +50,19 @@ public class SignupService {
     public void saveSellerAccount(SignupSeller signupSeller) {
         Seller seller = toSeller(signupSeller);
         saveWithRole(seller, "ROLE_SELLER");
-        Bank bank = getBankByName(signupSeller.getBankName());
-        linkBankToAccount(bank, seller, signupSeller);
+        BankInfo bankInfo = signupSeller.getBankInfo();
+        saveBankInfo(bankInfo, seller);
+    }
+
+    private void saveBankInfo(BankInfo bankInfo, Seller seller) {
+        Bank bank = getBankByName(bankInfo.getName());
+        linkBank(bank, seller, bankInfo);
     }
 
     private void saveWithRole(Account account, String roleType) {
         accountRepository.save(account);
         Role role = getRoleByType(roleType);
-        linkRoleToAccount(role, account);
+        linkRole(role, account);
     }
 
     /**
@@ -69,14 +75,14 @@ public class SignupService {
      * @param role {@link Role} 객체로, 사용자에게 부여할 역할 정보
      * @param account {@link Account} 객체로, 역할을 부여할 사용자
      */
-    private void linkRoleToAccount(Role role, Account account) {
+    private void linkRole(Role role, Account account) {
         RoleManagement roleManagement = new RoleManagement(role, account);
         roleManagementRepository.save(roleManagement);
         account.addRoleManagement(roleManagement);
     }
 
-    private void linkBankToAccount(Bank bank, Seller seller, SignupSeller signupSeller) {
-        BankAccount bankAccount = new BankAccount(seller, bank, signupSeller.getDepositor(), signupSeller.getAccountNumber());
+    private void linkBank(Bank bank, Seller seller, BankInfo bankInfo) {
+        BankAccount bankAccount = new BankAccount(seller, bank, bankInfo.getDepositor(), bankInfo.getAccountNumber());
         bankAccountRepository.save(bankAccount);
         seller.addBankAccount(bankAccount);
     }
@@ -110,8 +116,8 @@ public class SignupService {
                 .name(signup.getName())
                 .accountId(signup.getUsername())
                 .password(passwordEncoder.encode(signup.getPassword()))
-                .email(getEmail(signup))
-                .phone(getPhoneNumber(signup))
+                .email(signup.getEmailAddress())
+                .phone(signup.getPhoneNumber())
                 .build();
     }
 
@@ -120,26 +126,10 @@ public class SignupService {
                 .name(signupSeller.getName())
                 .accountId(signupSeller.getUsername())
                 .password(passwordEncoder.encode(signupSeller.getPassword()))
-                .email(getEmail(signupSeller))
-                .phone(getPhoneNumber(signupSeller))
-                .csPhone(getCsPhoneNumber(signupSeller))
+                .email(signupSeller.getEmailAddress())
+                .phone(signupSeller.getPhoneNumber())
+                .csPhone(signupSeller.getCsPhoneNumber())
                 .build();
-    }
-
-    private static String getEmail(Signup signup) {
-        return signup.getEmailId() + "@" + signup.getEmailAddress();
-    }
-
-    private static String getPhoneNumber(Signup signup) {
-        return formatPhoneNumber(signup.getPhonePrefix(), signup.getPhoneMiddle(), signup.getPhoneLast());
-    }
-
-    private static String getCsPhoneNumber(SignupSeller signupSeller) {
-        return formatPhoneNumber(signupSeller.getCsPhonePrefix(), signupSeller.getCsPhoneMiddle(), signupSeller.getCsPhoneLast());
-    }
-
-    private static String formatPhoneNumber(String phonePrefix, String phoneMiddle, String phoneLast) {
-        return phonePrefix + "-" + phoneMiddle + "-" + phoneLast;
     }
 
     @Cacheable("bankNames")
