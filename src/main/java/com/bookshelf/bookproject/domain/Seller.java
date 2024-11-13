@@ -34,4 +34,8 @@ public class Seller extends Account {
         this.phone = phone;
         this.csPhone = csPhone;
     }
+
+    public void addBankAccount(BankAccount bankAccount) {
+        bankAccounts.add(bankAccount);
+    }
 }

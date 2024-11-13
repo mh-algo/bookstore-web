@@ -115,7 +115,7 @@ public class SignupController {
 
 
     @GetMapping("/seller")
-    public String signupSeller(@ModelAttribute("signupSeller") SignupSeller signupSeller, Model model) {
+    public String signupSeller(@ModelAttribute SignupSeller signupSeller, Model model) {
         addBankNames(model);
         addLocalNumberValue(model);
         return "seller/signup";
@@ -128,6 +128,8 @@ public class SignupController {
             addLocalNumberValue(model);
             return "seller/signup";
         }
+        signupService.saveSellerAccount(signupSeller);
+
         return "redirect:/";
     }
 

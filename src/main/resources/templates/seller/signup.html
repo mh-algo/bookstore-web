@@ -166,11 +166,11 @@
 
         <div class="form-group">
             <label for="bank-details">정산대금 입금계좌</label>
-            <div th:if="${#fields.hasErrors('bank') or #fields.hasErrors('depositor') or #fields.hasErrors('accountNumber')}">
-                <p class="field-error" th:text="#{Pattern.bank}"></p>
+            <div th:if="${#fields.hasErrors('bankName') or #fields.hasErrors('depositor') or #fields.hasErrors('accountNumber')}">
+                <p class="field-error" th:text="#{Pattern.bankName}"></p>
             </div>
             <div class="input-group" id="bank-details">
-                <select class="form-control col-6" id="bank-name" th:field="*{bank}" th:errorclass="field-error">
+                <select class="form-control col-6" id="bank-name" th:field="*{bankName}" th:errorclass="field-error">
                     <option disabled selected value="">은행을 선택하세요</option>
                     <option th:each="bankName:${bankNames}" th:value="${bankName}" th:text="${bankName}">은행 이름</option>
                 </select>

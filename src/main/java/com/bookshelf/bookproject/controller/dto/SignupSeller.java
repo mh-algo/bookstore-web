@@ -15,7 +15,7 @@ public class SignupSeller extends Signup {
     private String csPhoneLast;
 
     @Pattern(regexp = "^[가-힣a-zA-Z]{2,10}$")
-    private String bank = "";
+    private String bankName = "";
 
     @Pattern(regexp = "^[가-힣a-zA-Z0-9]{1,20}$")
     private String depositor;

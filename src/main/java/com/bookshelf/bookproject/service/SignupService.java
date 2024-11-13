@@ -20,9 +20,9 @@ public class SignupService {
     private final RoleRepository roleRepository;
     private final RoleManagementRepository roleManagementRepository;
     private final AccountRepository accountRepository;
-    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final BankRepository bankRepository;
+    private final BankAccountRepository bankAccountRepository;
 
     @Transactional(readOnly = true)
     public boolean isEnableUsername(String username) {
@@ -41,10 +41,22 @@ public class SignupService {
      */
     @Transactional
     public void saveUserAccount(Signup signup) {
-        Role roleUser = getRoleByType("ROLE_USER");
         User user = toUser(signup);
-        userRepository.save(user);
-        assignRoleToAccount(roleUser, user);
+        saveWithRole(user, "ROLE_USER");
+    }
+
+    @Transactional
+    public void saveSellerAccount(SignupSeller signupSeller) {
+        Seller seller = toSeller(signupSeller);
+        saveWithRole(seller, "ROLE_SELLER");
+        Bank bank = getBankByName(signupSeller.getBankName());
+        linkBankToAccount(bank, seller, signupSeller);
+    }
+
+    private void saveWithRole(Account account, String roleType) {
+        accountRepository.save(account);
+        Role role = getRoleByType(roleType);
+        linkRoleToAccount(role, account);
     }
 
     /**
@@ -57,10 +69,16 @@ public class SignupService {
      * @param role {@link Role} 객체로, 사용자에게 부여할 역할 정보
      * @param account {@link Account} 객체로, 역할을 부여할 사용자
      */
-    private void assignRoleToAccount(Role role, Account account) {
+    private void linkRoleToAccount(Role role, Account account) {
         RoleManagement roleManagement = new RoleManagement(role, account);
         roleManagementRepository.save(roleManagement);
         account.addRoleManagement(roleManagement);
+    }
+
+    private void linkBankToAccount(Bank bank, Seller seller, SignupSeller signupSeller) {
+        BankAccount bankAccount = new BankAccount(seller, bank, signupSeller.getDepositor(), signupSeller.getAccountNumber());
+        bankAccountRepository.save(bankAccount);
+        seller.addBankAccount(bankAccount);
     }
 
     /**
@@ -73,6 +91,10 @@ public class SignupService {
      */
     private Role getRoleByType(String type) {
         return roleRepository.findByType(type);
+    }
+
+    private Bank getBankByName(String bankName) {
+        return bankRepository.findByName(bankName);
     }
 
     /**
@@ -93,12 +115,27 @@ public class SignupService {
                 .build();
     }
 
+    private Seller toSeller(SignupSeller signupSeller) {
+        return Seller.builder()
+                .name(signupSeller.getName())
+                .accountId(signupSeller.getUsername())
+                .password(passwordEncoder.encode(signupSeller.getPassword()))
+                .email(getEmail(signupSeller))
+                .phone(getPhoneNumber(signupSeller))
+                .csPhone(getCsPhoneNumber(signupSeller))
+                .build();
+    }
+
     private static String getEmail(Signup signup) {
         return signup.getEmailId() + "@" + signup.getEmailAddress();
     }
 
     private static String getPhoneNumber(Signup signup) {
         return formatPhoneNumber(signup.getPhonePrefix(), signup.getPhoneMiddle(), signup.getPhoneLast());
+    }
+
+    private static String getCsPhoneNumber(SignupSeller signupSeller) {
+        return formatPhoneNumber(signupSeller.getCsPhonePrefix(), signupSeller.getCsPhoneMiddle(), signupSeller.getCsPhoneLast());
     }
 
     private static String formatPhoneNumber(String phonePrefix, String phoneMiddle, String phoneLast) {

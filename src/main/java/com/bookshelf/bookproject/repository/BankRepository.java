@@ -9,4 +9,6 @@ import java.util.List;
 public interface BankRepository extends JpaRepository<Bank, Integer> {
     @Query("select b.name from Bank b")
     List<String> findAllBankNames();
+
+    Bank findByName(String name);
 }
