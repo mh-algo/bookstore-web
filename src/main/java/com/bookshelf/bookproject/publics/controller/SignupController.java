@@ -74,11 +74,11 @@ public class SignupController {
     /**
      * 회원가입 페이지에 대한 Post 요청을 처리하고, 유효성 검사 수행
      * <p> 사용자가 입력한 회원가입 데이터를 받아 유효성 검사를 진행합니다.
-     * <p> 문제가 있는 경우 회원가입 페이지로 다시 반환하고,
+     * <p> 문제가 있는 경우 회원가입 페이지를 반환하고,
      * 문제가 없는 경우 {@link Signup} 객체를 저장한 후
      * 메인 페이지로 리다이렉트합니다.
      *
-     * @param signup 입력받은 회원 정보
+     * @param signup 입력받은 회원가입 정보
      * @param bindingResult 유효성 검사 결과를 담고 있는 {@link BindingResult} 객체
      * @return 유효성 검사가 실패하면 회원가입 페이지, 성공하면 메인 페이지로 리다이렉트
      */
@@ -113,19 +113,36 @@ public class SignupController {
         return ResponseEntity.ok(response);
     }
 
-
+    /**
+     * 판매자 가입 페이지에 대한 GET 요청 처리
+     * <p> 빈 {@link SignupSeller} 객체와 은행 목록, 지역 번호 값을 뷰에 전달합니다.
+     *
+     * @param signupSeller 새로운 판매자 등록을 위한 빈 {@link SignupSeller} 객체
+     * @param model 뷰에 전달할 객체를 담는 {@link Model} 객체
+     * @return 판매자 가입 페이지
+     */
     @GetMapping("/seller")
     public String signupSeller(@ModelAttribute SignupSeller signupSeller, Model model) {
         addBankNames(model);
-        addLocalNumberValue(model);
+        addAllNumberValue(model);
         return "seller/signup";
     }
 
+    /**
+     * 판매자 가입 페이지에 대한 Post 요청을 처리하고, 유효성 검사 수행
+     * <p> 사용자가 입력한 가입 데이터를 유효성 검사하고, 검사에 실패하면 가입 페이지를 다시 반환합니다.
+     * 유효성 검사가 성공하면 판매자 정보를 저장하고 메인 페이지로 리다이렉트합니다.
+     *
+     * @param signupSeller 입력받은 판매자 가입 정보
+     * @param bindingResult 유효성 검사 결과를 담고 있는 {@link BindingResult} 객체
+     * @param model 뷰에 전달할 객체를 담는 {@link Model} 객체
+     * @return 유효성 검사가 실패하면 판매자 가입 페이지, 성공하면 메인 페이지로 리다이렉트
+     */
     @PostMapping("/seller")
     public String saveSellerAccount(@Valid @ModelAttribute SignupSeller signupSeller, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             addBankNames(model);
-            addLocalNumberValue(model);
+            addAllNumberValue(model);
             return "seller/signup";
         }
         signupService.saveSellerAccount(signupSeller);
@@ -133,12 +150,26 @@ public class SignupController {
         return "redirect:/";
     }
 
+    /**
+     * 은행 이름 리스트를 가져와 {@link Model} 객체에 담는 메서드
+     * <p> 이 메서드는 뷰에서 은행 이름을 선택할 수 있도록
+     * 모델에 "bankNames"라는 키로 은행 이름 리스트를 추가합니다.
+     *
+     * @param model 뷰에 전달할 객체를 담는 {@link Model} 객체
+     */
     private void addBankNames(Model model) {
         List<String> bankNames = signupService.getBankNames();
         model.addAttribute("bankNames", bankNames);
     }
 
-    private void addLocalNumberValue(Model model) {
+    /**
+     * 지역 번호와 휴대전화 앞자리 번호 리스트를 가져와 {@link Model} 객체에 담는 메서드
+     * <p> 이 메서드는 뷰에서 선택할 수 있도록 지역 번호와 휴대전화 앞자리 번호 리스트를
+     * 모델에 "allNumberType"이라는 키로 추가합니다.
+     *
+     * @param model 뷰에 전달할 객체를 담는 {@link Model} 객체
+     */
+    private void addAllNumberValue(Model model) {
         List<EnumMapperValue> allNumberList = Stream.concat(localNumberList.stream(), phonePrefixList.stream()).toList();
         model.addAttribute("allNumberType", allNumberList);
     }
