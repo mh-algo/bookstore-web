@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(uniqueConstraints =
+        @UniqueConstraint(name = "unique_roles_id_paths_id", columnNames = {"roles_id", "paths_id"})
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class AuthorityManagement {
