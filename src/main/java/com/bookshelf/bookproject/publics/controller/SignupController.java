@@ -6,7 +6,9 @@ import com.bookshelf.bookproject.publics.controller.dto.signup.Username;
 import com.bookshelf.bookproject.enums.EnumMapper;
 import com.bookshelf.bookproject.enums.EnumMapperValue;
 import com.bookshelf.bookproject.publics.service.SignupService;
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,14 +22,16 @@ import static com.bookshelf.bookproject.enums.EnumKeys.*;
 
 @Controller
 @RequestMapping("/signup")
+@RequiredArgsConstructor
 public class SignupController {
+    private final EnumMapper enumMapper;
     private final SignupService signupService;
-    private final List<EnumMapperValue> emailAddressList;
-    private final List<EnumMapperValue> phonePrefixList;
-    private final List<EnumMapperValue> localNumberList;
+    private List<EnumMapperValue> emailAddressList;
+    private List<EnumMapperValue> phonePrefixList;
+    private List<EnumMapperValue> localNumberList;
 
-    public SignupController(EnumMapper enumMapper, SignupService signupService) {
-        this.signupService = signupService;
+    @PostConstruct
+    private void initialize() {
         this.emailAddressList = enumMapper.get(EMAIL_ADDRESS_TYPE);
         this.phonePrefixList = enumMapper.get(PHONE_PREFIX_TYPE);
         this.localNumberList = enumMapper.get(LOCAL_NUMBER_TYPE);
