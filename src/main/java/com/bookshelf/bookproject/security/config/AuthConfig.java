@@ -6,8 +6,10 @@ import com.bookshelf.bookproject.security.handler.FormAuthenticationFailureHandl
 import com.bookshelf.bookproject.security.manager.CustomDynamicAuthorizationManager;
 import com.bookshelf.bookproject.security.provider.FormLoginProvider;
 import com.bookshelf.bookproject.security.service.FormLoginService;
+import com.bookshelf.bookproject.security.service.RoleHierarchyService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -40,7 +42,14 @@ public class AuthConfig {
     @Bean
     public CustomDynamicAuthorizationManager customDynamicAuthorizationManager(
             HandlerMappingIntrospector handlerMappingIntrospector,
-            AuthorityManagementRepository authorityManagementRepository) {
-        return new CustomDynamicAuthorizationManager(handlerMappingIntrospector, authorityManagementRepository);
+            AuthorityManagementRepository authorityManagementRepository,
+            RoleHierarchyImpl roleHierarchy) {
+        return new CustomDynamicAuthorizationManager(handlerMappingIntrospector, authorityManagementRepository, roleHierarchy);
+    }
+
+    @Bean
+    public RoleHierarchyImpl roleHierarchy(RoleHierarchyService roleHierarchyService) {
+        String allHierarchy = roleHierarchyService.findAllHierarchy();
+        return RoleHierarchyImpl.fromHierarchy(allHierarchy);
     }
 }

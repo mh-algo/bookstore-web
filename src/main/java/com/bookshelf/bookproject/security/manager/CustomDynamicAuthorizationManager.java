@@ -4,6 +4,7 @@ import com.bookshelf.bookproject.repository.AuthorityManagementRepository;
 import com.bookshelf.bookproject.security.mapper.PathRoleMapper;
 import com.bookshelf.bookproject.security.service.DynamicAuthorizationService;
 import jakarta.annotation.PostConstruct;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
@@ -22,10 +23,12 @@ public class CustomDynamicAuthorizationManager implements AuthorizationManager<R
     private List<RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> mappings;
     private final HandlerMappingIntrospector handlerMappingIntrospector;
     private final AuthorityManagementRepository authorityManagementRepository;
+    private final RoleHierarchyImpl roleHierarchy;
 
-    public CustomDynamicAuthorizationManager(HandlerMappingIntrospector handlerMappingIntrospector, AuthorityManagementRepository authorityManagementRepository) {
+    public CustomDynamicAuthorizationManager(HandlerMappingIntrospector handlerMappingIntrospector, AuthorityManagementRepository authorityManagementRepository, RoleHierarchyImpl roleHierarchy) {
         this.handlerMappingIntrospector = handlerMappingIntrospector;
         this.authorityManagementRepository = authorityManagementRepository;
+        this.roleHierarchy = roleHierarchy;
     }
 
     /**
@@ -40,9 +43,9 @@ public class CustomDynamicAuthorizationManager implements AuthorizationManager<R
         DynamicAuthorizationService dynamicAuthorizationService = new DynamicAuthorizationService(new PathRoleMapper(authorityManagementRepository));
 
         this.mappings = dynamicAuthorizationService.getPathRoleMappings().entrySet().stream()
-                .map(entry -> new RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>(
+                .map(entry -> new RequestMatcherEntry<>(
                         new MvcRequestMatcher(handlerMappingIntrospector, entry.getKey()),
-                        AuthorityAuthorizationManager.hasAuthority(entry.getValue()))
+                        customAuthorizationManager(entry.getValue()))
                 ).toList();
     }
 
@@ -75,5 +78,12 @@ public class CustomDynamicAuthorizationManager implements AuthorizationManager<R
     @Override
     public void verify(Supplier<Authentication> authentication, RequestAuthorizationContext object) {
         AuthorizationManager.super.verify(authentication, object);
+    }
+
+    private AuthorizationManager<RequestAuthorizationContext> customAuthorizationManager(String role) {
+        AuthorityAuthorizationManager<RequestAuthorizationContext> authorizationManager =
+                AuthorityAuthorizationManager.hasAuthority(role);
+        authorizationManager.setRoleHierarchy(roleHierarchy);
+        return authorizationManager;
     }
 }
