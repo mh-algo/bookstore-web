@@ -1,7 +1,9 @@
 package com.bookshelf.bookproject.security.config;
 
 import com.bookshelf.bookproject.repository.AccountRepository;
+import com.bookshelf.bookproject.repository.AuthorityManagementRepository;
 import com.bookshelf.bookproject.security.handler.FormAuthenticationFailureHandler;
+import com.bookshelf.bookproject.security.manager.CustomDynamicAuthorizationManager;
 import com.bookshelf.bookproject.security.provider.FormLoginProvider;
 import com.bookshelf.bookproject.security.service.FormLoginService;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 public class AuthConfig {
@@ -32,5 +35,12 @@ public class AuthConfig {
     @Bean
     public AuthenticationFailureHandler authenticationFailureHandler() {
         return new FormAuthenticationFailureHandler();
+    }
+
+    @Bean
+    public CustomDynamicAuthorizationManager customDynamicAuthorizationManager(
+            HandlerMappingIntrospector handlerMappingIntrospector,
+            AuthorityManagementRepository authorityManagementRepository) {
+        return new CustomDynamicAuthorizationManager(handlerMappingIntrospector, authorityManagementRepository);
     }
 }
