@@ -25,6 +25,6 @@ public class PathRoleMapper {
         List<AuthorityDto> authorityList = authorityManagementRepository.findAuthorityAll();
 
         return authorityList.stream()
-                .collect(Collectors.toMap(AuthorityDto::getPath, AuthorityDto::getRole));
+                .collect(Collectors.toUnmodifiableMap(AuthorityDto::getPath, AuthorityDto::getRole));
     }
 }

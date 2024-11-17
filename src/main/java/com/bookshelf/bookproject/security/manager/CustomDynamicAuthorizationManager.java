@@ -32,7 +32,7 @@ public class CustomDynamicAuthorizationManager implements AuthorizationManager<R
     }
 
     /**
-     * 경로와 권한 매핑 정보를 사용하여 {@code mappings} 리스트를 초기화합니다.
+     * 경로와 권한 매핑 정보를 사용하여 {@code mappings} 리스트를 초기화
      * <p> 이 메서드는 애플리케이션 시작 시 {@link PostConstruct} 어노테이션에 의해 자동으로 호출되며,
      * {@link AuthorityManagementRepository}로부터 권한 매핑 정보를 가져와 동적 인가 매핑을 설정합니다.
      * 각 경로(path)와 권한(role)을 매핑하여 {@link RequestMatcherEntry} 리스트를 생성하고,
