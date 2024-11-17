@@ -2,7 +2,7 @@ package com.bookshelf.bookproject.security.service;
 
 import com.bookshelf.bookproject.security.dto.AccountAuth;
 import com.bookshelf.bookproject.domain.Account;
-import com.bookshelf.bookproject.repository.AccountRepository;
+import com.bookshelf.bookproject.security.repository.AccountRepository;
 import com.bookshelf.bookproject.security.dto.FormUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

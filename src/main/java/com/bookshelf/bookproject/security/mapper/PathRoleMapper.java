@@ -1,7 +1,7 @@
 package com.bookshelf.bookproject.security.mapper;
 
-import com.bookshelf.bookproject.repository.AuthorityManagementRepository;
-import com.bookshelf.bookproject.repository.dto.AuthorityDto;
+import com.bookshelf.bookproject.security.repository.AuthorityManagementRepository;
+import com.bookshelf.bookproject.security.repository.dto.AuthorityDto;
 
 import java.util.List;
 import java.util.Map;

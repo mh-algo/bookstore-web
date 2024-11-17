@@ -1,6 +1,6 @@
 package com.bookshelf.bookproject.security.manager;
 
-import com.bookshelf.bookproject.repository.AuthorityManagementRepository;
+import com.bookshelf.bookproject.security.repository.AuthorityManagementRepository;
 import com.bookshelf.bookproject.security.mapper.PathRoleMapper;
 import com.bookshelf.bookproject.security.service.DynamicAuthorizationService;
 import jakarta.annotation.PostConstruct;

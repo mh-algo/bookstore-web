@@ -1,4 +1,4 @@
-package com.bookshelf.bookproject.repository.config;
+package com.bookshelf.bookproject.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

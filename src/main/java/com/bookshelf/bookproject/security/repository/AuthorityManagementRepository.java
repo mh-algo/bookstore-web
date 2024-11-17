@@ -1,6 +1,7 @@
-package com.bookshelf.bookproject.repository;
+package com.bookshelf.bookproject.security.repository;
 
 import com.bookshelf.bookproject.domain.Path;
+import com.bookshelf.bookproject.security.repository.querydsl.CustomAuthorityManagementRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AuthorityManagementRepository extends JpaRepository<Path, Long>, CustomAuthorityManagementRepository {

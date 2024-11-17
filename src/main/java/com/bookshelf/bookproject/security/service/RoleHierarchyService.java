@@ -1,7 +1,7 @@
 package com.bookshelf.bookproject.security.service;
 
-import com.bookshelf.bookproject.repository.RoleHierarchyRepository;
-import com.bookshelf.bookproject.repository.dto.RoleHierarchyDto;
+import com.bookshelf.bookproject.security.repository.RoleHierarchyRepository;
+import com.bookshelf.bookproject.security.repository.dto.RoleHierarchyDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

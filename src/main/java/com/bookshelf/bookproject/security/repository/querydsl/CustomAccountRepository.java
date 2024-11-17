@@ -1,4 +1,4 @@
-package com.bookshelf.bookproject.repository;
+package com.bookshelf.bookproject.security.repository.querydsl;
 
 
 import java.util.List;

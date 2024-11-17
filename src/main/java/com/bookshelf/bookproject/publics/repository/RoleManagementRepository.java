@@ -1,4 +1,4 @@
-package com.bookshelf.bookproject.repository;
+package com.bookshelf.bookproject.publics.repository;
 
 import com.bookshelf.bookproject.domain.RoleManagement;
 import org.springframework.data.jpa.repository.JpaRepository;

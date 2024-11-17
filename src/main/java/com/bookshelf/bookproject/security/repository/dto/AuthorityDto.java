@@ -1,11 +1,11 @@
-package com.bookshelf.bookproject.repository.dto;
+package com.bookshelf.bookproject.security.repository.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class RoleHierarchyDto {
+public class AuthorityDto {
     private final String role;
-    private final String parent;
+    private final String path;
 }

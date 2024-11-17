@@ -1,7 +1,7 @@
 package com.bookshelf.bookproject.security.config;
 
-import com.bookshelf.bookproject.repository.AccountRepository;
-import com.bookshelf.bookproject.repository.AuthorityManagementRepository;
+import com.bookshelf.bookproject.security.repository.AccountRepository;
+import com.bookshelf.bookproject.security.repository.AuthorityManagementRepository;
 import com.bookshelf.bookproject.security.handler.FormAuthenticationFailureHandler;
 import com.bookshelf.bookproject.security.manager.CustomDynamicAuthorizationManager;
 import com.bookshelf.bookproject.security.provider.FormLoginProvider;

@@ -1,6 +1,6 @@
-package com.bookshelf.bookproject.repository;
+package com.bookshelf.bookproject.security.repository.querydsl;
 
-import com.bookshelf.bookproject.repository.dto.AuthorityDto;
+import com.bookshelf.bookproject.security.repository.dto.AuthorityDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
