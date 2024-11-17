@@ -1,22 +1,23 @@
 package com.bookshelf.bookproject.enums;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class EnumMapper {
-    private final Map<String, List<EnumMapperValue>> factory = new LinkedHashMap<>();
+    private final Map<String, List<EnumMapperValue>> enumMap;
 
     /**
-     * 주어진 {@link EnumType} 클래스를 {@link EnumMapperValue} 객체 리스트로 변환하여,
-     * 주어진 key와 함께 {@code key}와 {@code value} 형태로 저장
+     * 주어진 enum 클래스들을 기반으로 {@code EnumMapper} 객체를 생성
+     * <p> 이 생성자는 제공된 enum 클래스들을 매핑하여, 각 클래스 이름을 key로, 해당 enum 값 리스트를 value로 갖는
+     * 변경 불가능한 Map을 초기화합니다.
      *
-     * @param key 저장할 {@link EnumType}에 대응되는 key
-     * @param enumType 저장할 {@link EnumType} 클래스
+     * @param enumClasses enum 클래스의 이름과 그 타입을 매핑한 {@link Map} 객체
      */
-    public void put(String key, Class<? extends EnumType> enumType) {
-        factory.put(key, toEnumValue(enumType));
+    public EnumMapper(Map<String, Class<? extends EnumType>> enumClasses) {
+        this.enumMap = enumClasses.entrySet().stream()
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey,
+                        entry -> toEnumValue(entry.getValue()),
+                        (v1, v2) -> v1));
     }
 
     /**
@@ -38,6 +39,6 @@ public class EnumMapper {
      * key에 해당하는 값이 없을 경우 {@code null}을 반환
      */
     public List<EnumMapperValue> get(String key) {
-        return factory.get(key);
+        return enumMap.get(key);
     }
 }
