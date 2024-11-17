@@ -1,0 +1,17 @@
+.container {
+    max-width: 400px;
+}
+.phone-input-group select {
+    width: 80px;
+}
+.phone-input-group input {
+    flex: 1;
+    max-width: none;
+    width: 100px;
+}
+.phone-input-group span {
+    flex: 0;
+    width: auto;
+    padding: 0 5px;
+    margin: .5rem;
+}
