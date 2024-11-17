@@ -45,7 +45,7 @@ public class CustomDynamicAuthorizationManager implements AuthorizationManager<R
         this.mappings = dynamicAuthorizationService.getPathRoleMappings().entrySet().stream()
                 .map(entry -> new RequestMatcherEntry<>(
                         new MvcRequestMatcher(handlerMappingIntrospector, entry.getKey()),
-                        customAuthorizationManager(entry.getValue()))
+                        customAuthorizationManager(entry.getValue(), roleHierarchy))
                 ).toList();
     }
 
@@ -80,7 +80,17 @@ public class CustomDynamicAuthorizationManager implements AuthorizationManager<R
         AuthorizationManager.super.verify(authentication, object);
     }
 
-    private AuthorizationManager<RequestAuthorizationContext> customAuthorizationManager(String role) {
+    /**
+     * 주어진 권한과 권한 계층을 설정하여 {@link AuthorityAuthorizationManager} 객체를 생성하고 반환
+     * <p> 이 메서드는 주어진 권한(role)과 권한 계층(roleHierarchy)을 사용하여
+     * {@link AuthorityAuthorizationManager} 객체를 생성합니다.
+     * 생성된 객체는 권한 인가를 관리하고, 요청에 대한 접근 권한을 결정하는 데 사용됩니다.
+     *
+     * @param role 설정할 권한
+     * @param roleHierarchy 권한 간의 계층 구조를 설정할 {@link RoleHierarchyImpl} 객체
+     * @return 생성된 권한 인가 관리 {@link AuthorityAuthorizationManager} 객체
+     */
+    private AuthorizationManager<RequestAuthorizationContext> customAuthorizationManager(String role, RoleHierarchyImpl roleHierarchy) {
         AuthorityAuthorizationManager<RequestAuthorizationContext> authorizationManager =
                 AuthorityAuthorizationManager.hasAuthority(role);
         authorizationManager.setRoleHierarchy(roleHierarchy);
