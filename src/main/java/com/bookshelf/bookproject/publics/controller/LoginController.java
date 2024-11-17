@@ -36,7 +36,7 @@ public class LoginController {
             session.removeAttribute("error");
         } catch (NullPointerException ignored) {}
 
-        return "login";
+        return "publics/login";
     }
 }
 

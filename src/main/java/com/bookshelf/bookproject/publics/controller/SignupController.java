@@ -61,7 +61,7 @@ public class SignupController {
 
     @GetMapping
     public String signup() {
-        return "signup";
+        return "publics/signup";
     }
 
     /**
@@ -72,7 +72,7 @@ public class SignupController {
      */
     @GetMapping("/user")
     public String signupUser(@ModelAttribute Signup signup) {
-        return "user/signup";
+        return "publics/signup-user";
     }
 
     /**
@@ -89,7 +89,7 @@ public class SignupController {
     @PostMapping("/user")
     public String saveUserAccount(@Valid @ModelAttribute Signup signup, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "user/signup";
+            return "publics/signup-user";
         }
         signupService.saveUserAccount(signup);
 
@@ -129,7 +129,7 @@ public class SignupController {
     public String signupSeller(@ModelAttribute SignupSeller signupSeller, Model model) {
         addBankNames(model);
         addAllNumberValue(model);
-        return "seller/signup";
+        return "publics/signup-seller";
     }
 
     /**
@@ -147,7 +147,7 @@ public class SignupController {
         if (bindingResult.hasErrors()) {
             addBankNames(model);
             addAllNumberValue(model);
-            return "seller/signup";
+            return "publics/signup-seller";
         }
         signupService.saveSellerAccount(signupSeller);
 
