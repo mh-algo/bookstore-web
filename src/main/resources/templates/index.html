@@ -1,10 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html th:replace="~{layouts/default::layout-main(~{::meta}, ~{::title}, ~{::link}, ~{::style}, ~{::main}, ~{::script})}">
 <head>
-    <meta charset="UTF-8">
-    <title>Main Page</title>
+    <title>My Bookshelf</title>
 </head>
 <body>
-login success
+<main>
+<div class="container-fluid bg-light py-5 text-center" style="background-image: url('https://via.placeholder.com/1500x500'); background-size: cover; background-position: center;">
+    <h1 class="display-4">Welcome to My Bookshelf!</h1>
+    <p class="lead text-white">책의 세계를 발견하고 끝없는 이야기에 빠져보세요.</p>
+    <a class="btn btn-outline-light btn-lg mt-3" href="#" role="button">책 찾아보기</a>
+</div>
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">인기 카테고리</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Fiction">
+                <div class="card-body">
+                    <h5 class="card-title">Fiction</h5>
+                    <p class="card-text">Explore our collection of amazing fictional stories that captivate the imagination.</p>
+                    <a href="#" class="btn btn-primary">View More</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Non-Fiction">
+                <div class="card-body">
+                    <h5 class="card-title">Non-Fiction</h5>
+                    <p class="card-text">Learn and grow with our selection of informative and inspiring non-fiction books.</p>
+                    <a href="#" class="btn btn-primary">View More</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Children">
+                <div class="card-body">
+                    <h5 class="card-title">Children</h5>
+                    <p class="card-text">Find the perfect book for your young readers, from bedtime stories to educational books.</p>
+                    <a href="#" class="btn btn-primary">View More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mt-5 mb-4">베스트 셀러</h2>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Book 1">
+                <div class="card-body">
+                    <h5 class="card-title">Book Title 1</h5>
+                    <p class="card-text">An engaging story that everyone is talking about.</p>
+                    <a href="#" class="btn btn-primary">Buy Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Book 2">
+                <div class="card-body">
+                    <h5 class="card-title">Book Title 2</h5>
+                    <p class="card-text">An inspiring book that will change your perspective.</p>
+                    <a href="#" class="btn btn-primary">Buy Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Book 3">
+                <div class="card-body">
+                    <h5 class="card-title">Book Title 3</h5>
+                    <p class="card-text">A gripping tale that keeps you on the edge of your seat.</p>
+                    <a href="#" class="btn btn-primary">Buy Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Book 4">
+                <div class="card-body">
+                    <h5 class="card-title">Book Title 4</h5>
+                    <p class="card-text">A must-read for every book lover out there.</p>
+                    <a href="#" class="btn btn-primary">Buy Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</main>
 </body>
 </html>
