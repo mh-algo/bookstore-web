@@ -5,3 +5,10 @@ p.is-invalid{
 main > .container {
     min-height: 100vh;
 }
+
+/*header*/
+.nav-item button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}

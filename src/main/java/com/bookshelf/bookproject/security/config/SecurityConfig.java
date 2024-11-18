@@ -30,7 +30,11 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/")
                         .failureHandler(authenticationFailureHandler)
-                ).authenticationProvider(authenticationProvider);
+                ).authenticationProvider(authenticationProvider)
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                );
 
         return http.build();
     }
