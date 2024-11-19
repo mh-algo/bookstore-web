@@ -17,8 +17,8 @@ function updateEmailAddressInput() {
 
 function checkUsername() {
     const username = document.getElementById("username").value;
-    const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
-    const csrfToken = $('meta[name="_csrf"]').attr('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
 
     fetch("/signup/check-username", {
         method: "POST",
