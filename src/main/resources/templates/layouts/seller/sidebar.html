@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<div class="sidebar" th:fragment="sidebar">
+    <h4 class="text-center">관리 메뉴</h4>
+    <div class="nav flex-column">
+        <div class="nav-item">
+            <a href="#" class="nav-link" onclick="toggleMenu('product-management')">상품관리</a>
+            <div id="product-management" class="submenu">
+                <a href="#" class="nav-link">상품 조회/수정</a>
+                <a href="#" class="nav-link">상품 등록</a>
+            </div>
+        </div>
+        <div class="nav-item">
+            <a href="#" class="nav-link" onclick="toggleMenu('sales-management')">판매관리</a>
+            <div id="sales-management" class="submenu">
+                <a href="#" class="nav-link">구매확정 내역</a>
+                <a href="#" class="nav-link">취소 관리</a>
+                <a href="#" class="nav-link">반품 관리</a>
+                <a href="#" class="nav-link">교환 관리</a>
+            </div>
+        </div>
+        <div class="nav-item">
+            <a href="#" class="nav-link">정산관리</a>
+        </div>
+        <div class="nav-item">
+            <a href="#" class="nav-link">문의/리뷰관리</a>
+        </div>
+        <div class="nav-item">
+            <a href="#" class="nav-link">판매자 정보</a>
+        </div>
+    </div>
+</div>

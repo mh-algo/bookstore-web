@@ -2,6 +2,7 @@ p.is-invalid{
     color: #dc3545;
 }
 
+main,
 main > .container {
     min-height: 100vh;
 }

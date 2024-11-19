@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html th:replace="~{layouts/default::layout-main(~{::meta}, ~{::title}, ~{::link}, ~{::style}, ~{::main}, ~{::script})}">
+<head>
+    <title>판매관리 대시보드 - My Bookshelf</title>
+    <link href="/css/sidebar.css" rel="stylesheet">
+</head>
+<body>
+<main>
+<div class="d-flex flex-column flex-lg-row">
+    <div th:replace="layouts/seller/sidebar::sidebar"></div>
+    <div layout:fragment="content"></div>
+</div>
+</main>
+<script src="/js/sidebar.js"></script>
+</body>
+</html>
