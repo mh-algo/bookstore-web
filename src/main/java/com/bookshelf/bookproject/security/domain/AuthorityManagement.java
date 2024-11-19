@@ -1,5 +1,6 @@
-package com.bookshelf.bookproject.domain;
+package com.bookshelf.bookproject.security.domain;
 
+import com.bookshelf.bookproject.domain.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

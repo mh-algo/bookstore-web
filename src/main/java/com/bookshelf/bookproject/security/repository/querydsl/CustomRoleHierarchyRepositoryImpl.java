@@ -1,7 +1,7 @@
 package com.bookshelf.bookproject.security.repository.querydsl;
 
 import com.bookshelf.bookproject.domain.QRole;
-import com.bookshelf.bookproject.domain.QRoleHierarchy;
+import com.bookshelf.bookproject.security.domain.QRoleHierarchy;
 import com.bookshelf.bookproject.security.repository.dto.RoleHierarchyDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import static com.bookshelf.bookproject.domain.QRole.role;
-import static com.bookshelf.bookproject.domain.QRoleHierarchy.roleHierarchy;
+import static com.bookshelf.bookproject.security.domain.QRoleHierarchy.roleHierarchy;
 
 @RequiredArgsConstructor
 public class CustomRoleHierarchyRepositoryImpl implements CustomRoleHierarchyRepository {

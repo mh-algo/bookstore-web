@@ -1,4 +1,4 @@
-package com.bookshelf.bookproject.domain;
+package com.bookshelf.bookproject.security.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static com.bookshelf.bookproject.domain.QAuthorityManagement.authorityManagement;
-import static com.bookshelf.bookproject.domain.QPath.path;
+import static com.bookshelf.bookproject.security.domain.QAuthorityManagement.authorityManagement;
+import static com.bookshelf.bookproject.security.domain.QPath.path;
 import static com.bookshelf.bookproject.domain.QRole.role;
 
 @RequiredArgsConstructor

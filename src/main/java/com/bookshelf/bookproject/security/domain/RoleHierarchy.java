@@ -1,5 +1,6 @@
-package com.bookshelf.bookproject.domain;
+package com.bookshelf.bookproject.security.domain;
 
+import com.bookshelf.bookproject.domain.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,7 +23,7 @@ public class RoleHierarchy {
     private Role role;
 
     @ManyToOne
-    @JoinColumn(name = "parent_id", nullable = false, insertable = false, updatable = false,
+    @JoinColumn(name = "parent_id", insertable = false, updatable = false,
             foreignKey = @ForeignKey(name="fk_authority_parent_authority"))
     private RoleHierarchy parent;
 }
