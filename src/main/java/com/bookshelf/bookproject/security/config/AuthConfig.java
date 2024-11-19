@@ -1,10 +1,12 @@
 package com.bookshelf.bookproject.security.config;
 
+import com.bookshelf.bookproject.security.handler.CustomAccessDeniedHandler;
 import com.bookshelf.bookproject.security.repository.AccountRepository;
 import com.bookshelf.bookproject.security.repository.AuthorityManagementRepository;
 import com.bookshelf.bookproject.security.handler.FormAuthenticationFailureHandler;
 import com.bookshelf.bookproject.security.manager.CustomDynamicAuthorizationManager;
 import com.bookshelf.bookproject.security.provider.FormLoginProvider;
+import com.bookshelf.bookproject.security.service.AccessDeniedPolicyService;
 import com.bookshelf.bookproject.security.service.FormLoginService;
 import com.bookshelf.bookproject.security.service.RoleHierarchyService;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +16,10 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
@@ -51,5 +56,15 @@ public class AuthConfig {
     public RoleHierarchyImpl roleHierarchy(RoleHierarchyService roleHierarchyService) {
         String allHierarchy = roleHierarchyService.findAllHierarchy();
         return RoleHierarchyImpl.fromHierarchy(allHierarchy);
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler(AccessDeniedPolicyService accessDeniedPolicyService) {
+        return new CustomAccessDeniedHandler(accessDeniedPolicyService);
+    }
+
+    @Bean
+    public PathMatcher pathMatcher() {
+        return new AntPathMatcher();
     }
 }
