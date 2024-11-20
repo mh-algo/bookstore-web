@@ -6,9 +6,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/seller")
-public class DashBoardController {
+public class ManagementController {
     @GetMapping("/dashboard")
     public String dashboard() {
-        return "seller/main-dashboard";
+        return "seller/dashboard";
+    }
+
+    @GetMapping("/register")
+    public String register() {
+        return "seller/product-registration";
     }
 }

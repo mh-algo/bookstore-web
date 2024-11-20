@@ -1,0 +1,7 @@
+.image-preview {
+    max-width: 200px;
+    margin-top: 10px;
+}
+.list-group li {
+    cursor: pointer;
+}
