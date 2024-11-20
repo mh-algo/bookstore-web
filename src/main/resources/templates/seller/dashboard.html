@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html th:replace="~{layouts/default::layout-main(~{::meta}, ~{::title}, ~{::link}, ~{::style}, ~{::main}, ~{::script})}">
+<head>
+    <title>판매관리 대시보드 - My Bookstore</title>
+    <link href="/css/sidebar.css" rel="stylesheet">
+</head>
+<body>
+<main>
+<div class="d-flex flex-column flex-lg-row">
+    <div class="content">
+        <div th:replace="layouts/seller/sidebar::sidebar"></div>
+        <div class="dashboard-header">
+            <h2 class="text-center mb-4">판매관리 대시보드</h2>
+        </div>
+        <div class="fixed-container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">총 판매량</h5>
+                            <p class="card-text display-4">123</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">판매 품목 수</h5>
+                            <p class="card-text display-4">45</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">리뷰 개수</h5>
+                            <p class="card-text display-4">78</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">이름: 홍길동</h5>
+                            <p class="card-text">이메일: honggildong@example.com</p>
+                            <p class="card-text">회원 가입일: 2024년 1월 1일</p>
+                            <a href="#" class="btn btn-primary">정보 수정</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">최근 판매 내역</h5>
+                            <p class="card-text">최근 판매된 상품 5개의 내역을 확인하세요.</p>
+                            <a href="#" class="btn btn-secondary">내역 보기</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</main>
+<script src="/js/sidebar.js"></script>
+</body>
+</html>
