@@ -17,12 +17,12 @@ public class RoleHierarchy {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roles_id", nullable = false, insertable = false, updatable = false,
             foreignKey = @ForeignKey(name="fk_authority_roles"))
     private Role role;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", insertable = false, updatable = false,
             foreignKey = @ForeignKey(name="fk_authority_parent_authority"))
     private RoleHierarchy parent;

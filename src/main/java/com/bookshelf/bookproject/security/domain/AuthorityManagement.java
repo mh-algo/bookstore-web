@@ -17,12 +17,12 @@ public class AuthorityManagement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roles_id", nullable = false, insertable = false, updatable = false,
             foreignKey = @ForeignKey(name="fk_authority_management_roles"))
     private Role role;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "paths_id", nullable = false, insertable = false, updatable = false,
             foreignKey = @ForeignKey(name="fk_authority_management_paths"))
     private Path path;
