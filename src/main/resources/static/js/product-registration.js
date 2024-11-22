@@ -7,8 +7,15 @@ function toggleCategoryList() {
     }
 }
 
-function toggleSubCategoryList(subCategoryId) {
-    const subCategoryList = document.getElementById(subCategoryId);
+function toggleSubCategoryList(element) {
+    if (typeof event !== 'undefined') {
+        // 현재 이벤트가 걸린 요소와 실제 클릭된 요소가 같은지 확인
+        if (event.target !== event.currentTarget) {
+            event.stopPropagation();
+            return;
+        }
+    }
+    const subCategoryList = element.firstElementChild
     if (subCategoryList.style.display === 'none' || subCategoryList.style.display === '') {
         subCategoryList.style.display = 'block';
     } else {
@@ -17,13 +24,15 @@ function toggleSubCategoryList(subCategoryId) {
 }
 
 function selectCategory(element) {
-    const parentCategory = element.closest("ul").parentNode;
+    const secondCategory = element.closest("ul").parentNode;
+    const firstCategory = secondCategory.closest("ul").parentNode;
 
-    const parentText = parentCategory.childNodes[0].textContent.trim();
-    const childText = element.textContent.trim();
+    const firstText = firstCategory.childNodes[0].textContent.trim();
+    const secondText = secondCategory.childNodes[0].textContent.trim();
+    const thirdText = element.textContent.trim();
 
     const selectedCategory = document.getElementById('selectedCategoryPath');
-    selectedCategory.textContent = '선택된 카테고리: ' + parentText + ' > ' + childText;
+    selectedCategory.textContent = firstText + ' > ' + secondText + ' > ' + thirdText;
 
     if (selectedCategory.style.display === 'none') {
         selectedCategory.style.display = 'block'
@@ -31,9 +40,11 @@ function selectCategory(element) {
 
     const hiddenCategory = document.getElementById('category');
     const hiddenSubcategory = document.getElementById('subcategory');
+    const hiddenSubSubcategory = document.getElementById('sub-subcategory');
 
-    hiddenCategory.value = parentText;
-    hiddenSubcategory.value = childText;
+    hiddenCategory.value = firstText;
+    hiddenSubcategory.value = secondText;
+    hiddenSubSubcategory.value = thirdText;
 
     const categoryList = document.getElementById('categoryList');
     categoryList.style.display = 'none';
