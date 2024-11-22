@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html th:replace="~{layouts/default::layout-main(~{::meta}, ~{::title}, ~{::link}, ~{::style}, ~{::main}, ~{::script})}">
+<html th:replace="~{layouts/default::layout-main(~{::meta}, ~{::title}, ~{::link}, ~{::style}, ~{::main}, ~{::script})}"
+      xmlns:th="http://www.thymeleaf.org">
 <meta name="_csrf" th:content="${_csrf.token}"/>
 <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <head>
