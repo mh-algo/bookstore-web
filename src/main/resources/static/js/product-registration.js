@@ -1,3 +1,14 @@
+function removeCommas() {
+    const priceInput = document.getElementById("price");
+    const discountInput = document.getElementById("discount");
+    remove(priceInput);
+    remove(discountInput);
+}
+
+function remove(element) {
+    element.value = element.value.replace(/,/g, ''); // 쉼표 제거
+}
+
 function toggleCategoryList() {
     const categoryList = document.getElementById('categoryList');
     if (categoryList.style.display === 'none' || categoryList.style.display === '') {
@@ -33,10 +44,6 @@ function selectCategory(element) {
 
     const selectedCategory = document.getElementById('selectedCategoryPath');
     selectedCategory.textContent = firstText + ' > ' + secondText + ' > ' + thirdText;
-
-    if (selectedCategory.style.display === 'none') {
-        selectedCategory.style.display = 'block'
-    }
 
     const hiddenCategory = document.getElementById('category');
     const hiddenSubcategory = document.getElementById('subcategory');
@@ -90,16 +97,31 @@ function previewImage(inputElement, previewId) {
 }
 
 function previewAdditionalImages(inputElement) {
-    const previewContainer = document.getElementById('additionalImagesPreview');
-    previewContainer.innerHTML = '';
-    Array.from(inputElement.files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function () {
-            const img = document.createElement('img');
-            img.src = reader.result;
-            img.classList.add('image-preview', 'me-2', 'mb-2');
-            previewContainer.appendChild(img);
-        };
-        reader.readAsDataURL(file);
-    });
+    if (validateAdditionalImages(inputElement)) {
+        const previewContainer = document.getElementById('additionalImagesPreview');
+        previewContainer.innerHTML = '';
+        Array.from(inputElement.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function () {
+                const img = document.createElement('img');
+                img.src = reader.result;
+                img.classList.add('image-preview', 'me-2', 'mb-2');
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+}
+
+function validateAdditionalImages(inputElement) {
+    const files = inputElement.files;
+
+    // 최대 파일 개수 검사
+    if (files.length > 9) {
+        alert("최대 9개의 파일만 업로드할 수 있습니다.");
+        // 파일 선택을 초기화
+        inputElement.value = "";
+        return false;
+    }
+    return true;
 }
