@@ -5,6 +5,20 @@
     <title>상품 등록 - My Bookstore</title>
     <link href="/css/sidebar.css" rel="stylesheet">
     <link href="/css/product-registration.css" rel="stylesheet">
+    <style>
+        /* 버튼 모서리를 둥글게 하고 색상을 회색빛이 돌도록 변경 */
+        .custom-upload-button {
+            border-top-left-radius: 0.375rem !important; /* 모서리를 둥글게 설정 */
+            border-bottom-left-radius: 0.375rem !important;;
+            background-color: #f8f9fa; /* 회색빛 배경색 */
+            border: 1px solid #dee2e6; /* 살짝 어두운 테두리 */
+            color: #333; /* 버튼 텍스트 색상 */
+        }
+
+        .custom-upload-button:hover {
+            background-color: #e9ecef; /* 호버 시 약간 더 어두운 회색 */
+        }
+    </style>
 </head>
 <body>
 <main>
@@ -97,13 +111,32 @@
                         <h5 class="card-title">상품 이미지</h5>
                         <div class="mb-3">
                             <label for="mainImage" class="form-label">대표 이미지</label>
-                            <input class="form-control" type="file" id="mainImage" name="mainImage" accept="image/*" onchange="previewImage(this, 'mainImagePreview')">
-                            <img id="mainImagePreview" class="image-preview" />
+
+                            <div class="input-group">
+                                <input type="file" id="mainImage" name="mainImageFile" accept="image/*" class="d-none" onchange="showSelectedFile('mainImage', 'selectedFileName');previewImage(this, 'mainImagePreview')">
+
+                                <label for="mainImage" class="btn custom-upload-button">찾아보기...</label>
+                                <input type="text" id="selectedFileName" th:field="*{image.name}" class="form-control" placeholder="선택된 파일 없음" readonly>
+                            </div>
+                            <img id="mainImagePreview" th:src="*{image.path}" class="image-preview"/>
+                            <input type="hidden" th:field="*{image.path}">
+
+
                         </div>
                         <div class="mb-3">
                             <label for="additionalImages" class="form-label">추가 이미지 (최대 9개)</label>
-                            <input class="form-control" type="file" id="additionalImages" name="additionalImages" accept="image/*" multiple onchange="previewAdditionalImages(this)">
-                            <div id="additionalImagesPreview" class="d-flex flex-wrap"></div>
+                            <div class="input-group">
+                                <input type="file" id="additionalImages" name="additionalImageFiles" accept="image/*" class="d-none" multiple onchange="previewAdditionalImages(this, 'additionalImages', 'selectedFileNames')">
+
+                                <label for="additionalImages" class="btn custom-upload-button">찾아보기...</label>
+                                <input type="text" id="selectedFileNames" th:field="*{imagesMessage}" class="form-control" placeholder="선택된 파일 없음" readonly>
+                            </div>
+                            <div id="additionalImagesPreview" class="d-flex flex-wrap">
+                                <th:block th:each="additionalImage, iterStat : *{images}">
+                                    <img  th:src="${additionalImage.path}" class="image-preview me-2 mb-2"/>
+                                    <input type="hidden" th:name="images[__${iterStat.index}__].path" th:value="${additionalImage.path}">
+                                </th:block>
+                            </div>
                         </div>
                     </div>
                 </div>

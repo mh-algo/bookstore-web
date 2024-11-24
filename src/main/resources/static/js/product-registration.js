@@ -96,8 +96,10 @@ function previewImage(inputElement, previewId) {
     reader.readAsDataURL(inputElement.files[0]);
 }
 
-function previewAdditionalImages(inputElement) {
+function previewAdditionalImages(inputElement, file, fileName) {
     if (validateAdditionalImages(inputElement)) {
+        showSelectedFile(file, fileName)
+
         const previewContainer = document.getElementById('additionalImagesPreview');
         previewContainer.innerHTML = '';
         Array.from(inputElement.files).forEach(file => {
@@ -124,4 +126,18 @@ function validateAdditionalImages(inputElement) {
         return false;
     }
     return true;
+}
+
+function showSelectedFile(file, fileName) {
+    const fileInput = document.getElementById(file);
+    const fileNameInput = document.getElementById(fileName);
+
+    if (fileInput.files.length === 1) {
+        fileNameInput.value = fileInput.files[0].name;
+    } else if (fileInput.files.length > 1) {
+        fileNameInput.value = "파일 " + fileInput.files.length +"개 선택됨";
+    }
+    else {
+        fileNameInput.value = "선택된 파일 없음";
+    }
 }
