@@ -7,7 +7,6 @@ import com.bookshelf.bookproject.seller.service.dto.CategoryDto;
 import com.bookshelf.bookproject.seller.service.ManagementService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

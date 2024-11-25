@@ -13,10 +13,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +63,8 @@ public class ManagementService {
             String uploadDir = getTempStoragePath(defaultPath, accountId);
             String accessDir = getTempStoragePath(defaultUrl, accountId);
 
+            deleteTempImage(uploadDir, registerInfo.getImage().getUploadName());
+
             registerInfo.setImage(
                     createImage(imageFile, uploadDir, accessDir)
             );
@@ -76,6 +75,14 @@ public class ManagementService {
         if (!imageFiles.get(0).isEmpty()) {
             String uploadDir = getTempStoragePath(defaultPath, accountId);
             String accessDir = getTempStoragePath(defaultUrl, accountId);
+
+            List<Image> images = registerInfo.getImages();
+
+            if (images != null) {
+                registerInfo.getImages().forEach(image -> {
+                    deleteTempImage(uploadDir, image.getUploadName());
+                });
+            }
 
             registerInfo.setImages(
                     imageFiles.stream()
@@ -91,17 +98,23 @@ public class ManagementService {
     }
 
     private Image createImage(MultipartFile imageFile, String uploadDir, String accessDir) {
-        String imageName = uploadImage(imageFile, uploadDir);
-        String imageUrl = accessDir + imageName;
+        String uploadImageName = uploadImage(imageFile, uploadDir);
+        String imageUrl = accessDir + uploadImageName;
 
         Image image = new Image();
         image.setName(imageFile.getOriginalFilename());
         image.setPath(imageUrl);
+        image.setUploadName(uploadImageName);
 
         return image;
     }
 
     private String uploadImage(MultipartFile imageFile, String uploadDir) {
         return storageService.upload(imageFile, uploadDir);
+    }
+
+    private void deleteTempImage(String imageDir, String imageName) {
+        String imagePath = imageDir + imageName;
+        storageService.delete(imagePath);
     }
 }
