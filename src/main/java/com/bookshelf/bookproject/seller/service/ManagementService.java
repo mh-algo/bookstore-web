@@ -1,13 +1,17 @@
 package com.bookshelf.bookproject.seller.service;
 
+import com.bookshelf.bookproject.seller.controller.dto.product.RegisterInfo;
+import com.bookshelf.bookproject.seller.controller.dto.product.item.Image;
 import com.bookshelf.bookproject.seller.repository.CategoryRepository;
 import com.bookshelf.bookproject.seller.repository.dto.AllCategoryDto;
 import com.bookshelf.bookproject.seller.service.dto.CategoryDto;
 import com.bookshelf.bookproject.seller.service.dto.SubSubcategoryDto;
 import com.bookshelf.bookproject.seller.service.dto.SubcategoryDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -18,6 +22,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ManagementService {
     private final CategoryRepository categoryRepository;
+    private final StorageService storageService;
+
+    @Value("${app.upload.dir}")
+    private String defaultPath;
+
+    @Value("${app.access.url}")
+    private String defaultUrl;
 
     @Cacheable("allCategories")
     public List<CategoryDto> getAllCategories() {
@@ -48,5 +59,49 @@ public class ManagementService {
         }
 
         return new ArrayList<>(categoryMap.values());
+    }
+
+    public void handleImageUpload(MultipartFile imageFile, RegisterInfo registerInfo, String accountId) {
+        if (!imageFile.isEmpty()) {
+            String uploadDir = getTempStoragePath(defaultPath, accountId);
+            String accessDir = getTempStoragePath(defaultUrl, accountId);
+
+            registerInfo.setImage(
+                    createImage(imageFile, uploadDir, accessDir)
+            );
+        }
+    }
+
+    public void handleImagesUpload(List<MultipartFile> imageFiles, RegisterInfo registerInfo, String accountId) {
+        if (!imageFiles.get(0).isEmpty()) {
+            String uploadDir = getTempStoragePath(defaultPath, accountId);
+            String accessDir = getTempStoragePath(defaultUrl, accountId);
+
+            registerInfo.setImages(
+                    imageFiles.stream()
+                            .map(imageFile ->
+                                    createImage(imageFile, uploadDir, accessDir)
+                            ).toList()
+            );
+        }
+    }
+
+    private String getTempStoragePath(String basePath, String accountId) {
+        return storageService.getStoragePath(basePath, accountId, "/tmp");
+    }
+
+    private Image createImage(MultipartFile imageFile, String uploadDir, String accessDir) {
+        String imageName = uploadImage(imageFile, uploadDir);
+        String imageUrl = accessDir + imageName;
+
+        Image image = new Image();
+        image.setName(imageFile.getOriginalFilename());
+        image.setPath(imageUrl);
+
+        return image;
+    }
+
+    private String uploadImage(MultipartFile imageFile, String uploadDir) {
+        return storageService.upload(imageFile, uploadDir);
     }
 }
