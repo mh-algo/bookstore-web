@@ -24,7 +24,7 @@ public class LocalStorageService implements StorageService{
             File userDir = new File(directory);
             if (!userDir.exists()) {
                 if (userDir.mkdirs()) {
-                    log.warn("디렉터리 생성 실패: {}", directory);
+                    log.error("디렉터리 생성 실패: {}", directory);
                 }
             }
 
