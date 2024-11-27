@@ -4,28 +4,51 @@ import com.bookshelf.bookproject.seller.controller.dto.product.RegisterInfo;
 import com.bookshelf.bookproject.seller.controller.dto.product.item.Image;
 import com.bookshelf.bookproject.seller.repository.CategoryRepository;
 import com.bookshelf.bookproject.seller.repository.dto.AllCategoryDto;
-import com.bookshelf.bookproject.seller.service.dto.CategoryDto;
-import com.bookshelf.bookproject.seller.service.dto.SubSubcategoryDto;
-import com.bookshelf.bookproject.seller.service.dto.SubcategoryDto;
+import com.bookshelf.bookproject.seller.service.dto.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ManagementService {
     private final CategoryRepository categoryRepository;
     private final StorageService storageService;
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
 
     @Value("${app.upload.dir}")
     private String defaultPath;
 
     @Value("${app.access.url}")
     private String defaultUrl;
+
+    @Value("${search.api.url}")
+    private String searchUrl;
+
+    @Value("${search.api.id}")
+    private String clientId;
+
+    @Value("${search.api.secret}")
+    private String clientSecret;
+
+    private static int DISPLAY_NUM = 10;
+
 
     @Cacheable("allCategories")
     public List<CategoryDto> getAllCategories() {
@@ -116,5 +139,82 @@ public class ManagementService {
     private void deleteTempImage(String imageDir, String imageName) {
         String imagePath = imageDir + imageName;
         storageService.delete(imagePath);
+    }
+
+    public String requestBookDataAsJson(String bookName, int page) {
+        URI uri = generateBookSearchUriByName(bookName, page);
+        return requestBookDataFromNaver(uri);
+    }
+
+    public SearchInfo requestSearchInfo(String isbn) {
+        try {
+            URI uri = generateBookSearchUriByIsbn(isbn);
+            return objectMapper.readValue(requestBookDataFromNaver(uri), SearchInfo.class);
+        } catch (JsonProcessingException e) {
+            log.warn("json 변환 실패: {}", e.getMessage(), e);
+        }
+        return new SearchInfo();
+    }
+
+    private String requestBookDataFromNaver(URI uri) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Naver-Client-Id", clientId);
+        headers.set("X-Naver-Client-Secret", clientSecret);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                entity,
+                String.class
+        );
+
+        return response.getBody();
+    }
+
+    private URI generateBookSearchUriByIsbn(String isbn) {
+        return UriComponentsBuilder
+                .fromUriString(searchUrl)
+                .path("/book_adv.json")
+                .queryParam("d_isbn", isbn)
+                .encode()
+                .build()
+                .toUri();
+    }
+
+    private URI generateBookSearchUriByName(String bookName, int page) {
+        int start = (page - 1) * DISPLAY_NUM + 1;
+
+        return UriComponentsBuilder
+                .fromUriString(searchUrl)
+                .path("/book.json")
+                .queryParam("query", bookName)
+                .queryParam("start", start)
+                .queryParam("display", DISPLAY_NUM)
+                .encode()
+                .build()
+                .toUri();
+    }
+
+    public static boolean validateBookData(SearchInfo searchInfo) {
+        List<BookInfo> items = searchInfo.getItems();
+        return items != null && !items.isEmpty();
+    }
+
+    public static boolean validateImageFile(MultipartFile imageFile) {
+        String contentType = imageFile.getContentType();
+        if (!imageFile.isEmpty() && !contentType.startsWith("image/")) {
+            log.warn("파일이 이미지 타입이 아닙니다: {}", imageFile.getOriginalFilename());
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean validateImageFiles(List<MultipartFile> imageFiles) {
+        for (MultipartFile file : imageFiles) {
+            return validateImageFile(file);
+        }
+        return true;
     }
 }

@@ -37,3 +37,9 @@ app:
     dir: C:/Users/User/Desktop/data/images/
   access:
     url: /images/
+
+search:
+  api:
+    url: https://openapi.naver.com/v1/search
+    id: ${SEARCH_CLIENT_ID}
+    secret: ${SEARCH_CLIENT_SECRET}

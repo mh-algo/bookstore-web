@@ -43,7 +43,7 @@ public class LocalStorageService implements StorageService{
         String uuid = UUID.randomUUID().toString().replace("-", "");
         String extension = fileName.substring(fileName.lastIndexOf("."));
 
-        return timestamp + "_" + uuid + "." + extension;
+        return timestamp + "_" + uuid  + extension;
     }
 
     @Override
