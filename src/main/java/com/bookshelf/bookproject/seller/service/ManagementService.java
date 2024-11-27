@@ -141,11 +141,13 @@ public class ManagementService {
         storageService.delete(imagePath);
     }
 
+    @Cacheable(value = "bookSearch", key = "#bookName + ':' + #page", cacheManager = "cacheManagerWithTTL")
     public String requestBookDataAsJson(String bookName, int page) {
         URI uri = generateBookSearchUriByName(bookName, page);
         return requestBookDataFromNaver(uri);
     }
 
+    @Cacheable(value = "isbnSearch", key = "#isbn", cacheManager = "cacheManagerWithTTL")
     public SearchInfo requestSearchInfo(String isbn) {
         try {
             URI uri = generateBookSearchUriByIsbn(isbn);
