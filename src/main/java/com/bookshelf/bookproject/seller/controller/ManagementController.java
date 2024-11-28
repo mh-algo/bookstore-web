@@ -50,13 +50,11 @@ public class ManagementController {
         addAllCategories(model);
         addCategoryPath(model, registerInfo.getSelectedCategory());
 
-        if (bindingResult.hasErrors()) {
-                managementService.handleImageUpload(mainImageFile, registerInfo, accountAuth.getAccountId());
-                managementService.handleImagesUpload(additionalImageFiles, registerInfo, accountAuth.getAccountId());
-            return "seller/product-registration";
-        }
+        managementService.handleImageUpload(mainImageFile, registerInfo, accountAuth.getAccountId());
+        managementService.handleImagesUpload(additionalImageFiles, registerInfo, accountAuth.getAccountId());
 
-        if (!validateImageFile(mainImageFile) || !validateImageFiles(additionalImageFiles)) {
+        if (bindingResult.hasErrors() || !validateImageFile(mainImageFile) ||
+                !validateImageFiles(additionalImageFiles) || additionalImageFiles.size() > 9) {
             return "seller/product-registration";
         }
 
@@ -68,7 +66,10 @@ public class ManagementController {
             return "seller/product-registration";
         }
 
+        // discount가 price보다 크지 않아야 한다는 검증 추가 필요!!
+
         // 데이터 저장 로직 추가
+
 
         return "redirect:/seller/dashboard";
     }

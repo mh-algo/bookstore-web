@@ -208,7 +208,7 @@ function searchBooks(page = 1) {
                                 <div class="card-body">
                                     <h5 class="card-title">${title.mainTitle}</h5>
                                     <p class="card-text"><small class="text-muted">${title.subTitle}</small></p>
-                                    <p class="card-text"><strong>저자:</strong> ${book.author}</p>
+                                    <p class="card-text"><strong>저자:</strong> ${replaceCaretWithSlash(book.author)}</p>
                                     <p class="card-text"><strong>출판사:</strong> ${book.publisher}</p>
                                     <p class="card-text"><strong>출판일:</strong> ${formatDate(book.pubdate)}</p>
                                     <p class="card-text"><strong>ISBN:</strong> ${book.isbn}</p>
@@ -327,4 +327,9 @@ function toggleReadOnly(input) {
     } else {
         input.setAttribute("readonly", true);
     }
+}
+
+// 만약 ^가 있으면 /로 변경하고, 없으면 원래 텍스트 그대로 반환
+function replaceCaretWithSlash(text) {
+    return text.includes('^') ? text.replace(/\^/g, '/') : text;
 }
