@@ -20,7 +20,7 @@ public class RegisterInfo {
 
     @PositiveOrZero
     @NotNull
-    private Integer deliveryPrice;
+    private Integer deliveryFee;
     private Image image;
     private List<Image> images;
     private String imagesMessage;

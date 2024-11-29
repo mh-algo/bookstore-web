@@ -128,7 +128,7 @@
                 <div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">배송비</h5>
-                        <input type="text" class="form-control" name="deliveryPrice" th:value="*{deliveryPrice!=null?#numbers.formatInteger(deliveryPrice, 0, 'COMMA'):0}"
+                        <input type="text" class="form-control" name="deliveryFee" th:value="*{deliveryFee!=null?#numbers.formatInteger(deliveryFee, 0, 'COMMA'):0}"
                                placeholder="배송비를 입력하세요" oninput="validateStockQuantity(this)">
                     </div>
                 </div>
