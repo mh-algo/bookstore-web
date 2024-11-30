@@ -4,6 +4,7 @@ import com.bookshelf.bookproject.security.dto.AccountAuth;
 import com.bookshelf.bookproject.seller.controller.dto.product.RegisterInfo;
 import com.bookshelf.bookproject.seller.controller.dto.product.item.Product;
 import com.bookshelf.bookproject.seller.controller.dto.product.item.SelectedCategory;
+import com.bookshelf.bookproject.seller.service.dto.BookInfo;
 import com.bookshelf.bookproject.seller.service.dto.CategoryDto;
 import com.bookshelf.bookproject.seller.service.ManagementService;
 import com.bookshelf.bookproject.seller.service.dto.SearchInfo;
@@ -50,8 +51,9 @@ public class ManagementController {
         addAllCategories(model);
         addCategoryPath(model, registerInfo.getSelectedCategory());
 
-        managementService.handleImageUpload(mainImageFile, registerInfo, accountAuth.getAccountId());
-        managementService.handleImagesUpload(additionalImageFiles, registerInfo, accountAuth.getAccountId());
+        String accountId = accountAuth.getAccountId();
+        managementService.handleImageUpload(mainImageFile, registerInfo, accountId);
+        managementService.handleImagesUpload(additionalImageFiles, registerInfo, accountId);
 
         if (bindingResult.hasErrors() || !validateImageFile(mainImageFile) ||
                 !validateImageFiles(additionalImageFiles) || additionalImageFiles.size() > 9) {
@@ -68,8 +70,9 @@ public class ManagementController {
 
         // discount가 price보다 크지 않아야 한다는 검증 추가 필요!!
 
-        // 데이터 저장 로직 추가
-
+        // + 저장할 이미지 파일을 tmp에서 저장할 폴더로 이동 후 tmp 파일 제거
+        BookInfo bookInfo = searchInfo.getItems().get(0);
+        managementService.registerProduct(registerInfo, bookInfo, accountId);
 
         return "redirect:/seller/dashboard";
     }

@@ -2,6 +2,7 @@ package com.bookshelf.bookproject.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -39,4 +40,16 @@ public class Book {
 
     @Column(name = "book_description", length = 1000, nullable = false)
     private String description;
+
+    @Builder
+    public Book(String title, String imageUrl, String author, String publisher, String isbn, LocalDate publishedDate, Integer price, String description) {
+        this.title = title;
+        this.imageUrl = imageUrl;
+        this.author = author;
+        this.publisher = publisher;
+        this.isbn = isbn;
+        this.publishedDate = publishedDate;
+        this.price = price;
+        this.description = description;
+    }
 }

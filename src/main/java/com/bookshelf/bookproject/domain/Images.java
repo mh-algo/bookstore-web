@@ -19,4 +19,9 @@ public class Images {
 
     @Column(name = "sub_image_url", nullable = false)
     private String subImageUrl;
+
+    public Images(BookProduct bookProduct, String subImageUrl) {
+        this.bookProduct = bookProduct;
+        this.subImageUrl = subImageUrl;
+    }
 }

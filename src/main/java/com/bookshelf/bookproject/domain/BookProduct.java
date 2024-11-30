@@ -2,8 +2,12 @@ package com.bookshelf.bookproject.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,6 +25,10 @@ public class BookProduct {
     @JoinColumn(name = "book_id", nullable = false, foreignKey = @ForeignKey(name="fk_book_product_book"))
     private Book book;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sub_subcategory_id", nullable = false, foreignKey = @ForeignKey(name="fk_book_product_sub_subcategory"))
+    private SubSubcategory subSubcategory;
+
     @Column(columnDefinition = "int constraint chk_book_product_price check(price >= 0)")
     private Integer price;
 
@@ -35,4 +43,23 @@ public class BookProduct {
 
     @Column(name = "main_image_url")
     private String mainImageUrl;
+
+    @OneToMany(mappedBy = "bookProduct")
+    private final List<Images> images = new ArrayList<>();
+
+    @Builder
+    public BookProduct(Seller seller, Book book, SubSubcategory subSubcategory, Integer price, Integer discount, Integer inventory, Integer deliveryFee, String mainImageUrl) {
+        this.seller = seller;
+        this.book = book;
+        this.subSubcategory = subSubcategory;
+        this.price = price;
+        this.discount = discount;
+        this.inventory = inventory;
+        this.deliveryFee = deliveryFee;
+        this.mainImageUrl = mainImageUrl;
+    }
+
+    public void addImages(Images image) {
+        this.images.add(image);
+    }
 }

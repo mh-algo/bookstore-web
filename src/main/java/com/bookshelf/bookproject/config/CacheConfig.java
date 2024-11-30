@@ -20,16 +20,30 @@ public class CacheConfig {
     }
 
     @Bean
-    public Caffeine<Object, Object> caffeineConfigWithTTL() {
+    public Caffeine<Object, Object> caffeineConfigWith10Min() {
         return Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES)
                 .maximumSize(1000);
     }
 
     @Bean
-    public CacheManager cacheManagerWithTTL(Caffeine<Object, Object> caffeineConfigWithTTL) {
+    public CacheManager cacheManagerWith10Min(Caffeine<Object, Object> caffeineConfigWith10Min) {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager("bookSearch", "isbnSearch");
-        cacheManager.setCaffeine(caffeineConfigWithTTL);
+        cacheManager.setCaffeine(caffeineConfigWith10Min);
+        return cacheManager;
+    }
+
+    @Bean
+    public Caffeine<Object, Object> caffeineConfigWith24Hours() {
+        return Caffeine.newBuilder()
+                .expireAfterWrite(24, TimeUnit.HOURS)
+                .maximumSize(1000);
+    }
+
+    @Bean
+    public CacheManager cacheManagerWith24Hours(Caffeine<Object, Object> caffeineConfigWith24Hours) {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("bookData");
+        cacheManager.setCaffeine(caffeineConfigWith24Hours);
         return cacheManager;
     }
 }

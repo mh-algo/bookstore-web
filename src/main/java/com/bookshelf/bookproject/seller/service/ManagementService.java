@@ -1,8 +1,11 @@
 package com.bookshelf.bookproject.seller.service;
 
+import com.bookshelf.bookproject.domain.*;
 import com.bookshelf.bookproject.seller.controller.dto.product.RegisterInfo;
 import com.bookshelf.bookproject.seller.controller.dto.product.item.Image;
-import com.bookshelf.bookproject.seller.repository.CategoryRepository;
+import com.bookshelf.bookproject.seller.controller.dto.product.item.Product;
+import com.bookshelf.bookproject.seller.controller.dto.product.item.SelectedCategory;
+import com.bookshelf.bookproject.seller.repository.*;
 import com.bookshelf.bookproject.seller.repository.dto.AllCategoryDto;
 import com.bookshelf.bookproject.seller.service.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -27,10 +31,15 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class ManagementService {
-    private final CategoryRepository categoryRepository;
+    private final SubSubcategoryRepository subsubcategoryRepository;
+    private final SellerRepository sellerRepository;
+    private final BookProductRepository bookProductRepository;
     private final StorageService storageService;
+    private final ManagementCache managementCache;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final ImagesRepository imagesRepository;
+
 
     @Value("${app.upload.dir}")
     private String defaultPath;
@@ -49,10 +58,10 @@ public class ManagementService {
 
     private static int DISPLAY_NUM = 10;
 
-
     @Cacheable("allCategories")
+    @Transactional(readOnly = true)
     public List<CategoryDto> getAllCategories() {
-        List<AllCategoryDto> categoriesList = categoryRepository.findAllCategories();
+        List<AllCategoryDto> categoriesList = subsubcategoryRepository.findAllCategories();
         return convertCategoryDtoList(categoriesList);
     }
 
@@ -141,13 +150,13 @@ public class ManagementService {
         storageService.delete(imagePath);
     }
 
-    @Cacheable(value = "bookSearch", key = "#bookName + ':' + #page", cacheManager = "cacheManagerWithTTL")
+    @Cacheable(value = "bookSearch", key = "#bookName + ':' + #page", cacheManager = "cacheManagerWith10Min")
     public String requestBookDataAsJson(String bookName, int page) {
         URI uri = generateBookSearchUriByName(bookName, page);
         return requestBookDataFromNaver(uri);
     }
 
-    @Cacheable(value = "isbnSearch", key = "#isbn", cacheManager = "cacheManagerWithTTL")
+    @Cacheable(value = "isbnSearch", key = "#isbn", cacheManager = "cacheManagerWith10Min")
     public SearchInfo requestSearchInfo(String isbn) {
         try {
             URI uri = generateBookSearchUriByIsbn(isbn);
@@ -218,5 +227,63 @@ public class ManagementService {
             return validateImageFile(file);
         }
         return true;
+    }
+
+    @Transactional
+    public void registerProduct(RegisterInfo registerInfo, BookInfo bookInfo, String accountId) {
+        BookProduct bookProduct = createBookProduct(
+                registerInfo,
+                getSellerByAccountId(accountId),
+                getBook(bookInfo),
+                getSubSubcategory(registerInfo.getSelectedCategory())
+        );
+        bookProductRepository.save(bookProduct);
+        saveImages(registerInfo.getImages(), bookProduct);
+    }
+
+    private static BookProduct createBookProduct(RegisterInfo registerInfo, Seller sellerByAccountId,
+                                                 Book book, SubSubcategory subSubcategory) {
+        Product product = registerInfo.getProduct();
+        Image image = registerInfo.getImage();
+
+        return BookProduct.builder()
+                .seller(sellerByAccountId)
+                .book(book)
+                .subSubcategory(subSubcategory)
+                .price(product.getPrice())
+                .discount(product.getDiscount())
+                .inventory(product.getAmount())
+                .deliveryFee(registerInfo.getDeliveryFee())
+                .mainImageUrl(image.getPath())
+                .build();
+    }
+
+    private SubSubcategory getSubSubcategory(SelectedCategory selectedCategory) {
+        return subsubcategoryRepository.findCategoryGroupByName(
+                selectedCategory.getCategoryName(),
+                selectedCategory.getSubcategoryName(),
+                selectedCategory.getSubSubcategoryName()
+        );
+    }
+
+    private Book getBook(BookInfo bookInfo) {
+        return managementCache.findOrSaveBook(bookInfo);
+    }
+
+    private Seller getSellerByAccountId(String accountId) {
+        return sellerRepository.findByAccountId(accountId);
+    }
+
+    private void saveImages(List<Image> imageList, BookProduct bookProduct) {
+        if (imageList != null) {
+            for (Image image : imageList) {
+                Images images = createImages(bookProduct, image.getPath());
+                imagesRepository.save(images);
+            }
+        }
+    }
+
+    private static Images createImages(BookProduct bookProduct, String imagePath) {
+        return new Images(bookProduct, imagePath);
     }
 }
