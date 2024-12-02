@@ -1,9 +1,11 @@
 package com.bookshelf.bookproject.seller.controller.dto.product.item;
 
+import com.bookshelf.bookproject.seller.validator.ValidDiscount;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
+@ValidDiscount(price = "price", discount = "discount")
 public class Product {
     @NotBlank
     private String name;
