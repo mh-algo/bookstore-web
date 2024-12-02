@@ -5,9 +5,13 @@ import org.springframework.web.multipart.MultipartFile;
 public interface StorageService {
     String upload(MultipartFile file, String directory);
 
-    void delete(String filePath);
+    boolean delete(String filePath);
 
-    String getStoragePath(String basePath, String accountId);
+    boolean move(String filePath, String savePath);
 
-    String getStoragePath(String basePath, String accountId, String additionalPath);
+    String getStoragePath(String path);
+
+    String getFilePath(String path, String fileName);
+
+    boolean deleteFilesInDirectory(String directoryPath);
 }

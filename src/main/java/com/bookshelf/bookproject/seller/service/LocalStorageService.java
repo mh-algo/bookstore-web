@@ -47,25 +47,68 @@ public class LocalStorageService implements StorageService{
     }
 
     @Override
-    public void delete(String filePath) {
+    public boolean delete(String filePath) {
         File file = new File(filePath);
 
         if (file.exists() && file.isFile()) {
             if (!file.delete()) {
                 log.warn("파일 삭제 실패: {}", filePath);
+                return false;
             }
         } else {
-            log.warn("파일이 존재하지 않거나 파일이 아닙니다: {}", filePath);
+            log.warn("제거할 파일이 존재하지 않거나 파일이 아닙니다: {}", filePath);
+            return false;
         }
+        return true;
     }
 
     @Override
-    public String getStoragePath(String basePath, String accountId) {
-        return basePath + accountId + "/";
+    public boolean move(String filePath, String savePath) {
+        File file = new File(filePath);
+        File newFile = new File(savePath);
+
+        if (file.exists() && file.isFile()) {
+            if (!newFile.isDirectory() && !file.renameTo(newFile)) {
+                log.warn("파일 저장 실패: {} -> {}", filePath, savePath);
+                return false;
+            }
+        } else {
+            log.warn("저장할 파일이 존재하지 않거나 파일이 아닙니다: {}", filePath);
+            return false;
+        }
+        return true;
     }
 
     @Override
-    public String getStoragePath(String basePath, String accountId, String additionalPath) {
-        return basePath + accountId + additionalPath + "/";
+    public String getStoragePath(String path) {
+        return path + "/";
+    }
+
+    @Override
+    public String getFilePath(String path, String fileName) {
+        return path + "/" + fileName;
+    }
+
+    @Override
+    public boolean deleteFilesInDirectory(String path) {
+        File directory = new File(path);
+
+        if (directory.exists() && directory.isDirectory()) {
+            for (File file : directory.listFiles()) {
+                if (file.isFile()) {
+                    if (!file.delete()) {
+                        log.warn("디렉터리 내 파일 삭제 실패: {}{}", path, file.getName());
+                        return false;
+                    }
+                } else {
+                    log.warn("파일이 아닙니다: {}{}", path, file.getName());
+                    return false;
+                }
+            }
+        } else {
+            log.warn("디렉터리가 존재하지 않거나 디렉터리가 아닙니다: {}", path);
+            return false;
+        }
+        return true;
     }
 }

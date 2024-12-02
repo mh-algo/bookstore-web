@@ -48,31 +48,29 @@ public class ManagementController {
                                    BindingResult bindingResult,
                                    @AuthenticationPrincipal AccountAuth accountAuth,
                                    Model model) {
-        addAllCategories(model);
-        addCategoryPath(model, registerInfo.getSelectedCategory());
+        addAllCategories(model);        // 뷰에 보여줄 카테고리 추가
+        addCategoryPath(model, registerInfo.getSelectedCategory());     // 클라이언트가 선택한 카테고리 경로 추가
 
+        // 클라이언트가 업로드한 이미지 파일 임시 저장
         String accountId = accountAuth.getAccountId();
-        managementService.handleImageUpload(mainImageFile, registerInfo, accountId);
-        managementService.handleImagesUpload(additionalImageFiles, registerInfo, accountId);
+        managementService.uploadAndSetAllImages(mainImageFile, additionalImageFiles, registerInfo, accountId);
 
-        if (bindingResult.hasErrors() || !validateImageFile(mainImageFile) ||
-                !validateImageFiles(additionalImageFiles) || additionalImageFiles.size() > 9) {
+        // 데이터 검증
+        if (bindingResult.hasErrors() || !isValidImageFile(mainImageFile, additionalImageFiles)) {
             return "seller/product-registration";
         }
 
+        // 입력 도서 데이터 검증
         Product product = registerInfo.getProduct();
         SearchInfo searchInfo = managementService.requestSearchInfo(product.getIsbn());
-
         if (!validateBookData(searchInfo)) {
-            log.warn("유효하지 않은 데이터입니다 : {}", registerInfo);
             return "seller/product-registration";
         }
 
         // discount가 price보다 크지 않아야 한다는 검증 추가 필요!!
-
-        // + 저장할 이미지 파일을 tmp에서 저장할 폴더로 이동 후 tmp 파일 제거
-        BookInfo bookInfo = searchInfo.getItems().get(0);
-        managementService.registerProduct(registerInfo, bookInfo, accountId);
+        // 입력 데이터 저장
+        managementService.registerProduct(registerInfo, searchInfo.getItems(), accountId);
+        managementService.saveAllImageFiles(registerInfo, accountId);    // 클라이언트가 업로드한 이미지 파일 최종 저장
 
         return "redirect:/seller/dashboard";
     }
