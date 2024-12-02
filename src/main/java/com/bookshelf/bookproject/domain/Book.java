@@ -38,7 +38,7 @@ public class Book {
     @Column(nullable = false, columnDefinition = "int constraint chk_book_price check(price >= 0)")
     private Integer price;
 
-    @Column(name = "book_description", length = 1000, nullable = false)
+    @Column(name = "book_description", length = 2500, nullable = false)
     private String description;
 
     @Builder
