@@ -259,7 +259,6 @@ public class ManagementService {
     private URI generateBookSearchUriByIsbn(String isbn) {
         return UriComponentsBuilder
                 .fromUriString(searchUrl)
-                .path("/book_adv.json")
                 .queryParam("d_isbn", isbn)
                 .encode()
                 .build()
@@ -271,8 +270,7 @@ public class ManagementService {
 
         return UriComponentsBuilder
                 .fromUriString(searchUrl)
-                .path("/book.json")
-                .queryParam("query", bookName)
+                .queryParam("d_titl", bookName)
                 .queryParam("start", start)
                 .queryParam("display", DISPLAY_NUM)
                 .encode()
