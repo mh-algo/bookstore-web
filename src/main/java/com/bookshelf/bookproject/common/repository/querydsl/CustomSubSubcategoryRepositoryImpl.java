@@ -1,7 +1,7 @@
-package com.bookshelf.bookproject.seller.repository.querydsl;
+package com.bookshelf.bookproject.common.repository.querydsl;
 
 import com.bookshelf.bookproject.domain.SubSubcategory;
-import com.bookshelf.bookproject.seller.repository.dto.AllCategoryDto;
+import com.bookshelf.bookproject.common.repository.dto.AllCategoryDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +20,11 @@ public class CustomSubSubcategoryRepositoryImpl implements CustomSubSubcategoryR
     public List<AllCategoryDto> findAllCategories() {
         return queryFactory
                 .select(Projections.constructor(AllCategoryDto.class,
+                                category.id,
                                 category.name,
+                                subcategory.id,
                                 subcategory.name,
+                                subSubcategory.id,
                                 subSubcategory.name))
                 .from(subSubcategory)
                 .join(subSubcategory.subcategory, subcategory)
@@ -30,14 +33,10 @@ public class CustomSubSubcategoryRepositoryImpl implements CustomSubSubcategoryR
     }
 
     @Override
-    public SubSubcategory findCategoryGroupByName(String name, String subName, String subSubName) {
+    public SubSubcategory findSubSubcategoryById(Long id) {
         return queryFactory
                 .selectFrom(subSubcategory)
-                .join(subSubcategory.subcategory, subcategory)
-                .on(subcategory.name.eq(subName))
-                .join(subcategory.category, category)
-                .on(category.name.eq(name))
-                .where(subSubcategory.name.eq(subSubName))
+                .where(subSubcategory.id.eq(id))
                 .fetchOne();
     }
 }

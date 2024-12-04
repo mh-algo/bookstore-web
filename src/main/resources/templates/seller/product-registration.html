@@ -24,20 +24,20 @@
                         <h5 class="card-title">카테고리</h5>
                         <div class="row">
                             <div class="col-md-12">
-                                <p class="is-invalid" th:errors="*{selectedCategory.categoryName}">카테고리 검증 메시지</p>
+                                <p class="is-invalid" th:errors="*{selectedCategory.categoryId}">카테고리 검증 메시지</p>
                                 <button type="button" class="btn btn-success mb-2" onclick="toggleCategoryList()">카테고리명 선택</button>
                                 <div id="categoryList" class="mt-3" style="display: none;">
                                     <ul class="list-group">
 <!--                                        카테고리-->
-                                        <li th:each="category : ${categories}" class="list-group-item" onclick="toggleSubCategoryList(this)">[[${category.name}]]
+                                        <li th:each="entry : ${categoryMap}" class="list-group-item" onclick="toggleSubCategoryList(this)" th:value="${entry.key}">[[${entry.value.name}]]
 <!--                                            세부 카테고리-->
                                             <ul class="list-group mt-2" style="display: none;">
-                                                <li th:each="subcategory : ${category.subcategories}" class="list-group-item border-0"
-                                                    onclick="toggleSubCategoryList(this)">[[${subcategory.name}]]
+                                                <li th:each="subEntry : ${entry.value.subcategories}" class="list-group-item border-0"
+                                                    onclick="toggleSubCategoryList(this)" th:value="${subEntry.key}">[[${subEntry.value.name}]]
 <!--                                                    세부 세부 카테고리-->
                                                     <ul class="list-group mt-2" style="display: none;">
-                                                        <li th:each="subSubcategory : ${subcategory.subSubcategories}" class="list-group-item border-0"
-                                                            onclick="selectCategory(this)" th:text="${subSubcategory.name}"></li>
+                                                        <li th:each="subSubEntry : ${subEntry.value.subSubcategories}" class="list-group-item border-0"
+                                                            onclick="selectCategory(this)" th:text="${subSubEntry.value.name}" th:value="${subSubEntry.key}"></li>
                                                     </ul>
                                                 </li>
                                             </ul>
@@ -45,9 +45,9 @@
                                     </ul>
                                 </div>
                                 <p id="selectedCategoryPath" class="mt-3" th:text="${selectedCategoryPath}"></p>
-                                <input type="hidden" id="category" th:field="*{selectedCategory.categoryName}">
-                                <input type="hidden" id="subcategory" th:field="*{selectedCategory.subcategoryName}">
-                                <input type="hidden" id="sub-subcategory" th:field="*{selectedCategory.subSubcategoryName}">
+                                <input type="hidden" id="category" th:field="*{selectedCategory.categoryId}">
+                                <input type="hidden" id="subcategory" th:field="*{selectedCategory.subcategoryId}">
+                                <input type="hidden" id="sub-subcategory" th:field="*{selectedCategory.subSubcategoryId}">
                             </div>
                         </div>
                     </div>

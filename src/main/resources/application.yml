@@ -40,6 +40,6 @@ app:
 
 search:
   api:
-    url: https://openapi.naver.com/v1/search
+    url: https://openapi.naver.com/v1/search/book_adv.json
     id: ${SEARCH_CLIENT_ID}
     secret: ${SEARCH_CLIENT_SECRET}

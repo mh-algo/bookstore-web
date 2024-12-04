@@ -49,9 +49,9 @@ function selectCategory(element) {
     const hiddenSubcategory = document.getElementById('subcategory');
     const hiddenSubSubcategory = document.getElementById('sub-subcategory');
 
-    hiddenCategory.value = firstText;
-    hiddenSubcategory.value = secondText;
-    hiddenSubSubcategory.value = thirdText;
+    hiddenCategory.value = firstCategory.value;
+    hiddenSubcategory.value = secondCategory.value;
+    hiddenSubSubcategory.value = element.value;
 
     const categoryList = document.getElementById('categoryList');
     categoryList.style.display = 'none';

@@ -1,12 +1,12 @@
 package com.bookshelf.bookproject.seller.service;
 
+import com.bookshelf.bookproject.common.repository.SubSubcategoryRepository;
 import com.bookshelf.bookproject.domain.*;
 import com.bookshelf.bookproject.seller.controller.dto.product.RegisterInfo;
 import com.bookshelf.bookproject.seller.controller.dto.product.item.Image;
 import com.bookshelf.bookproject.seller.controller.dto.product.item.Product;
 import com.bookshelf.bookproject.seller.controller.dto.product.item.SelectedCategory;
 import com.bookshelf.bookproject.seller.repository.*;
-import com.bookshelf.bookproject.seller.repository.dto.AllCategoryDto;
 import com.bookshelf.bookproject.seller.service.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,39 +57,6 @@ public class ManagementService {
     private String clientSecret;
 
     private static int DISPLAY_NUM = 10;
-
-    // 카테고리 데이터 db로부터 가져옴
-    @Cacheable("allCategories")
-    @Transactional(readOnly = true)
-    public List<CategoryDto> getAllCategories() {
-        List<AllCategoryDto> categoriesList = subsubcategoryRepository.findAllCategories();
-        return convertCategoryDtoList(categoriesList);
-    }
-
-    private static List<CategoryDto> convertCategoryDtoList(List<AllCategoryDto> categoriesList) {
-        Map<String, CategoryDto> categoryMap = new LinkedHashMap<>();
-
-        for (AllCategoryDto category : categoriesList) {
-            String categoryName = category.getCategoryName();
-            String subcategoryName = category.getSubCategoryName();
-            String subSubcategoryName = category.getSubSubCategoryName();
-
-            CategoryDto categoryDto = categoryMap.computeIfAbsent(categoryName, name -> new CategoryDto(name, new ArrayList<>()));
-
-            SubcategoryDto subcategoryDto = categoryDto.getSubcategories().stream()
-                    .filter(sub -> sub.getName().equals(subcategoryName))
-                    .findFirst()
-                    .orElseGet(() -> {
-                        SubcategoryDto newSubcategoryDto = new SubcategoryDto(subcategoryName, new ArrayList<>());
-                        categoryDto.getSubcategories().add(newSubcategoryDto);
-                        return newSubcategoryDto;
-                    });
-
-            subcategoryDto.getSubSubcategories().add(new SubSubcategoryDto(subSubcategoryName));
-        }
-
-        return new ArrayList<>(categoryMap.values());
-    }
 
     public void uploadAndSetAllImages(MultipartFile imageFile,
                                       List<MultipartFile> imageFiles,
@@ -316,7 +283,7 @@ public class ManagementService {
                 registerInfo,
                 getSellerByAccountId(accountId),
                 getBook(bookInfo.get(0)),
-                getSubSubcategory(registerInfo.getSelectedCategory())
+                getSubSubcategory(registerInfo.getSelectedCategory().getSubSubcategoryId())
         );
         bookProductRepository.save(bookProduct);
         saveImages(registerInfo.getImages(), bookProduct);
@@ -339,12 +306,8 @@ public class ManagementService {
                 .build();
     }
 
-    private SubSubcategory getSubSubcategory(SelectedCategory selectedCategory) {
-        return subsubcategoryRepository.findCategoryGroupByName(
-                selectedCategory.getCategoryName(),
-                selectedCategory.getSubcategoryName(),
-                selectedCategory.getSubSubcategoryName()
-        );
+    private SubSubcategory getSubSubcategory(Long id) {
+        return subsubcategoryRepository.findSubSubcategoryById(id);
     }
 
     private Book getBook(BookInfo bookInfo) {
@@ -383,5 +346,14 @@ public class ManagementService {
     private boolean deleteFilesInTmpDirectory(String accountId) {
         return storageService.deleteFilesInDirectory(
                 generateTmpDirectoryPath(defaultPath, accountId));
+    }
+
+    // categoryMap에서 카테고리 이름을 찾은 다음, selectedCategory에 저장
+    public static void setSelectedCategory(Map<Long, CategoryDto> categoryMap, SelectedCategory selectedCategory) {
+        CategoryDto categoryDto = categoryMap.get(selectedCategory.getCategoryId());
+        SubcategoryDto subcategoryDto = categoryDto.getSubcategories().get(selectedCategory.getSubcategoryId());
+        SubSubcategoryDto subSubcategoryDto = subcategoryDto.getSubSubcategories().get(selectedCategory.getSubSubcategoryId());
+
+        selectedCategory.setCategoriesName(categoryDto.getName(), subcategoryDto.getName(), subSubcategoryDto.getName());
     }
 }

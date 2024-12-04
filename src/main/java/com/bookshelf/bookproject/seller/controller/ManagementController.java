@@ -1,10 +1,10 @@
 package com.bookshelf.bookproject.seller.controller;
 
+import com.bookshelf.bookproject.common.CategoryService;
 import com.bookshelf.bookproject.security.dto.AccountAuth;
 import com.bookshelf.bookproject.seller.controller.dto.product.RegisterInfo;
 import com.bookshelf.bookproject.seller.controller.dto.product.item.Product;
 import com.bookshelf.bookproject.seller.controller.dto.product.item.SelectedCategory;
-import com.bookshelf.bookproject.seller.service.dto.BookInfo;
 import com.bookshelf.bookproject.seller.service.dto.CategoryDto;
 import com.bookshelf.bookproject.seller.service.ManagementService;
 import com.bookshelf.bookproject.seller.service.dto.SearchInfo;
@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
+import static com.bookshelf.bookproject.common.CategoryService.validateCategory;
 import static com.bookshelf.bookproject.seller.service.ManagementService.*;
 
 @Slf4j
@@ -28,6 +30,7 @@ import static com.bookshelf.bookproject.seller.service.ManagementService.*;
 @RequestMapping("/seller")
 @RequiredArgsConstructor
 public class ManagementController {
+    private final CategoryService categoryService;
     private final ManagementService managementService;
 
     @GetMapping("/dashboard")
@@ -37,7 +40,7 @@ public class ManagementController {
 
     @GetMapping("/register")
     public String register(@ModelAttribute("registerInfo") RegisterInfo registerInfo, Model model) {
-        addAllCategories(model);
+        addCategoryMap(model);
         return "seller/product-registration";
     }
 
@@ -48,17 +51,24 @@ public class ManagementController {
                                    BindingResult bindingResult,
                                    @AuthenticationPrincipal AccountAuth accountAuth,
                                    Model model) {
-        addAllCategories(model);        // 뷰에 보여줄 카테고리 추가
-        addCategoryPath(model, registerInfo.getSelectedCategory());     // 클라이언트가 선택한 카테고리 경로 추가
+        Map<Long, CategoryDto> categoryMap = addCategoryMap(model);     // 뷰에 보여줄 카테고리 추가
 
         // 클라이언트가 업로드한 이미지 파일 임시 저장
         String accountId = accountAuth.getAccountId();
         managementService.uploadAndSetAllImages(mainImageFile, additionalImageFiles, registerInfo, accountId);
 
+        // 클라이언트가 선택한 카테고리 정보를 담은 객체
+        SelectedCategory selectedCategory = registerInfo.getSelectedCategory();
+
         // 데이터 검증
-        if (bindingResult.hasErrors() || !isValidImageFile(mainImageFile, additionalImageFiles)) {
+        if (bindingResult.hasErrors() || !validateCategory(categoryMap, selectedCategory) ||
+                !isValidImageFile(mainImageFile, additionalImageFiles)) {
             return "seller/product-registration";
         }
+
+        // 클라이언트가 선택한 카테고리 경로 추가
+        setSelectedCategory(categoryMap, selectedCategory);
+        addCategoryPath(model, selectedCategory);
 
         // 입력 도서 데이터 검증
         Product product = registerInfo.getProduct();
@@ -67,7 +77,6 @@ public class ManagementController {
             return "seller/product-registration";
         }
 
-        // discount가 price보다 크지 않아야 한다는 검증 추가 필요!!
         // 입력 데이터 저장
         managementService.registerProduct(registerInfo, searchInfo.getItems(), accountId);
         managementService.saveAllImageFiles(registerInfo, accountId);    // 클라이언트가 업로드한 이미지 파일 최종 저장
@@ -81,9 +90,10 @@ public class ManagementController {
         }
     }
 
-    private void addAllCategories(Model model) {
-        List<CategoryDto> allCategories = managementService.getAllCategories();
-        model.addAttribute("categories", allCategories);
+    private Map<Long, CategoryDto> addCategoryMap(Model model) {
+        Map<Long, CategoryDto> categoryMap = categoryService.getAllCategories();
+        model.addAttribute("categoryMap", categoryMap);
+        return categoryMap;
     }
 
     @PostMapping("/register/search-book")
