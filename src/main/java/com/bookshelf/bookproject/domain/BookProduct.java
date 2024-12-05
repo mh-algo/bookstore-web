@@ -35,8 +35,8 @@ public class BookProduct {
     @Column(nullable = false, columnDefinition = "int default 0 constraint chk_discount check(discount >= 0)")
     private Integer discount;
 
-    @Column(nullable = false, columnDefinition = "int default 0 constraint chk_inventory check(inventory >= 0)")
-    private Integer inventory;
+    @Column(nullable = false, columnDefinition = "int default 0 constraint chk_stock check(stock >= 0)")
+    private Integer stock;
 
     @Column(name = "delivery_fee", nullable = false, columnDefinition = "int default 0 constraint chk_delivery_fee check(delivery_fee >= 0)")
     private Integer deliveryFee;
@@ -48,13 +48,13 @@ public class BookProduct {
     private final List<Images> images = new ArrayList<>();
 
     @Builder
-    public BookProduct(Seller seller, Book book, SubSubcategory subSubcategory, Integer price, Integer discount, Integer inventory, Integer deliveryFee, String mainImageUrl) {
+    public BookProduct(Seller seller, Book book, SubSubcategory subSubcategory, Integer price, Integer discount, Integer stock, Integer deliveryFee, String mainImageUrl) {
         this.seller = seller;
         this.book = book;
         this.subSubcategory = subSubcategory;
         this.price = price;
         this.discount = discount;
-        this.inventory = inventory;
+        this.stock = stock;
         this.deliveryFee = deliveryFee;
         this.mainImageUrl = mainImageUrl;
     }

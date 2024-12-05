@@ -118,8 +118,8 @@
                 <div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">재고 수량</h5>
-                        <p class="is-invalid" th:errors="*{product.amount}">재고 수량 검증 메시지</p>
-                        <input type="number" class="form-control" th:field="*{product.amount}"
+                        <p class="is-invalid" th:errors="*{product.stock}">재고 수량 검증 메시지</p>
+                        <input type="number" class="form-control" th:field="*{product.stock}"
                                placeholder="재고 수량을 입력하세요" min="0" max="1000" oninput="validateStockQuantity(this)">
                     </div>
                 </div>

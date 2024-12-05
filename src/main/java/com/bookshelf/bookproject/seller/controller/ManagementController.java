@@ -39,7 +39,7 @@ public class ManagementController {
     }
 
     @GetMapping("/register")
-    public String register(@ModelAttribute("registerInfo") RegisterInfo registerInfo, Model model) {
+    public String register(@ModelAttribute RegisterInfo registerInfo, Model model) {
         addCategoryMap(model);
         return "seller/product-registration";
     }

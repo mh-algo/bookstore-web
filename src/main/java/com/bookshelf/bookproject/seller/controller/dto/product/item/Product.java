@@ -22,7 +22,7 @@ public class Product {
     @Max(1000)
     @PositiveOrZero
     @NotNull
-    private Integer amount;
+    private Integer stock;
 
     @Pattern(regexp = "^[0-9]+$")
     private String isbn;

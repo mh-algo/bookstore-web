@@ -299,7 +299,7 @@ public class ManagementService {
                 .subSubcategory(subSubcategory)
                 .price(product.getPrice())
                 .discount(product.getDiscount())
-                .inventory(product.getAmount())
+                .stock(product.getStock())
                 .deliveryFee(registerInfo.getDeliveryFee())
                 .mainImageUrl(image.getPath())
                 .build();
