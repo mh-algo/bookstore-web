@@ -32,7 +32,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ManagementService {
     private final SubSubcategoryRepository subsubcategoryRepository;
-    private final SellerRepository sellerRepository;
     private final BookProductRepository bookProductRepository;
     private final StorageService storageService;
     private final ManagementCache managementCache;
@@ -315,7 +314,8 @@ public class ManagementService {
     }
 
     private Seller getSellerByAccountId(String accountId) {
-        return sellerRepository.findByAccountId(accountId);
+        Account account = managementCache.getAccount(accountId);
+        return account instanceof Seller ? (Seller) account : Seller.builder().build();
     }
 
     private void saveImages(List<Image> imageList, BookProduct bookProduct) {

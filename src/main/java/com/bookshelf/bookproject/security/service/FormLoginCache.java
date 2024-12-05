@@ -1,7 +1,7 @@
 package com.bookshelf.bookproject.security.service;
 
 import com.bookshelf.bookproject.domain.Account;
-import com.bookshelf.bookproject.security.repository.AccountRepository;
+import com.bookshelf.bookproject.common.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;

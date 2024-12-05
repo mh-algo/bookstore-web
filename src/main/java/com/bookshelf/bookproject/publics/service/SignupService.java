@@ -8,7 +8,7 @@ import com.bookshelf.bookproject.publics.repository.BankAccountRepository;
 import com.bookshelf.bookproject.publics.repository.BankRepository;
 import com.bookshelf.bookproject.publics.repository.RoleManagementRepository;
 import com.bookshelf.bookproject.publics.repository.RoleRepository;
-import com.bookshelf.bookproject.security.repository.AccountRepository;
+import com.bookshelf.bookproject.common.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;

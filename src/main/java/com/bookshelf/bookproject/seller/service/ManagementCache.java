@@ -1,6 +1,8 @@
 package com.bookshelf.bookproject.seller.service;
 
+import com.bookshelf.bookproject.domain.Account;
 import com.bookshelf.bookproject.domain.Book;
+import com.bookshelf.bookproject.common.repository.AccountRepository;
 import com.bookshelf.bookproject.seller.repository.BookRepository;
 import com.bookshelf.bookproject.seller.service.dto.BookInfo;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class ManagementCache {
     private final BookRepository bookRepository;
+    private final AccountRepository accountRepository;
 
     @Cacheable(value = "bookData", key = "#bookInfo.isbn", cacheManager = "cacheManagerWith24Hours")
     @Transactional
@@ -39,5 +42,11 @@ public class ManagementCache {
     private static LocalDate getLocalDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         return LocalDate.parse(date, formatter);
+    }
+
+    @Cacheable(value = "accountInfo", key = "#accountId", cacheManager = "cacheManagerWith1Hour")
+    @Transactional
+    public Account getAccount(String accountId) {
+        return accountRepository.findByAccountId(accountId);
     }
 }

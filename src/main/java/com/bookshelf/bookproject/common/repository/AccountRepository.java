@@ -1,4 +1,4 @@
-package com.bookshelf.bookproject.security.repository;
+package com.bookshelf.bookproject.common.repository;
 
 import com.bookshelf.bookproject.domain.Account;
 import com.bookshelf.bookproject.security.repository.querydsl.CustomAccountRepository;
