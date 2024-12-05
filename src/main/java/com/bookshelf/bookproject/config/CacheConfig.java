@@ -42,8 +42,22 @@ public class CacheConfig {
 
     @Bean
     public CacheManager cacheManagerWith24Hours(Caffeine<Object, Object> caffeineConfigWith24Hours) {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager("bookData");
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("bookData", "roleInfo");
         cacheManager.setCaffeine(caffeineConfigWith24Hours);
+        return cacheManager;
+    }
+
+    @Bean
+    public Caffeine<Object, Object> caffeineConfigWith1Hour() {
+        return Caffeine.newBuilder()
+                .expireAfterWrite(1, TimeUnit.HOURS)
+                .maximumSize(500);
+    }
+
+    @Bean
+    public CacheManager cacheManagerWith1Hour(Caffeine<Object, Object> caffeineConfigWith1Hour) {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("accountInfo");
+        cacheManager.setCaffeine(caffeineConfigWith1Hour);
         return cacheManager;
     }
 }

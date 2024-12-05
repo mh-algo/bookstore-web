@@ -1,12 +1,12 @@
 package com.bookshelf.bookproject.security.config;
 
 import com.bookshelf.bookproject.security.handler.CustomAccessDeniedHandler;
-import com.bookshelf.bookproject.security.repository.AccountRepository;
 import com.bookshelf.bookproject.security.repository.AuthorityManagementRepository;
 import com.bookshelf.bookproject.security.handler.FormAuthenticationFailureHandler;
 import com.bookshelf.bookproject.security.manager.CustomDynamicAuthorizationManager;
 import com.bookshelf.bookproject.security.provider.FormLoginProvider;
 import com.bookshelf.bookproject.security.service.AccessDeniedPolicyService;
+import com.bookshelf.bookproject.security.service.FormLoginCache;
 import com.bookshelf.bookproject.security.service.FormLoginService;
 import com.bookshelf.bookproject.security.service.RoleHierarchyService;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +30,8 @@ public class AuthConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(AccountRepository accountRepository) {
-        return new FormLoginService(accountRepository);
+    public UserDetailsService userDetailsService(FormLoginCache formLoginCache) {
+        return new FormLoginService(formLoginCache);
     }
 
     @Bean

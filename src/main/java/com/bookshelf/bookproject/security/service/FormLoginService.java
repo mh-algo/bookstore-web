@@ -13,10 +13,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.List;
 
 public class FormLoginService implements UserDetailsService {
-    private final AccountRepository accountRepository;
+    private final FormLoginCache formLoginCache;
 
-    public FormLoginService(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
+    public FormLoginService(FormLoginCache formLoginCache) {
+        this.formLoginCache = formLoginCache;
     }
 
     /**
@@ -31,7 +31,7 @@ public class FormLoginService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Account user = accountRepository.findByAccountId(username);
+        Account user = formLoginCache.getAccount(username);
 
         if (user == null) {
             throw new UsernameNotFoundException("Failed to find user '" + username + "'");
@@ -39,7 +39,7 @@ public class FormLoginService implements UserDetailsService {
 
         AccountAuth accountAuth = toAccountAuth(user);
 
-        List<String> roles = accountRepository.findRolesByAccountId(username);
+        List<String> roles = formLoginCache.getRoles(username);
         List<GrantedAuthority> authorities = roles.stream()
                 .map(role -> (GrantedAuthority) new SimpleGrantedAuthority(role)).toList();
 
