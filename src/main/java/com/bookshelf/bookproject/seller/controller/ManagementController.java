@@ -78,8 +78,8 @@ public class ManagementController {
         }
 
         // 입력 데이터 저장
-        managementService.registerProduct(registerInfo, searchInfo.getItems(), accountId);
         managementService.saveAllImageFiles(registerInfo, accountId);    // 클라이언트가 업로드한 이미지 파일 최종 저장
+        managementService.registerProduct(registerInfo, searchInfo.getItems(), accountId);
 
         return "redirect:/seller/dashboard";
     }

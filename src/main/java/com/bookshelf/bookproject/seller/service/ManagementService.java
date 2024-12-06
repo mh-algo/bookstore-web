@@ -1,5 +1,6 @@
 package com.bookshelf.bookproject.seller.service;
 
+import com.bookshelf.bookproject.common.repository.BookProductRepository;
 import com.bookshelf.bookproject.common.repository.SubSubcategoryRepository;
 import com.bookshelf.bookproject.domain.*;
 import com.bookshelf.bookproject.seller.controller.dto.product.RegisterInfo;
@@ -105,32 +106,42 @@ public class ManagementService {
     }
 
     // 임시 디렉터리에 저장된 임시 파일을 저장할 공간으로 이동
-    private boolean imageSave(String imageName, String accountId) {
-        if (imageName != null && !imageName.isEmpty()) {
-            return storageService.move(
-                    getSavedTempStoragePath(accountId, imageName),
-                    getSaveStoragePath(accountId, imageName)
-            );
+    private boolean imageSave(Image image, String accountId) {
+        if (image == null) {
+            return false;
         }
+
+        String imageName = image.getUploadName();
+        if (imageName == null || imageName.isEmpty()) {
+            return false;
+        }
+
+        boolean isMoved = storageService.move(
+                getSavedTempStoragePath(accountId, imageName),
+                getSaveStoragePath(accountId, imageName)
+        );
+
+        if (isMoved) {
+            image.setPath(getSavedUrlPath(accountId, imageName)); // 저장 경로 변경
+            return true;
+        }
+
         return false;
     }
 
     // 임시 디렉터리에 저장된 이미지를 저장할 공간으로 이동
     private boolean imagesSave(List<Image> imageList, String accountId) {
-        if (imageList != null) {
-            for (Image image : imageList) {
-                String uploadName = image.getUploadName();
-                boolean isMoved = storageService.move(
-                        getSavedTempStoragePath(accountId, uploadName),
-                        getSaveStoragePath(accountId, uploadName)
-                );
-                if (!isMoved) {
-                    return false;
-                }
-            }
-            return true;
+        if (imageList == null || imageList.isEmpty()) {
+            return false; // 이미지 리스트가 null이거나 비어있으면 저장 실패
         }
-        return false;
+
+        for (Image image : imageList) {
+            if (!imageSave(image, accountId)) {
+                return false; // 이미지 저장 실패 시 false 반환
+            }
+        }
+
+        return true; // 모든 이미지가 성공적으로 저장된 경우 true 반환
     }
 
     private String getTempStoragePath(String basePath, String accountId) {
@@ -145,6 +156,11 @@ public class ManagementService {
 
     private String getSaveStoragePath(String accountId, String fileName) {
         String path = generateDirectoryPath(defaultPath, accountId);
+        return storageService.getFilePath(path, fileName);
+    }
+
+    private String getSavedUrlPath(String accountId, String fileName) {
+        String path = generateDirectoryPath(defaultUrl, accountId);
         return storageService.getFilePath(path, fileName);
     }
 
@@ -333,10 +349,10 @@ public class ManagementService {
 
     // 이미지 파일 저장
     public boolean saveAllImageFiles(RegisterInfo registerInfo, String accountId) {
-        boolean isImageSaved = imageSave(registerInfo.getImage().getUploadName(), accountId);
+        boolean isImageSaved = imageSave(registerInfo.getImage(), accountId);
         boolean isImagesSaved = imagesSave(registerInfo.getImages(), accountId);
 
-        if (isImageSaved && isImagesSaved) {
+        if (isImageSaved || isImagesSaved) {
             return deleteFilesInTmpDirectory(accountId);
         }
         return false;
