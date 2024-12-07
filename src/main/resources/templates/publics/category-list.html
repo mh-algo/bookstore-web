@@ -52,7 +52,7 @@
         </div>
         <div class="col-md-9">
             <div id="book-list" class="book-list">
-                <div class="card mb-3" th:each="bookInfo : ${bookList}">
+                <div class="card mb-3" th:each="bookInfo : ${booksPage.content}">
                     <div class="row g-0">
                         <div class="col-md-3 text-center align-self-center">
                             <img th:src="${bookInfo.imageUrl}" alt="Book Cover" class="img-fluid">
@@ -60,7 +60,7 @@
                         <div class="col-md-9">
                             <div class="card-body">
                                 <h5 class="card-title" th:text="${bookInfo.title}"></h5>
-                                <p class="card-text text-muted" th:text="${bookInfo.author} + ' &middot; ' + ${bookInfo.publishedDate}"></p>
+                                <p class="card-text text-muted" th:text="${bookInfo.author} + ' &middot; ' + ${#temporals.format(bookInfo.publishedDate, 'yyyy년 MM월 dd일')}"></p>
                                 <p class="card-text" th:text="${bookInfo.description}"></p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="badge bg-success" th:text="${bookInfo.discountRate} + '% ' + ${bookInfo.price}"></span>
@@ -76,7 +76,44 @@
             </div>
 
             <div class="pagination-container">
-                <ul id="pagination" class="pagination"></ul>
+                <p th:if="${booksPage.content.isEmpty()}">잘못된 접근입니다.</p>
+
+                <ul id="pagination" class="pagination" th:object="${booksPage}" th:if="${!booksPage.content.isEmpty()}">
+                    <!-- Previous Page Button -->
+                    <li class="page-item" th:classappend="*{pageable.pageNumber == 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/books/list(page=*{pageable.pageNumber - 1})}">❮</a>
+                    </li>
+
+                    <!-- Start Pages with "..." -->
+                    <li th:if="*{pageable.pageNumber > 4}" class="page-item">
+                        <a class="page-link" th:href="@{/books/list(page=1)}">1</a>
+                    </li>
+                    <li th:if="*{pageable.pageNumber > 4}" class="page-item disabled">
+                        <a class="page-link">...</a>
+                    </li>
+
+                    <!-- Middle Pages -->
+                    <li th:each="i : *{#numbers.sequence(
+                          T(java.lang.Math).max(1, pageable.pageNumber - 3),
+                          T(java.lang.Math).min(totalPages, pageable.pageNumber + 3))}"
+                        class="page-item" th:classappend="${i == booksPage.pageable.pageNumber} ? 'active'">
+                        <a class="page-link" th:href="@{/books/list(page=${i})}" th:text="${i}"></a>
+                    </li>
+
+                    <!-- End Pages with "..." -->
+                    <li th:if="*{pageable.pageNumber + 3 < totalPages}" class="page-item disabled">
+                        <a class="page-link">...</a>
+                    </li>
+                    <li th:if="*{pageable.pageNumber + 3 < totalPages}" class="page-item">
+                        <a class="page-link" th:href="@{/books/list(page=*{totalPages})}" th:text="*{totalPages}"></a>
+                    </li>
+
+                    <!-- Next Page Button -->
+                    <li class="page-item" th:classappend="*{pageable.pageNumber == totalPages} ? 'disabled'">
+                        <a class="page-link" th:href="@{/books/list(page=*{pageable.pageNumber + 1})}">❯</a>
+                    </li>
+                </ul>
+
             </div>
         </div>
     </div>
@@ -99,143 +136,6 @@
             subCategoryList.style.display = 'none';
         }
     }
-
-    let currentPage = 1;
-    const totalPages = 35;
-
-    // Function to generate pagination UI
-    function generatePagination() {
-        const pagination = document.getElementById('pagination');
-        pagination.innerHTML = '';
-
-        // Previous page button
-        pagination.innerHTML += `
-                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                    <a class="page-link" onclick="goToPage(currentPage - 1)">❮</a>
-                </li>
-            `;
-
-        if (currentPage > 4) {
-            pagination.innerHTML += `
-                    <li class="page-item"><a class="page-link" onclick="goToPage(1)">1</a></li>
-                    <li class="page-item disabled"><a class="page-link">...</a></li>
-                `;
-        }
-
-        const startPage = Math.max(1, currentPage - 3);
-        const endPage = Math.min(totalPages, currentPage + 3);
-
-        for (let i = startPage; i <= endPage; i++) {
-            pagination.innerHTML += `
-                    <li class="page-item ${i === currentPage ? 'active' : ''}" id="page-${i}">
-                        <a class="page-link" onclick="goToPage(${i})">${i}</a>
-                    </li>
-                `;
-        }
-
-        if (endPage < totalPages - 1) {
-            pagination.innerHTML += `
-                    <li class="page-item disabled"><a class="page-link">...</a></li>
-                    <li class="page-item"><a class="page-link" onclick="goToPage(${totalPages})">${totalPages}</a></li>
-                `;
-        }
-
-        // Next page button
-        pagination.innerHTML += `
-                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                    <a class="page-link" onclick="goToPage(currentPage + 1)">❯</a>
-                </li>
-            `;
-    }
-
-    // Sample data for books per page
-    const booksData = {
-        1: [
-            {
-                title: '첫 번째 책',
-                author: '작가 A',
-                date: '2024.11.15',
-                price: '13,500원',
-                discount: '10%',
-                img: 'https://via.placeholder.com/100x150',
-                releaseDate: '12/6(금)',
-                description: '첫 번째 책에 대한 설명입니다.'
-            }
-        ],
-        14: [
-            {
-                title: '논길',
-                author: '권오선',
-                date: '2024.11.15',
-                price: '13,500원',
-                discount: '10%',
-                img: 'https://via.placeholder.com/100x150',
-                releaseDate: '12/6(금)',
-                description: '칠십이라는 노년의 나이에 접어들어 작가 권오선은 새로운 도전을 시작한다.'
-            },
-            {
-                title: '당신의 자화상',
-                author: '홍승용',
-                date: '2024.11.11',
-                price: '16,200원',
-                discount: '10%',
-                img: 'https://via.placeholder.com/100x150',
-                releaseDate: '12/4(수)',
-                description: '홍승용 작가의 최신작으로, 자신의 삶을 돌아보는 이야기.'
-            }
-        ]
-    };
-
-    // Function to load books for a given page
-    function loadBooks(page) {
-        const bookList = document.getElementById('book-list');
-        bookList.innerHTML = ''; // Clear current books
-
-        const books = booksData[page] || [];
-        if (books.length > 0) {
-            books.forEach(book => {
-                const bookCard = `
-                        <div class="card mb-3">
-                            <div class="row g-0">
-                                <div class="col-md-3 text-center align-self-center">
-                                    <img src="${book.img}" alt="Book Cover" class="img-fluid">
-                                </div>
-                                <div class="col-md-9">
-                                    <div class="card-body">
-                                        <h5 class="card-title">${book.title}</h5>
-                                        <p class="card-text text-muted">${book.author} &middot; ${book.date}</p>
-                                        <p class="card-text">${book.description}</p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="badge bg-success">${book.discount} ${book.price}</span>
-                                            <span>${book.releaseDate} 출고예정</span>
-                                            <div>
-                                                <button class="btn btn-outline-primary">장바구니</button>
-                                                <button class="btn btn-primary">바로구매</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                bookList.innerHTML += bookCard;
-            });
-        } else {
-            bookList.innerHTML = '<p>No books available for this page.</p>';
-        }
-    }
-
-    // Function to handle pagination
-    function goToPage(page) {
-        if (page < 1 || page > totalPages) return; // Limit page range
-
-        currentPage = page;
-        loadBooks(page);
-        generatePagination();
-    }
-
-    // Initial load for page 1
-    generatePagination();
 </script>
 </body>
 

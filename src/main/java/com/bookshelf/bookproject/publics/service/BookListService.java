@@ -1,9 +1,14 @@
 package com.bookshelf.bookproject.publics.service;
 
+import com.bookshelf.bookproject.common.CustomPage;
 import com.bookshelf.bookproject.common.repository.BookProductRepository;
 import com.bookshelf.bookproject.publics.repository.dto.BookListDto;
 import com.bookshelf.bookproject.publics.service.dto.BookListInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,12 +16,19 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BookListService {
+    private static final int PAGE_SIZE = 10;
     private final BookProductRepository bookProductRepository;
 
-    public List<BookListInfo> getAllBooksList() {
-        List<BookListDto> allBookProducts = bookProductRepository.findAllBookProducts();
-        return allBookProducts.stream()
+    public Page<BookListInfo> getBooksPage(Pageable pageable) {
+        Page<BookListDto> page = bookProductRepository.findPageBookProducts(createRequestPageable(pageable));
+        List<BookListInfo> bookList = page.getContent().stream()
                 .map(BookListService::createBookList).toList();
+
+        return new CustomPage<>(new PageImpl<>(bookList, page.getPageable(), page.getTotalElements()));
+    }
+
+    private static Pageable createRequestPageable(Pageable pageable) {
+        return PageRequest.of(pageable.getPageNumber(), PAGE_SIZE, pageable.getSort());
     }
 
     private static BookListInfo createBookList(BookListDto bookListDto) {

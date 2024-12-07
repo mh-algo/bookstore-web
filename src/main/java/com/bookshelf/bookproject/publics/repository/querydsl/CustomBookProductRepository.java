@@ -1,9 +1,9 @@
 package com.bookshelf.bookproject.publics.repository.querydsl;
 
 import com.bookshelf.bookproject.publics.repository.dto.BookListDto;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CustomBookProductRepository {
-    List<BookListDto> findAllBookProducts();
+    Page<BookListDto> findPageBookProducts(Pageable pageable);
 }
