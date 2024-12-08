@@ -28,6 +28,7 @@ public class CustomBookProductRepositoryImpl implements CustomBookProductReposit
                         bookProduct.discount,
                         bookProduct.mainImageUrl,
                         book.title,
+                        book.subtitle,
                         book.imageUrl,
                         book.author,
                         book.publisher,

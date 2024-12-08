@@ -16,6 +16,7 @@ public class BookListDto {
 
     // Book
     private final String title;
+    private final String subtitle;
     private final String defaultImageUrl;
     private final String author;
     private final String publisher;

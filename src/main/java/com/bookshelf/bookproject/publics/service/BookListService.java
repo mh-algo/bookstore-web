@@ -41,6 +41,7 @@ public class BookListService {
         return BookListInfo.builder()
                 .id(bookListDto.getId())
                 .title(bookListDto.getTitle())
+                .subtitle(bookListDto.getSubtitle())
                 .imageUrl(imageUrl)
                 .author(bookListDto.getAuthor())
                 .publisher(bookListDto.getPublisher())

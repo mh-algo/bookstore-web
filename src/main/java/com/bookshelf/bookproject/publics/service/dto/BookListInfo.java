@@ -10,6 +10,7 @@ import java.time.LocalDate;
 public class BookListInfo {
     private final Long id;
     private final String title;
+    private final String subtitle;
     private final String imageUrl;
     private final String author;
     private final String publisher;

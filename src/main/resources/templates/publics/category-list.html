@@ -60,6 +60,7 @@
                         <div class="col-md-9">
                             <div class="card-body">
                                 <h5 class="card-title" th:text="${bookInfo.title}"></h5>
+                                <p class="card-text" th:if="${!bookInfo.subtitle.isBlank}"><small class="text-muted" th:text="${bookInfo.subtitle}"></small></p>
                                 <p class="card-text text-muted" th:text="${bookInfo.author} + ' &middot; ' + ${#temporals.format(bookInfo.publishedDate, 'yyyy년 MM월 dd일')}"></p>
                                 <p class="card-text" th:text="${bookInfo.description}"></p>
                                 <div class="d-flex justify-content-between align-items-center">
