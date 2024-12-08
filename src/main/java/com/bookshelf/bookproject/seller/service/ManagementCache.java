@@ -3,6 +3,7 @@ package com.bookshelf.bookproject.seller.service;
 import com.bookshelf.bookproject.domain.Account;
 import com.bookshelf.bookproject.domain.Book;
 import com.bookshelf.bookproject.common.repository.AccountRepository;
+import com.bookshelf.bookproject.seller.service.dto.TitleDto;
 import com.bookshelf.bookproject.seller.repository.BookRepository;
 import com.bookshelf.bookproject.seller.service.dto.BookInfo;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +30,10 @@ public class ManagementCache {
     }
 
     private static Book createBook(BookInfo bookInfo) {
+        TitleDto titleDto = splitTitleAndSubtitle(bookInfo.getTitle());
         return Book.builder()
-                .title(bookInfo.getTitle())
+                .title(titleDto.getTitle())
+                .subtitle(titleDto.getSubtitle())
                 .imageUrl(bookInfo.getImage())
                 .author(bookInfo.getAuthor())
                 .publisher(bookInfo.getPublisher())
@@ -37,6 +42,17 @@ public class ManagementCache {
                 .price(bookInfo.getDiscount())
                 .description(bookInfo.getDescription())
                 .build();
+    }
+
+    private static TitleDto splitTitleAndSubtitle(String text) {
+        String regex = "\\((.*?)\\)$";
+        Matcher matcher = Pattern.compile(regex).matcher(text);
+
+        boolean isMatched = matcher.find();
+        String title = isMatched ? text.replaceFirst(regex, "").strip() : text;
+        String subTitle = isMatched ? matcher.group(1) : "";
+
+        return new TitleDto(title, subTitle);
     }
 
     private static LocalDate getLocalDate(String date) {

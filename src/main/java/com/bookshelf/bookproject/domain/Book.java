@@ -20,6 +20,9 @@ public class Book {
     @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
+    private String subtitle;
+
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
@@ -42,8 +45,9 @@ public class Book {
     private String description;
 
     @Builder
-    public Book(String title, String imageUrl, String author, String publisher, String isbn, LocalDate publishedDate, Integer price, String description) {
+    public Book(String title, String subtitle, String imageUrl, String author, String publisher, String isbn, LocalDate publishedDate, Integer price, String description) {
         this.title = title;
+        this.subtitle = subtitle;
         this.imageUrl = imageUrl;
         this.author = author;
         this.publisher = publisher;
