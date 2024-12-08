@@ -42,7 +42,7 @@ public class CacheConfig {
 
     @Bean
     public CacheManager cacheManagerWith24Hours(Caffeine<Object, Object> caffeineConfigWith24Hours) {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager("bookData", "roleInfo");
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("bookIsbn", "roleInfo");
         cacheManager.setCaffeine(caffeineConfigWith24Hours);
         return cacheManager;
     }

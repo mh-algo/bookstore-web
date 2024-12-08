@@ -1,7 +1,7 @@
 package com.bookshelf.bookproject.seller.service;
 
+import com.bookshelf.bookproject.common.CategoryService;
 import com.bookshelf.bookproject.common.repository.BookProductRepository;
-import com.bookshelf.bookproject.common.repository.SubSubcategoryRepository;
 import com.bookshelf.bookproject.domain.*;
 import com.bookshelf.bookproject.seller.controller.dto.product.RegisterInfo;
 import com.bookshelf.bookproject.seller.controller.dto.product.item.Image;
@@ -26,19 +26,21 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ManagementService {
-    private final SubSubcategoryRepository subsubcategoryRepository;
     private final BookProductRepository bookProductRepository;
     private final StorageService storageService;
     private final ManagementCache managementCache;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final ImagesRepository imagesRepository;
+    private final CategoryService categoryService;
 
 
     @Value("${app.upload.dir}")
@@ -207,17 +209,46 @@ public class ManagementService {
         return requestBookDataFromNaver(uri);
     }
 
-    // 캐시에 책 데이터가 없다면 api를 통해 책 데이터를 가져온 후 캐시에 저장
+    // 캐시에 책 데이터가 없다면 레포지토리에서 책을 조회
+    // 조회되는 데이터가 없을 경우 api를 통해 책 데이터를 가져온 후 캐시에 저장
     // isbn을 검색해서 책 데이터를 가져오는데 isbn은 고유값이기 때문에 데이터 1개만 반환됨
     @Cacheable(value = "isbnSearch", key = "#isbn", cacheManager = "cacheManagerWith10Min")
     public SearchInfo requestSearchInfo(String isbn) {
+        Book book = managementCache.findBookByIsbn(isbn);
+        if (!book.isEmpty()) {
+            return createSearchInfo(book);
+        }
         try {
             URI uri = generateBookSearchUriByIsbn(isbn);
             return objectMapper.readValue(requestBookDataFromNaver(uri), SearchInfo.class);
         } catch (JsonProcessingException e) {
             log.warn("json 변환 실패: {}", e.getMessage(), e);
-            return new SearchInfo();
+            return SearchInfo.empty();
         }
+    }
+
+    private SearchInfo createSearchInfo(Book book) {
+        SearchInfo searchInfo = SearchInfo.empty();
+        searchInfo.getItems().add(createBookInfo(book));
+        return searchInfo;
+    }
+
+    private BookInfo createBookInfo(Book book) {
+        return BookInfo.builder()
+                .title(book.getTitle())
+                .link("")
+                .image(book.getImageUrl())
+                .author(book.getAuthor())
+                .discount(book.getPrice())
+                .publisher(book.getPublisher())
+                .isbn(book.getIsbn())
+                .description(book.getDescription())
+                .pubdate(getLocalDateToString(book.getPublishedDate()))
+                .build();
+    }
+
+    private String getLocalDateToString(LocalDate date) {
+        return date.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
     // api 요청에 대한 응답 반환
@@ -322,7 +353,7 @@ public class ManagementService {
     }
 
     private SubSubcategory getSubSubcategory(Long id) {
-        return subsubcategoryRepository.findSubSubcategoryById(id);
+        return categoryService.getSubSubcategory(id);
     }
 
     private Book getBook(BookInfo bookInfo) {

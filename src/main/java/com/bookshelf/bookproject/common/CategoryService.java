@@ -3,6 +3,7 @@ package com.bookshelf.bookproject.common;
 import com.bookshelf.bookproject.common.repository.SubSubcategoryRepository;
 import com.bookshelf.bookproject.common.repository.dto.AllCategoryDto;
 import com.bookshelf.bookproject.common.repository.dto.Category;
+import com.bookshelf.bookproject.domain.SubSubcategory;
 import com.bookshelf.bookproject.seller.service.dto.CategoryDto;
 import com.bookshelf.bookproject.seller.service.dto.SubSubcategoryDto;
 import com.bookshelf.bookproject.seller.service.dto.SubcategoryDto;
@@ -16,14 +17,20 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
-    private final SubSubcategoryRepository subSubCategoryRepository;
+    private final SubSubcategoryRepository subSubcategoryRepository;
 
     // 카테고리 데이터 db로부터 가져옴
     @Cacheable("allCategories")
     @Transactional(readOnly = true)
     public Map<Long, CategoryDto> getAllCategories() {
-        List<AllCategoryDto> categoriesList = subSubCategoryRepository.findAllCategories();
+        List<AllCategoryDto> categoriesList = subSubcategoryRepository.findAllCategories();
         return convertCategoryDtoList(categoriesList);
+    }
+
+    @Cacheable(value = "category", key = "#id")
+    @Transactional(readOnly = true)
+    public SubSubcategory getSubSubcategory(Long id) {
+        return subSubcategoryRepository.findSubSubcategoryById(id);
     }
 
     private static Map<Long, CategoryDto> convertCategoryDtoList(List<AllCategoryDto> categoriesList) {
