@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Table(uniqueConstraints = @UniqueConstraint(name = "unique_isbn", columnNames = "isbn"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Book {
+public class Book extends TimeStamp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

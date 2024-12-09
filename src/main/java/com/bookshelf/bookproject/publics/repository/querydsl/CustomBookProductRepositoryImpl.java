@@ -37,6 +37,7 @@ public class CustomBookProductRepositoryImpl implements CustomBookProductReposit
                         book.description))
                 .from(bookProduct)
                 .join(bookProduct.book, book)
+                .orderBy(bookProduct.createdDate.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -67,6 +68,7 @@ public class CustomBookProductRepositoryImpl implements CustomBookProductReposit
                 .from(bookProduct)
                 .join(bookProduct.book, book)
                 .where(bookProduct.subSubcategory.id.eq(categoryId))
+                .orderBy(bookProduct.createdDate.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
