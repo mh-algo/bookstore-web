@@ -19,12 +19,31 @@ public class BookListService {
     private static final int PAGE_SIZE = 10;
     private final BookProductRepository bookProductRepository;
 
-    public Page<BookListInfo> getBooksPage(Pageable pageable) {
-        Page<BookListDto> page = bookProductRepository.findPageBookProducts(createRequestPageable(pageable));
+    // category가 존재하지 않을 경우(null) 유효
+    // category가 존재한다면 숫자로 이루어져있을 경우에만 유효
+    public static boolean validateCategoryParam(String category) {
+        String regex = "^[0-9]+$";
+        return category == null || category.matches(regex);
+    }
+
+    public Page<BookListInfo> getAllBooks(Pageable pageable) {
+        Page<BookListDto> page = bookProductRepository.findAllBooks(createRequestPageable(pageable));
         List<BookListInfo> bookList = page.getContent().stream()
                 .map(BookListService::createBookList).toList();
 
         return new CustomPage<>(new PageImpl<>(bookList, page.getPageable(), page.getTotalElements()));
+    }
+
+    public Page<BookListInfo> getBooksByCategory(Pageable pageable, String category) {
+        Page<BookListDto> page = bookProductRepository.findBooksByCategory(createRequestPageable(pageable), categoryToLong(category));
+        List<BookListInfo> bookList = page.getContent().stream()
+                .map(BookListService::createBookList).toList();
+
+        return new CustomPage<>(new PageImpl<>(bookList, page.getPageable(), page.getTotalElements()));
+    }
+
+    private static long categoryToLong(String category) {
+        return validateCategoryParam(category) ? Long.parseLong(category) : -1L;
     }
 
     private static Pageable createRequestPageable(Pageable pageable) {

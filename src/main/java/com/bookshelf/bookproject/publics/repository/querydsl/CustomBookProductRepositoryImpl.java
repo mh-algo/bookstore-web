@@ -20,7 +20,7 @@ public class CustomBookProductRepositoryImpl implements CustomBookProductReposit
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<BookListDto> findPageBookProducts(Pageable pageable) {
+    public Page<BookListDto> findAllBooks(Pageable pageable) {
         List<BookListDto> bookProducts = queryFactory
                 .select(Projections.constructor(BookListDto.class,
                         bookProduct.id,
@@ -44,6 +44,37 @@ public class CustomBookProductRepositoryImpl implements CustomBookProductReposit
         JPAQuery<Long> countQuery = queryFactory
                 .select(Wildcard.count)
                 .from(bookProduct);
+
+        return PageableExecutionUtils.getPage(bookProducts, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<BookListDto> findBooksByCategory(Pageable pageable, long categoryId) {
+        List<BookListDto> bookProducts = queryFactory
+                .select(Projections.constructor(BookListDto.class,
+                        bookProduct.id,
+                        bookProduct.price,
+                        bookProduct.discount,
+                        bookProduct.mainImageUrl,
+                        book.title,
+                        book.subtitle,
+                        book.imageUrl,
+                        book.author,
+                        book.publisher,
+                        book.publishedDate,
+                        book.price,
+                        book.description))
+                .from(bookProduct)
+                .join(bookProduct.book, book)
+                .where(bookProduct.subSubcategory.id.eq(categoryId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(Wildcard.count)
+                .from(bookProduct)
+                .where(bookProduct.subSubcategory.id.eq(categoryId));
 
         return PageableExecutionUtils.getPage(bookProducts, pageable, countQuery::fetchOne);
     }

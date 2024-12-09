@@ -11,8 +11,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
+
+import static com.bookshelf.bookproject.publics.service.BookListService.validateCategoryParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,8 +29,16 @@ public class BookListController {
     }
 
     @GetMapping("/books/list")
-    public String list(Pageable pageable, Model model) {
-        Page<BookListInfo> booksPage = bookListService.getBooksPage(pageable);
+    public String list(@RequestParam(required = false) String category, Pageable pageable, Model model) {
+        if (validateCategoryParam(category)) {
+            return addBooks(model, pageable, category);
+        }
+        return "redirect:/books/list";
+    }
+
+    private String addBooks(Model model, Pageable pageable, String category) {
+        Page<BookListInfo> booksPage = category == null ?
+                bookListService.getAllBooks(pageable) : bookListService.getBooksByCategory(pageable, category);
         model.addAttribute("booksPage", booksPage);
         return "publics/category-list";
     }
