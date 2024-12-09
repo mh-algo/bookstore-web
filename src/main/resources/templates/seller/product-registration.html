@@ -107,7 +107,7 @@
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label for="finalPrice" class="form-label">최종 판매가</label>
-                                <input type="text" id="finalPrice"  class="form-control border-0"
+                                <input type="text" id="finalPrice" class="form-control border-0"
                                        th:value="*{product!=null?#numbers.formatInteger(product.getDiscountPrice(), 0, 'COMMA'):0}" placeholder="최종 판매가" readonly>
                             </div>
                         </div>
@@ -128,7 +128,7 @@
                 <div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">배송비</h5>
-                        <input type="text" class="form-control" name="deliveryFee" th:value="*{deliveryFee!=null?#numbers.formatInteger(deliveryFee, 0, 'COMMA'):0}"
+                        <input type="text" class="form-control" id="deliveryFee" name="deliveryFee" th:value="*{deliveryFee!=null?#numbers.formatInteger(deliveryFee, 0, 'COMMA'):0}"
                                placeholder="배송비를 입력하세요" oninput="formatPrice(this)">
                     </div>
                 </div>

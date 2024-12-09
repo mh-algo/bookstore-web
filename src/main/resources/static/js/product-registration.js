@@ -1,8 +1,10 @@
 function removeCommas() {
     const priceInput = document.getElementById("price");
     const discountInput = document.getElementById("discount");
+    const deliveryFeeInput = document.getElementById("deliveryFee");
     remove(priceInput);
     remove(discountInput);
+    remove(deliveryFeeInput);
 }
 
 function remove(element) {
