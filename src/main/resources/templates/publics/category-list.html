@@ -87,7 +87,7 @@
             </div>
 
             <div class="pagination-container">
-                <p th:if="${booksPage.content.isEmpty()}">잘못된 접근입니다.</p>
+                <p th:if="${booksPage.content.isEmpty()}">조회 가능한 상품이 없습니다.</p>
 
                 <ul id="pagination" class="pagination" th:object="${booksPage}" th:if="${!booksPage.content.isEmpty()}">
                     <!-- Previous Page Button -->
