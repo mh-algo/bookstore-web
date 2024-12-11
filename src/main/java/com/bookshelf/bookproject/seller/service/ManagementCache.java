@@ -22,14 +22,14 @@ public class ManagementCache {
     private final BookRepository bookRepository;
     private final AccountRepository accountRepository;
 
-    @Cacheable(value = "bookIsbn", key = "#isbn", unless = "#result.empty", cacheManager = "cacheManagerWith24Hours")
+    @Cacheable(value = "seller:bookIsbn", key = "#isbn", unless = "#result.empty", cacheResolver = "cacheResolver")
     @Transactional(readOnly = true)
     public Book findBookByIsbn(String isbn) {
         return bookRepository.findByIsbn(isbn)
                 .orElseGet(() -> Book.builder().build());
     }
 
-    @Cacheable(value = "bookIsbn", key = "#bookInfo.isbn", cacheManager = "cacheManagerWith24Hours")
+    @Cacheable(value = "seller:bookIsbn", key = "#bookInfo.isbn", cacheResolver = "cacheResolver")
     @Transactional
     public Book findOrSaveBook(BookInfo bookInfo) {
         return bookRepository.findByIsbn(bookInfo.getIsbn())
@@ -67,7 +67,7 @@ public class ManagementCache {
         return LocalDate.parse(date, formatter);
     }
 
-    @Cacheable(value = "accountInfo", key = "#accountId", cacheManager = "cacheManagerWith1Hour")
+    @Cacheable(value = "account:accountInfo", key = "#accountId", cacheResolver = "cacheResolver")
     @Transactional(readOnly = true)
     public Account getAccount(String accountId) {
         return accountRepository.findByAccountId(accountId);

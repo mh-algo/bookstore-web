@@ -23,7 +23,7 @@ public class AccessDeniedPolicyCache {
      * @return 각 접근 거부 경로({@code requestPath})와 리다이렉트 경로({@code redirectPath}) 정보를 담은
      * {@link List}<{@link AccessDeniedPolicyDto}> 객체
      */
-    @Cacheable("pathPolicy")
+    @Cacheable(value = "pathPolicy", cacheResolver = "cacheResolver")
     @Transactional(readOnly = true)
     public List<AccessDeniedPolicyDto> getCachedAccessDeniedPolicies() {
         return accessDeniedPolicyRepository.findAllAccessDeniedPolicy();

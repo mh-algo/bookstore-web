@@ -203,7 +203,7 @@ public class ManagementService {
     }
 
     // 캐시에 책 데이터가 없다면 api를 통해 책 데이터를 가져온 후 캐시에 저장
-    @Cacheable(value = "bookSearch", key = "#bookName + ':' + #page", cacheManager = "cacheManagerWith10Min")
+    @Cacheable(value = "seller:bookSearch", key = "#bookName + ':' + #page", cacheResolver = "cacheResolver")
     public String requestBookDataAsJson(String bookName, int page) {
         URI uri = generateBookSearchUriByName(bookName, page);
         return requestBookDataFromNaver(uri);
@@ -212,7 +212,7 @@ public class ManagementService {
     // 캐시에 책 데이터가 없다면 레포지토리에서 책을 조회
     // 조회되는 데이터가 없을 경우 api를 통해 책 데이터를 가져온 후 캐시에 저장
     // isbn을 검색해서 책 데이터를 가져오는데 isbn은 고유값이기 때문에 데이터 1개만 반환됨
-    @Cacheable(value = "isbnSearch", key = "#isbn", cacheManager = "cacheManagerWith10Min")
+    @Cacheable(value = "seller:isbnSearch", key = "#isbn", cacheResolver = "cacheResolver")
     public SearchInfo requestSearchInfo(String isbn) {
         Book book = managementCache.findBookByIsbn(isbn);
         if (!book.isEmpty()) {

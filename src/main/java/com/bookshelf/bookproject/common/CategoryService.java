@@ -20,14 +20,14 @@ public class CategoryService {
     private final SubSubcategoryRepository subSubcategoryRepository;
 
     // 카테고리 데이터 db로부터 가져옴
-    @Cacheable("allCategories")
+    @Cacheable(value = "allCategories", cacheResolver = "cacheResolver")
     @Transactional(readOnly = true)
     public Map<Long, CategoryDto> getAllCategories() {
         List<AllCategoryDto> categoriesList = subSubcategoryRepository.findAllCategories();
         return convertCategoryDtoList(categoriesList);
     }
 
-    @Cacheable(value = "category", key = "#id")
+    @Cacheable(value = "category", key = "#id", cacheResolver = "cacheResolver")
     @Transactional(readOnly = true)
     public SubSubcategory getSubSubcategory(Long id) {
         return subSubcategoryRepository.findSubSubcategoryById(id);

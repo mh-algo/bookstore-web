@@ -181,7 +181,7 @@ public class SignupService {
      *
      * @return 조회한 은행 이름 리스트
      */
-    @Cacheable("bankNames")
+    @Cacheable(value = "bankNames", cacheResolver = "cacheResolver")
     @Transactional(readOnly = true)
     public List<String> getBankNames() {
         return bankRepository.findAllBankNames();
