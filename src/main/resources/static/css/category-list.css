@@ -1,0 +1,28 @@
+.pagination-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+.page-link {
+    cursor: pointer;
+}
+
+.page-item.active .page-link {
+    background-color: #6c757d;
+    color: white;
+}
+
+.list-group li {
+    cursor: pointer;
+}
+
+.text-truncate-multiline {
+    display: -webkit-box;        /* 플렉스 기반의 레이아웃 */
+    -webkit-line-clamp: 5;       /* 최대 5줄까지만 표시 */
+    -webkit-box-orient: vertical; /* 수직 방향으로 박스 설정 */
+    overflow: hidden;           /* 넘치는 텍스트를 숨김 */
+    text-overflow: ellipsis;    /* 생략 부호(...) 추가 */
+    max-height: calc(1.5em * 5); /* 한 줄의 높이 * 5줄 */
+}
