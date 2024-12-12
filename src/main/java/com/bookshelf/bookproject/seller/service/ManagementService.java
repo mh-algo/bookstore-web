@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -324,6 +325,8 @@ public class ManagementService {
 
     // 입력 데이터 저장
     @Transactional
+    @CacheEvict(value = {"bookList:category", "bookList:#{#registerInfo.getSelectedCategory().getSubSubcategoryId()}"},
+            allEntries = true, cacheResolver = "cacheResolver")
     public void registerProduct(RegisterInfo registerInfo, List<BookInfo> bookInfo, String accountId) {
         BookProduct bookProduct = createBookProduct(
                 registerInfo,

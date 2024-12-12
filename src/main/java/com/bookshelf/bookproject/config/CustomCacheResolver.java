@@ -4,12 +4,17 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.CacheOperationInvocationContext;
 import org.springframework.cache.interceptor.CacheResolver;
+import org.springframework.expression.ParserContext;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 
+import java.lang.reflect.Parameter;
 import java.util.*;
 
 public class CustomCacheResolver implements CacheResolver {
     protected static final String ACCOUNT = "account";
     protected static final String SELLER = "seller";
+    protected static final String BOOK_LIST = "bookList";
 
     private final Map<String, CacheManager> cacheManagers;
     private final CacheManager defaultCacheManager;
@@ -50,10 +55,30 @@ public class CustomCacheResolver implements CacheResolver {
             return this.cacheManagers.get(SELLER);
         }
 
+        if (cacheName.startsWith(BOOK_LIST)) {
+            return this.cacheManagers.get(BOOK_LIST);
+        }
+
         return defaultCacheManager;
     }
 
-    protected Collection<String> getCacheNames(CacheOperationInvocationContext<?> context) {
-        return context.getOperation().getCacheNames();
+    private Collection<String> getCacheNames(CacheOperationInvocationContext<?> context) {
+        Object[] args = context.getArgs();
+        String[] parameterNames = Arrays.stream(context.getMethod().getParameters())
+                .map(Parameter::getName) // 파라미터 이름 가져오기
+                .toArray(String[]::new);
+
+        return context.getOperation().getCacheNames().stream()
+                .map(it -> new SpelExpressionParser().parseExpression(it, ParserContext.TEMPLATE_EXPRESSION)
+                        .getValue(getStandardEvaluationContext(args, parameterNames), String.class))
+                .toList();
+    }
+
+    private static StandardEvaluationContext getStandardEvaluationContext(Object[] args, String[] parameterNames) {
+        StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
+        for (int i = 0; i < args.length; i++) {
+            evaluationContext.setVariable(parameterNames[i], args[i]);
+        }
+        return evaluationContext;
     }
 }

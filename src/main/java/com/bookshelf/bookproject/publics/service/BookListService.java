@@ -5,6 +5,7 @@ import com.bookshelf.bookproject.common.repository.BookProductRepository;
 import com.bookshelf.bookproject.publics.repository.dto.BookListDto;
 import com.bookshelf.bookproject.publics.service.dto.BookListInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +27,7 @@ public class BookListService {
         return category == null || category.matches(regex);
     }
 
+    @Cacheable(value = "bookList:category", key = "#pageable.pageNumber", cacheResolver = "cacheResolver")
     public Page<BookListInfo> getAllBooks(Pageable pageable) {
         Page<BookListDto> page = bookProductRepository.findAllBooks(createRequestPageable(pageable));
         List<BookListInfo> bookList = page.getContent().stream()
@@ -34,16 +36,17 @@ public class BookListService {
         return new CustomPage<>(new PageImpl<>(bookList, page.getPageable(), page.getTotalElements()));
     }
 
-    public Page<BookListInfo> getBooksByCategory(Pageable pageable, String category) {
-        Page<BookListDto> page = bookProductRepository.findBooksByCategory(createRequestPageable(pageable), categoryToLong(category));
+    @Cacheable(value = "bookList:#{#categoryId}", key = "#pageable.pageNumber", cacheResolver = "cacheResolver")
+    public Page<BookListInfo> getBooksByCategory(Pageable pageable, String categoryId) {
+        Page<BookListDto> page = bookProductRepository.findBooksByCategory(createRequestPageable(pageable), categoryIdToLong(categoryId));
         List<BookListInfo> bookList = page.getContent().stream()
                 .map(BookListService::createBookList).toList();
 
         return new CustomPage<>(new PageImpl<>(bookList, page.getPageable(), page.getTotalElements()));
     }
 
-    private static long categoryToLong(String category) {
-        return validateCategoryParam(category) ? Long.parseLong(category) : -1L;
+    private static long categoryIdToLong(String categoryId) {
+        return validateCategoryParam(categoryId) ? Long.parseLong(categoryId) : -1L;
     }
 
     private static Pageable createRequestPageable(Pageable pageable) {

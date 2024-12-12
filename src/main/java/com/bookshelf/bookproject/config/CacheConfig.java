@@ -13,8 +13,7 @@ import org.springframework.context.annotation.Primary;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.bookshelf.bookproject.config.CustomCacheResolver.ACCOUNT;
-import static com.bookshelf.bookproject.config.CustomCacheResolver.SELLER;
+import static com.bookshelf.bookproject.config.CustomCacheResolver.*;
 
 @EnableCaching
 @Configuration
@@ -40,6 +39,13 @@ public class CacheConfig {
     }
 
     @Bean
+    public Caffeine<Object, Object> bookListConfig() {
+        return Caffeine.newBuilder()
+                .expireAfterAccess(1, TimeUnit.HOURS)
+                .maximumSize(1000);
+    }
+
+    @Bean
     public CacheManager accountCacheManager(Caffeine<Object, Object> accountConfig) {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCaffeine(accountConfig);
@@ -54,13 +60,22 @@ public class CacheConfig {
     }
 
     @Bean
+    public CacheManager bookListCacheManager(Caffeine<Object, Object> bookListConfig) {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCaffeine(bookListConfig);
+        return cacheManager;
+    }
+
+    @Bean
     public CacheResolver cacheResolver(CacheManager cacheManager,
                                        @Qualifier("accountCacheManager") CacheManager accountCacheManager,
-                                       @Qualifier("sellerCacheManager") CacheManager sellerCacheManager) {
+                                       @Qualifier("sellerCacheManager") CacheManager sellerCacheManager,
+                                       @Qualifier("bookListCacheManager") CacheManager bookListCacheManager) {
         return new CustomCacheResolver(
                 Map.of(
                         ACCOUNT, accountCacheManager,
-                        SELLER, sellerCacheManager
+                        SELLER, sellerCacheManager,
+                        BOOK_LIST, bookListCacheManager
                 ), cacheManager
         );
     }
