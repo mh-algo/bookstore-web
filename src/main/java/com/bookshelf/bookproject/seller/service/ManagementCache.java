@@ -42,7 +42,7 @@ public class ManagementCache {
                 .title(titleDto.getTitle())
                 .subtitle(titleDto.getSubtitle())
                 .imageUrl(bookInfo.getImage())
-                .author(bookInfo.getAuthor())
+                .author(getAuthor(bookInfo.getAuthor()))
                 .publisher(bookInfo.getPublisher())
                 .isbn(bookInfo.getIsbn())
                 .publishedDate(getLocalDate(bookInfo.getPubdate()))
@@ -60,6 +60,10 @@ public class ManagementCache {
         String subTitle = isMatched ? matcher.group(1) : "";
 
         return new TitleDto(title, subTitle);
+    }
+
+    private static String getAuthor(String author) {
+        return author.contains("^") ? author.replace("^", "/") : author;
     }
 
     private static LocalDate getLocalDate(String date) {
