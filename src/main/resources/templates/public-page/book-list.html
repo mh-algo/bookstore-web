@@ -33,19 +33,21 @@
         </div>
         <div class="col-md-9">
             <div id="book-list" class="book-list">
+                <p th:if="${booksPage.content.isEmpty()}">조회 가능한 상품이 없습니다.</p>
                 <div class="card mb-3" th:each="bookInfo : ${booksPage.content}">
                     <div class="row g-0">
                         <div class="col-md-3 text-center align-self-center">
-                            <img th:src="${bookInfo.imageUrl}" alt="Book Cover" class="img-fluid">
+                            <img th:src="${bookInfo.imageUrl}" alt="Book Cover" class="img-fluid detail-href" th:onclick="|location.href='@{/books/{bookId}(bookId=${bookInfo.id})}'|">
                         </div>
                         <div class="col-md-9">
                             <div class="card-body">
-                                <h5 class="card-title" th:text="${bookInfo.title}"></h5>
-                                <p class="card-text" th:if="${!bookInfo.subtitle.isBlank}"><small class="text-muted" th:text="${bookInfo.subtitle}"></small></p>
+                                <h5 class="card-title detail-href" th:text="${bookInfo.title}" th:onclick="|location.href='@{/books/{bookId}(bookId=${bookInfo.id})}'|"></h5>
+                                <p class="card-text" th:if="${!bookInfo.subtitle.isBlank}">
+                                    <small class="text-muted detail-href" th:text="${bookInfo.subtitle}" th:onclick="|location.href='@{/books/{bookId}(bookId=${bookInfo.id})}'|"></small></p>
                                 <p class="card-text text-muted" th:text="${bookInfo.author} + ' &middot; ' + ${#temporals.format(bookInfo.publishedDate, 'yyyy년 MM월 dd일')}"></p>
                                 <p class="card-text text-truncate-multiline" th:text="${bookInfo.description}"></p>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-success" th:text="${bookInfo.discountRate} + '% ' + ${bookInfo.price}"></span>
+                                    <span class="badge bg-success" th:text="${bookInfo.discountRate} + '% ' + ${bookInfo.discountPrice}"></span>
                                     <div>
                                         <button class="btn btn-outline-primary">장바구니</button>
                                         <button class="btn btn-primary">바로구매</button>
@@ -58,8 +60,6 @@
             </div>
 
             <div class="pagination-container">
-                <p th:if="${booksPage.content.isEmpty()}">조회 가능한 상품이 없습니다.</p>
-
                 <ul id="pagination" class="pagination" th:object="${booksPage}" th:if="${!booksPage.content.isEmpty()}">
                     <!-- Previous Page Button -->
                     <li class="page-item" th:classappend="*{pageable.pageNumber == 1} ? 'disabled'">

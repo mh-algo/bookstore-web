@@ -1,12 +1,12 @@
 package com.bookshelf.bookproject.publicpage.repository.dto;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
 @Getter
-@RequiredArgsConstructor
+@SuperBuilder
 public class BookListDto {
     // BookProduct
     private final Long id;

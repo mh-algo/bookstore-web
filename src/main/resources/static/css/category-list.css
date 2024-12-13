@@ -26,3 +26,7 @@
     text-overflow: ellipsis;    /* 생략 부호(...) 추가 */
     max-height: calc(1.5em * 5); /* 한 줄의 높이 * 5줄 */
 }
+
+.detail-href {
+    cursor: pointer;
+}
