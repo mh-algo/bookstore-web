@@ -126,6 +126,11 @@
 
     <!-- Publisher Review and Basic Info -->
     <div class="mt-5" th:object="${bookDetail}">
+        <h5 class="fw-bold">카테고리</h5>
+        <p th:text="*{category + ' > ' + subcategory + ' > ' + subSubcategory}"></p>
+
+        <hr class="mt-4">
+
         <h5 class="fw-bold">책 소개</h5>
         <p th:text="*{description}"></p>
 
