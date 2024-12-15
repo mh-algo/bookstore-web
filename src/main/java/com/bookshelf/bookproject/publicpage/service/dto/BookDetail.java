@@ -13,4 +13,5 @@ public class BookDetail extends BookList {
     private final String category;
     private final String subcategory;
     private final String subSubcategory;
+    private final Long subSubcategoryId;
 }

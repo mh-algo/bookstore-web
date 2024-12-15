@@ -46,6 +46,7 @@ public class BookDetailService {
                 .category(bookDetailDto.getCategory())
                 .subcategory(bookDetailDto.getSubcategory())
                 .subSubcategory(bookDetailDto.getSubSubcategory())
+                .subSubcategoryId(bookDetailDto.getSubSubcategoryId())
                 .build();
     }
 }

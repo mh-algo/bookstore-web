@@ -130,7 +130,9 @@ public class CustomBookProductRepositoryImpl implements CustomBookProductReposit
                             book.description,
                             category.name,
                             subcategory.name,
-                            subSubcategory.name)
+                            subSubcategory.name,
+                            subSubcategory.id
+                            )
                     .from(bookProduct)
                     .join(bookProduct.book, book)
                     .join(bookProduct.subSubcategory, subSubcategory)
@@ -165,6 +167,7 @@ public class CustomBookProductRepositoryImpl implements CustomBookProductReposit
                 .category(tuple.get(category.name))
                 .subcategory(tuple.get(subcategory.name))
                 .subSubcategory(tuple.get(subSubcategory.name))
+                .subSubcategoryId(tuple.get(subSubcategory.id))
                 .build();
     }
 }

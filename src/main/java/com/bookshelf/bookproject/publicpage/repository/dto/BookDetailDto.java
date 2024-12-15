@@ -14,6 +14,7 @@ public class BookDetailDto extends BookListDto {
     private final String category;
     private final String subcategory;
     private final String subSubcategory;
+    private final Long subSubcategoryId;
 
     public static BookDetailDto empty() {
         return BookDetailDto.builder()
@@ -35,6 +36,7 @@ public class BookDetailDto extends BookListDto {
                 .category("")
                 .subcategory("")
                 .subSubcategory("")
+                .subSubcategoryId(0L)
                 .build();
     }
 }

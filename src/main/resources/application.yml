@@ -7,7 +7,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate #validate
+      ddl-auto: update #validate
     properties:
       hibernate:
 #        show_sql: true

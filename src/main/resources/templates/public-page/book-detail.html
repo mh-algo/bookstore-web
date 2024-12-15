@@ -96,7 +96,9 @@
             <h4 class="fw-bold" th:text="*{title}">제목</h4>
             <small class="text-muted" th:unless="*{subtitle.isBlank()}" th:text="*{subtitle}"></small>
 
-            <p class="text-muted author-text" th:text="*{author + ' | ' + subSubcategory}">작가 | 카테고리</p>
+            <p class="text-muted author-text">[[*{author}]] |
+                <a class="text-reset text-decoration-none" th:href="@{/books/list(category=*{subSubcategoryId})}" th:text="*{subSubcategory}"></a>
+            </p>
 
             <div class="d-flex align-items-center">
                 <span class="badge bg-success fs-6" th:text="*{discountRate + '%'}">할인율</span>
@@ -127,7 +129,7 @@
     <!-- Publisher Review and Basic Info -->
     <div class="mt-5" th:object="${bookDetail}">
         <h5 class="fw-bold">카테고리</h5>
-        <p th:text="*{category + ' > ' + subcategory + ' > ' + subSubcategory}"></p>
+        <a class="text-reset text-decoration-none" th:href="@{/books/list(category=*{subSubcategoryId})}" th:text="*{category + ' > ' + subcategory + ' > ' + subSubcategory}"></a>
 
         <hr class="mt-4">
 
