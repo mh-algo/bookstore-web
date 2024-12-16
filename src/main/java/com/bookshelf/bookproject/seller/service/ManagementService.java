@@ -2,12 +2,12 @@ package com.bookshelf.bookproject.seller.service;
 
 import com.bookshelf.bookproject.common.CategoryService;
 import com.bookshelf.bookproject.common.repository.BookProductRepository;
+import com.bookshelf.bookproject.common.repository.ImagesRepository;
 import com.bookshelf.bookproject.domain.*;
 import com.bookshelf.bookproject.seller.controller.dto.product.RegisterInfo;
 import com.bookshelf.bookproject.seller.controller.dto.product.item.Image;
 import com.bookshelf.bookproject.seller.controller.dto.product.item.Product;
 import com.bookshelf.bookproject.seller.controller.dto.product.item.SelectedCategory;
-import com.bookshelf.bookproject.seller.repository.*;
 import com.bookshelf.bookproject.seller.service.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

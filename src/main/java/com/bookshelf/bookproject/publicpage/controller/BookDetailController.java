@@ -17,8 +17,12 @@ public class BookDetailController {
 
     @GetMapping("/{bookId}")
     public String bookDetail(@PathVariable String bookId, Model model) {
+        addBookDetail(bookId, model);
+        return "public-page/book-detail";
+    }
+
+    private void addBookDetail(String bookId, Model model) {
         BookDetail bookDetail = bookDetailService.getBookDetailInfo(bookId);
         model.addAttribute("bookDetail", bookDetail);
-        return "public-page/book-detail";
     }
 }

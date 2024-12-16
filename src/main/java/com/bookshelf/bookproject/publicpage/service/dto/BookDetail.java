@@ -3,6 +3,8 @@ package com.bookshelf.bookproject.publicpage.service.dto;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Getter
 @SuperBuilder
 public class BookDetail extends BookList {
@@ -14,4 +16,5 @@ public class BookDetail extends BookList {
     private final String subcategory;
     private final String subSubcategory;
     private final Long subSubcategoryId;
+    private final List<String> subImagesUrl;
 }
