@@ -1,8 +1,8 @@
 package com.bookshelf.bookproject.seller.service;
 
+import com.bookshelf.bookproject.common.AccountCache;
 import com.bookshelf.bookproject.domain.Account;
 import com.bookshelf.bookproject.domain.Book;
-import com.bookshelf.bookproject.common.repository.AccountRepository;
 import com.bookshelf.bookproject.seller.service.dto.TitleDto;
 import com.bookshelf.bookproject.seller.repository.BookRepository;
 import com.bookshelf.bookproject.seller.service.dto.BookInfo;
@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class ManagementCache {
     private final BookRepository bookRepository;
-    private final AccountRepository accountRepository;
+    private final AccountCache accountCache;
 
     @Cacheable(value = "seller:bookIsbn", key = "#isbn", unless = "#result.empty", cacheResolver = "cacheResolver")
     @Transactional(readOnly = true)
@@ -71,9 +71,7 @@ public class ManagementCache {
         return LocalDate.parse(date, formatter);
     }
 
-    @Cacheable(value = "account:accountInfo", key = "#accountId", cacheResolver = "cacheResolver")
-    @Transactional(readOnly = true)
     public Account getAccount(String accountId) {
-        return accountRepository.findByAccountId(accountId);
+        return accountCache.getAccount(accountId);
     }
 }

@@ -1,5 +1,6 @@
 package com.bookshelf.bookproject.publicpage.service;
 
+import com.bookshelf.bookproject.common.AccountCache;
 import com.bookshelf.bookproject.domain.*;
 import com.bookshelf.bookproject.publicpage.controller.dto.signup.Signup;
 import com.bookshelf.bookproject.publicpage.controller.dto.signup.SignupSeller;
@@ -11,6 +12,7 @@ import com.bookshelf.bookproject.publicpage.repository.RoleRepository;
 import com.bookshelf.bookproject.common.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,16 +24,20 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SignupService {
+    private final AccountCache accountCache;
+    private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
     private final RoleManagementRepository roleManagementRepository;
-    private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final BankRepository bankRepository;
     private final BankAccountRepository bankAccountRepository;
 
-    @Transactional(readOnly = true)
     public boolean isEnableUsername(String username) {
-        return accountRepository.findByAccountId(username) == null;
+        return getAccount(username) == null;
+    }
+
+    private Account getAccount(String accountId) {
+        return accountCache.getAccount(accountId);
     }
 
     /**
@@ -42,6 +48,7 @@ public class SignupService {
      *
      * @param signup 저장할 {@link Signup} 객체 (회원 가입 정보)
      */
+    @CacheEvict(value = "account:accountInfo", key = "#signup.username", cacheResolver = "cacheResolver")
     @Transactional
     public void saveUserAccount(Signup signup) {
         User user = toUser(signup);
@@ -57,6 +64,7 @@ public class SignupService {
      *
      * @param signupSeller 저장할 {@link SignupSeller} 객체 (판매자 가입 정보)
      */
+    @CacheEvict(value = "account:accountInfo", key = "#signupSeller.username", cacheResolver = "cacheResolver")
     @Transactional
     public void saveSellerAccount(SignupSeller signupSeller) {
         Seller seller = toSeller(signupSeller);

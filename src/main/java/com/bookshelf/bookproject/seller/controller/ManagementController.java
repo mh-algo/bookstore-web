@@ -53,6 +53,10 @@ public class ManagementController {
                                    Model model) {
         Map<Long, CategoryDto> categoryMap = addCategoryMap(model);     // 뷰에 보여줄 카테고리 추가
 
+        if (accountAuth == null) {
+            return "redirect:/login";
+        }
+
         // 클라이언트가 업로드한 이미지 파일 임시 저장
         String accountId = accountAuth.getAccountId();
         managementService.uploadAndSetAllImages(mainImageFile, additionalImageFiles, registerInfo, accountId);

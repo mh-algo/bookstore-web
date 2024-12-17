@@ -1,5 +1,6 @@
 package com.bookshelf.bookproject.security.service;
 
+import com.bookshelf.bookproject.common.AccountCache;
 import com.bookshelf.bookproject.domain.Account;
 import com.bookshelf.bookproject.common.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +13,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FormLoginCache {
+    private final AccountCache accountCache;
     private final AccountRepository accountRepository;
 
-    @Cacheable(value = "account:accountInfo", key = "#accountId", cacheResolver = "cacheResolver")
-    @Transactional(readOnly = true)
     public Account getAccount(String accountId) {
-        return accountRepository.findByAccountId(accountId);
+        return accountCache.getAccount(accountId);
     }
 
     @Cacheable(value = "account:roleInfo", key = "#accountId", cacheResolver = "cacheResolver")
