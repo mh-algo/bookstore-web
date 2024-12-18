@@ -29,7 +29,7 @@ public class BookProduct extends TimeStamp {
     @JoinColumn(name = "sub_subcategory_id", nullable = false, foreignKey = @ForeignKey(name="fk_book_product_sub_subcategory"))
     private SubSubcategory subSubcategory;
 
-    @Column(columnDefinition = "int constraint chk_book_product_price check(price >= 0)")
+    @Column(columnDefinition = "int constraint chk_price check(price >= 0)")
     private Integer price;
 
     @Column(nullable = false, columnDefinition = "int default 0 constraint chk_discount check(discount >= 0)")

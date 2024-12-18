@@ -20,6 +20,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -61,6 +62,7 @@ public class ManagementService {
 
     private static int DISPLAY_NUM = 10;
 
+    @PreAuthorize("hasRole('SELLER') and #accountId == authentication.name")
     public void uploadAndSetAllImages(MultipartFile imageFile,
                                       List<MultipartFile> imageFiles,
                                       RegisterInfo registerInfo,
@@ -324,6 +326,7 @@ public class ManagementService {
     }
 
     // 입력 데이터 저장
+    @PreAuthorize("hasRole('SELLER') and #accountId == authentication.name")
     @Transactional
     @CacheEvict(value = {"bookList:category", "bookList:#{#registerInfo.getSelectedCategory().getSubSubcategoryId()}"},
             allEntries = true, cacheResolver = "cacheResolver")
@@ -382,6 +385,7 @@ public class ManagementService {
     }
 
     // 이미지 파일 저장
+    @PreAuthorize("hasRole('SELLER') and #accountId == authentication.name")
     public boolean saveAllImageFiles(RegisterInfo registerInfo, String accountId) {
         boolean isImageSaved = imageSave(registerInfo.getImage(), accountId);
         boolean isImagesSaved = imagesSave(registerInfo.getImages(), accountId);

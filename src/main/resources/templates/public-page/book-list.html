@@ -33,7 +33,7 @@
         </div>
         <div class="col-md-9">
             <div id="book-list" class="book-list">
-                <p th:if="${booksPage.content.isEmpty()}">조회 가능한 상품이 없습니다.</p>
+                <p class="text-center" th:if="${booksPage.content.isEmpty()}">조회 가능한 상품이 없습니다.</p>
                 <div class="card mb-3" th:each="bookInfo : ${booksPage.content}">
                     <div class="row g-0">
                         <div class="col-md-3 text-center align-self-center">

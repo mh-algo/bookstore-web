@@ -8,6 +8,7 @@ import com.bookshelf.bookproject.seller.repository.BookRepository;
 import com.bookshelf.bookproject.seller.service.dto.BookInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,6 +72,7 @@ public class ManagementCache {
         return LocalDate.parse(date, formatter);
     }
 
+    @PostAuthorize("returnObject.accountId == authentication.name")
     public Account getAccount(String accountId) {
         return accountCache.getAccount(accountId);
     }
