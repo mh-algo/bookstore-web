@@ -8,9 +8,10 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class ReviewListDto {
-    private Long id;
-    private String accountId;
-    private Integer rating;
-    private String context;
-    private LocalDateTime createdDate;
+    private final Long id;
+    private final String accountId;
+    private final Integer rating;
+    private final String context;
+    private final Integer likeCount;
+    private final LocalDateTime createdDate;
 }

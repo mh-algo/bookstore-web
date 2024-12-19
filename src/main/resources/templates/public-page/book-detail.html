@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html th:replace="~{layouts/default::layout-main(~{::meta}, ~{::title}, ~{::link}, ~{::style}, ~{::main}, ~{::script})}"
       xmlns:th="http://www.thymeleaf.org">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <head>
     <title>[[${bookDetail.title}]] - My Bookshelf</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
         /* Remove the up and down arrows from the number input */
         input[type=number]::-webkit-inner-spin-button,
@@ -60,6 +63,22 @@
             cursor: not-allowed !important; /* 금지 표시 커서 */
             pointer-events: auto !important; /* Bootstrap의 pointer-events 무효화 */
             opacity: 0.6 !important; /* 흐리게 표시 */
+        }
+
+        .like-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6c757d; /* 기본 색상 */
+            font-size: 1.2rem; /* 아이콘 크기 */
+        }
+
+        .like-btn.liked {
+            color: #007bff; /* 좋아요 활성화 색상 */
+        }
+
+        .like-btn:hover {
+            color: #0056b3; /* 호버 시 색상 */
         }
     </style>
 </head>
@@ -211,8 +230,8 @@
                         </div>
                     </div>
                     <div>
-                        <button class="btn btn-sm btn-outline-secondary like-btn">좋아요</button>
-                        <span class="like-count">0</span>
+                        <button class="btn btn-sm like-btn"><i class="far fa-thumbs-up"></i></button>
+                        <span class="like-count" th:text="*{likeCount}">좋아요 수</span>
                     </div>
                 </div>
                 <p class="mt-2 mb-0" th:text="*{context}">리뷰 내용</p>
@@ -337,6 +356,20 @@
 
         return true;
     }
+
+    // function toggleLikeBtn() {
+    //     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    //     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    //
+    //     fetch("/", {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //             [csrfHeader]: csrfToken
+    //         },
+    //         body: JSON.stringify({})
+    //     })
+    // }
 
     // Like button functionality
     document.addEventListener('click', (event) => {
