@@ -12,6 +12,7 @@ import com.bookshelf.bookproject.publicpage.controller.dto.ReviewData;
 import com.bookshelf.bookproject.publicpage.repository.dto.BookDetailDto;
 import com.bookshelf.bookproject.publicpage.service.dto.BookDetail;
 import com.bookshelf.bookproject.publicpage.repository.dto.ReviewListDto;
+import com.bookshelf.bookproject.publicpage.service.dto.ReviewLike;
 import com.bookshelf.bookproject.publicpage.service.dto.ReviewList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -149,14 +150,14 @@ public class BookDetailService {
         return reviewLikeCache.getValidLikeStatus(reviewId, accountId, liked);
     }
 
-//    public ReviewLike toggleLike(Long reviewId, String accountId) {
-//        boolean liked = !reviewLikeCache.isLiked(reviewId, accountId);  // true -> false, false -> true 변환
-//        int likeCount = reviewLikeCache.getLikeCount(reviewId);
-//
-//        synchronized (this) {
-//            reviewLikeCache.updateLikeStatus(reviewId, accountId, liked);
-//            reviewLikeCache.updateLikeCount(reviewId, liked, likeCount);
-//        }
-//        return new ReviewLike(liked, likeCount);
-//    }
+    public ReviewLike toggleLike(Long reviewId, String accountId) {
+        boolean liked = reviewLikeCache.isLiked(reviewId, accountId);
+        int likeCount = reviewLikeCache.getLikeCount(reviewId);
+
+        synchronized (this) {
+            liked = reviewLikeCache.updateLikeStatus(reviewId, accountId, liked);
+            likeCount = reviewLikeCache.updateLikeCount(reviewId, liked, likeCount);
+        }
+        return new ReviewLike(liked, likeCount);
+    }
 }

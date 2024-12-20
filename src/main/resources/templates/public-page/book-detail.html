@@ -230,8 +230,9 @@
                         </div>
                     </div>
                     <div>
-                        <button class="btn btn-sm like-btn"><i class="far fa-thumbs-up"></i></button>
-                        <span class="like-count" th:text="*{likeCount}">좋아요 수</span>
+                        <button class="btn btn-sm like-btn" th:classappend="*{likeStatus}?'liked'" th:data-review-id="*{id}" onclick="toggleLikeBtn(this)">
+                            <i class="fa-thumbs-up" th:classappend="*{likeStatus}?'fas':'far'"></i></button>
+                        <span class="like-count" th:name="*{id}" th:text="*{likeCount}">좋아요 수</span>
                     </div>
                 </div>
                 <p class="mt-2 mb-0" th:text="*{context}">리뷰 내용</p>
@@ -357,27 +358,49 @@
         return true;
     }
 
-    // function toggleLikeBtn() {
-    //     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-    //     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-    //
-    //     fetch("/", {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             [csrfHeader]: csrfToken
-    //         },
-    //         body: JSON.stringify({})
-    //     })
-    // }
+    function toggleLikeBtn(button) {
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const pathParts = window.location.pathname.split('/');
+        const bookId = pathParts[2];
+        const reviewId = button.getAttribute('data-review-id');
 
-    // Like button functionality
-    document.addEventListener('click', (event) => {
-        if (event.target.classList.contains('like-btn')) {
-            const likeCount = event.target.nextElementSibling;
-            likeCount.textContent = parseInt(likeCount.textContent) + 1;
-        }
-    });
+        fetch(`/books/${bookId}/review/like`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify({reviewId: reviewId})
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 403) {
+                    alert("로그인 후 시도해주세요.");
+                }
+
+                if (data.status === 200) {
+                    const like = document.getElementsByClassName('like-count').namedItem(reviewId);
+                    like.textContent = data.data.likeCount;
+
+                    const icon = button.querySelector('i'); // 아이콘 엘리먼트
+                    if (data.data.liked === true) {
+                        button.setAttribute('data-liked', 'true');
+                        button.classList.add('liked');
+                        icon.classList.remove('far'); // 비활성화 아이콘 클래스 제거
+                        icon.classList.add('fas'); // 활성화 아이콘 클래스 추가
+                    } else {
+                        button.setAttribute('data-liked', 'false');
+                        button.classList.remove('liked');
+                        icon.classList.remove('fas'); // 활성화 아이콘 클래스 제거
+                        icon.classList.add('far'); // 비활성화 아이콘 클래스 추가
+                    }
+                }
+            })
+            .catch(error => {
+                console.error("Fetch Error:", error);
+            });
+    }
 </script>
 </body>
 </html>

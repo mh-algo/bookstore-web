@@ -34,11 +34,11 @@ public class ReviewLikeCache {
         }
     }
 
-//    @Cacheable(value = "review:likeStatus", key = "#root.target.generateCacheKey(#reviewId, #accountId)", cacheResolver = "cacheResolver")
-//    @Transactional(readOnly = true)
-//    public boolean isLiked(Long reviewId, String accountId) {
-//        return likeStatusRepository.existsByReviewIdAndAccountId(reviewId, accountId);  // 코드 수정 필요
-//    }
+    @Cacheable(value = "review:likeStatus", key = "#reviewId + ':' + #accountId", cacheResolver = "cacheResolver")
+    @Transactional(readOnly = true)
+    public boolean isLiked(Long reviewId, String accountId) {
+        return likeStatusRepository.existsByReviewIdAndAccountId(reviewId, accountId);
+    }
 
     @Cacheable(value = "review:likeCnt", key = "#reviewId", cacheResolver = "cacheResolver")
     @Transactional(readOnly = true)
@@ -46,18 +46,14 @@ public class ReviewLikeCache {
         return reviewRepository.findLikeCountById(reviewId).orElse(0);
     }
 
-    @CachePut(value = "review:likeStatus", key = "#root.target.generateCacheKey(#reviewId, #accountId)", cacheResolver = "cacheResolver")
+    @CachePut(value = "review:likeStatus", key = "#reviewId + ':' + #accountId", cacheResolver = "cacheResolver")
     public boolean updateLikeStatus(Long reviewId, String accountId, boolean liked) {
-        return liked;
+        return !liked;
     }
 
     @CachePut(value = "review:likeCnt", key = "#reviewId", cacheResolver = "cacheResolver")
     public int updateLikeCount(Long reviewId, boolean liked, int likeCount) {
         return liked ? likeCount + 1 : likeCount - 1;
-    }
-
-    private static String generateCacheKey(Long primaryKey, String secondaryKey) {
-        return primaryKey + ":" + secondaryKey;
     }
 
     public int getValidLikeCount(Long reviewId, int likeCount) {
@@ -76,5 +72,9 @@ public class ReviewLikeCache {
         }
         Boolean likeStatusFromCache = cache.get(generateCacheKey(reviewId, accountId), Boolean.class);
         return Objects.requireNonNullElse(likeStatusFromCache, liked);
+    }
+
+    private static String generateCacheKey(Long primaryKey, String secondaryKey) {
+        return primaryKey + ":" + secondaryKey;
     }
 }

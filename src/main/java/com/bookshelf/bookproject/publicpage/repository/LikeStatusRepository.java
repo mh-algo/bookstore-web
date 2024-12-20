@@ -5,5 +5,4 @@ import com.bookshelf.bookproject.publicpage.repository.querydsl.CustomLikeStatus
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LikeStatusRepository extends JpaRepository<LikeStatus, Long>, CustomLikeStatusRepository {
-    Boolean existsByReviewIdAndAccountId(Long reviewId, Long accountId);
 }

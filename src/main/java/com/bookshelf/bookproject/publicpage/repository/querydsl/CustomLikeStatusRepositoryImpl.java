@@ -1,8 +1,10 @@
 package com.bookshelf.bookproject.publicpage.repository.querydsl;
 
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,5 +22,15 @@ public class CustomLikeStatusRepositoryImpl implements CustomLikeStatusRepositor
                 .where(likeStatus.review.bookProduct.id.eq(bookProductId))
                 .fetch()
                 .stream().collect(Collectors.toUnmodifiableSet());
+    }
+
+    @Override
+    public Boolean existsByReviewIdAndAccountId(Long reviewId, String accountId) {
+        Integer count = queryFactory
+                .select(Wildcard.countAsInt)
+                .from(likeStatus)
+                .where(likeStatus.review.id.eq(reviewId), likeStatus.account.accountId.eq(accountId))
+                .fetchOne();
+        return Objects.requireNonNullElse(count, 0) == 1;
     }
 }

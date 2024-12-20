@@ -8,4 +8,12 @@ import lombok.RequiredArgsConstructor;
 public class ReviewLike {
     private final boolean liked;
     private final int likeCount;
+
+    public static ReviewLike empty() {
+        return new ReviewLike(false, -1);
+    }
+
+    public boolean isEmpty() {
+        return likeCount < 0;
+    }
 }
