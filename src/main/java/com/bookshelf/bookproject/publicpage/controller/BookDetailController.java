@@ -1,9 +1,9 @@
 package com.bookshelf.bookproject.publicpage.controller;
 
 import com.bookshelf.bookproject.publicpage.controller.dto.ReviewData;
-import com.bookshelf.bookproject.publicpage.repository.dto.ReviewListDto;
 import com.bookshelf.bookproject.publicpage.service.BookDetailService;
 import com.bookshelf.bookproject.publicpage.service.dto.BookDetail;
+import com.bookshelf.bookproject.publicpage.service.dto.ReviewList;
 import com.bookshelf.bookproject.security.dto.AccountAuth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +22,11 @@ public class BookDetailController {
     private final BookDetailService bookDetailService;
 
     @GetMapping("/{bookId}")
-    public String bookDetail(@PathVariable String bookId, @ModelAttribute ReviewData reviewData, Model model) {
+    public String bookDetail(@PathVariable String bookId, @ModelAttribute ReviewData reviewData, Model model,
+                             @AuthenticationPrincipal AccountAuth accountAuth) {
         addBookDetail(bookId, model);
 
-        List<ReviewListDto> reviewList = bookDetailService.getReviewList(bookId);
+        List<ReviewList> reviewList = bookDetailService.getReviewList(bookId, getAccountId(accountAuth));
         model.addAttribute("reviewList", reviewList);
         return "public-page/book-detail";
     }
@@ -33,6 +34,10 @@ public class BookDetailController {
     private void addBookDetail(String bookId, Model model) {
         BookDetail bookDetail = bookDetailService.getBookDetailInfo(bookId);
         model.addAttribute("bookDetail", bookDetail);
+    }
+
+    private static String getAccountId(AccountAuth accountAuth) {
+        return accountAuth == null ? "" : accountAuth.getAccountId();
     }
 
     @PostMapping("/{bookId}/review")

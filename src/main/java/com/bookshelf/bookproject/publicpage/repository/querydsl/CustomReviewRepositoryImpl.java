@@ -23,6 +23,7 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
                                 account.accountId,
                                 review.rating,
                                 review.context,
+                                review.likeCount,
                                 review.createdDate)
                         .from(review)
                         .join(review.account, account)
@@ -38,6 +39,7 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
                 .accountId(tuple.get(account.accountId))
                 .rating(tuple.get(review.rating))
                 .context(tuple.get(review.context))
+                .likeCount(tuple.get(review.likeCount))
                 .createdDate(tuple.get(review.createdDate))
                 .build()
         ).toList();

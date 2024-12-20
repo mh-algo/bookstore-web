@@ -46,6 +46,13 @@ public class CacheConfig {
     }
 
     @Bean
+    public Caffeine<Object, Object> reviewConfig() {
+        return Caffeine.newBuilder()
+                .expireAfterWrite(24, TimeUnit.HOURS)
+                .maximumSize(10000);
+    }
+
+    @Bean
     public CacheManager accountCacheManager(Caffeine<Object, Object> accountConfig) {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCaffeine(accountConfig);
@@ -67,15 +74,24 @@ public class CacheConfig {
     }
 
     @Bean
+    public CacheManager reviewCacheManager(Caffeine<Object, Object> reviewConfig) {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCaffeine(reviewConfig);
+        return cacheManager;
+    }
+
+    @Bean
     public CacheResolver cacheResolver(CacheManager cacheManager,
                                        @Qualifier("accountCacheManager") CacheManager accountCacheManager,
                                        @Qualifier("sellerCacheManager") CacheManager sellerCacheManager,
-                                       @Qualifier("bookListCacheManager") CacheManager bookListCacheManager) {
+                                       @Qualifier("bookListCacheManager") CacheManager bookListCacheManager,
+                                       @Qualifier("reviewCacheManager") CacheManager reviewCacheManager) {
         return new CustomCacheResolver(
                 Map.of(
                         ACCOUNT, accountCacheManager,
                         SELLER, sellerCacheManager,
-                        BOOK_LIST, bookListCacheManager
+                        BOOK_LIST, bookListCacheManager,
+                        REVIEW, reviewCacheManager
                 ), cacheManager
         );
     }

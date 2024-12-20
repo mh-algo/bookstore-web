@@ -12,9 +12,10 @@ import java.lang.reflect.Parameter;
 import java.util.*;
 
 public class CustomCacheResolver implements CacheResolver {
-    protected static final String ACCOUNT = "account";
-    protected static final String SELLER = "seller";
-    protected static final String BOOK_LIST = "bookList";
+    public static final String ACCOUNT = "account";
+    public static final String SELLER = "seller";
+    public static final String BOOK_LIST = "bookList";
+    public static final String REVIEW = "review";
 
     private final Map<String, CacheManager> cacheManagers;
     private final CacheManager defaultCacheManager;
@@ -45,7 +46,7 @@ public class CustomCacheResolver implements CacheResolver {
         return result;
     }
 
-    private CacheManager resolveCacheManager(String cacheName) {
+    public CacheManager resolveCacheManager(String cacheName) {
         // 캐시 이름에 따른 캐시 매니저 매핑
         if (cacheName.startsWith(ACCOUNT)) {
             return this.cacheManagers.get(ACCOUNT);
