@@ -108,12 +108,13 @@ public class BookDetailService {
         long bookIdAsLong = stringToLongId(bookId);
         List<ReviewListDto> reviewList = reviewRepository.findReviewListByBookId(bookIdAsLong);
 
-        if (accountId.isEmpty()) {
+        Account account = getAccount(accountId);
+        if (account == null) {
             return reviewList.stream().map(this::createReviewList).toList();
         } else {
             Set<Long> likeStatusSet = likeStatusRepository.findReviewIdByBookProductId(bookIdAsLong);
             return reviewList.stream().map(reviewInfo ->
-                    createReviewList(reviewInfo, likeStatusSet, accountId)
+                    createReviewList(reviewInfo, likeStatusSet, account.getId())
             ).toList();
         }
     }
@@ -126,10 +127,11 @@ public class BookDetailService {
                 .context(reviewInfo.getContext())
                 .likeCount(getLikeCount(reviewInfo))
                 .likeStatus(false)
+                .createdDate(reviewInfo.getCreatedDate())
                 .build();
     }
 
-    private ReviewList createReviewList(ReviewListDto reviewInfo, Set<Long> likeStatusSet, String accountId) {
+    private ReviewList createReviewList(ReviewListDto reviewInfo, Set<Long> likeStatusSet, Long accountEntityId) {
         Long id = reviewInfo.getId();
         return ReviewList.builder()
                 .id(id)
@@ -137,7 +139,8 @@ public class BookDetailService {
                 .rating(reviewInfo.getRating())
                 .context(reviewInfo.getContext())
                 .likeCount(getLikeCount(reviewInfo))
-                .likeStatus(getLikeStatus(likeStatusSet, id, accountId))
+                .likeStatus(getLikeStatus(likeStatusSet, id, accountEntityId))
+                .createdDate(reviewInfo.getCreatedDate())
                 .build();
     }
 
@@ -145,17 +148,18 @@ public class BookDetailService {
         return reviewLikeCache.getValidLikeCount(review.getId(), review.getLikeCount());
     }
 
-    private boolean getLikeStatus(Set<Long> likeStatusSet, Long reviewId, String accountId) {
+    private boolean getLikeStatus(Set<Long> likeStatusSet, Long reviewId, Long accountEntityId) {
         boolean liked = likeStatusSet.contains(reviewId);
-        return reviewLikeCache.getValidLikeStatus(reviewId, accountId, liked);
+        return reviewLikeCache.getValidLikeStatus(reviewId, accountEntityId, liked);
     }
 
     public ReviewLike toggleLike(Long reviewId, String accountId) {
-        boolean liked = reviewLikeCache.isLiked(reviewId, accountId);
+        Long id = getAccount(accountId).getId();
+        boolean liked = reviewLikeCache.isLiked(reviewId, id);
         int likeCount = reviewLikeCache.getLikeCount(reviewId);
 
         synchronized (this) {
-            liked = reviewLikeCache.updateLikeStatus(reviewId, accountId, liked);
+            liked = reviewLikeCache.updateLikeStatus(reviewId, id, liked);
             likeCount = reviewLikeCache.updateLikeCount(reviewId, liked, likeCount);
         }
         return new ReviewLike(liked, likeCount);

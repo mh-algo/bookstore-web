@@ -25,11 +25,11 @@ public class CustomLikeStatusRepositoryImpl implements CustomLikeStatusRepositor
     }
 
     @Override
-    public Boolean existsByReviewIdAndAccountId(Long reviewId, String accountId) {
+    public Boolean existsByReviewIdAndAccountId(Long reviewId, Long accountEntityId) {
         Integer count = queryFactory
                 .select(Wildcard.countAsInt)
                 .from(likeStatus)
-                .where(likeStatus.review.id.eq(reviewId), likeStatus.account.accountId.eq(accountId))
+                .where(likeStatus.review.id.eq(reviewId), likeStatus.account.id.eq(accountEntityId))
                 .fetchOne();
         return Objects.requireNonNullElse(count, 0) == 1;
     }

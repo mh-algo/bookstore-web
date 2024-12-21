@@ -34,10 +34,10 @@ public class ReviewLikeCache {
         }
     }
 
-    @Cacheable(value = "review:likeStatus", key = "#reviewId + ':' + #accountId", cacheResolver = "cacheResolver")
+    @Cacheable(value = "review:likeStatus", key = "#reviewId + ':' + #accountEntityId", cacheResolver = "cacheResolver")
     @Transactional(readOnly = true)
-    public boolean isLiked(Long reviewId, String accountId) {
-        return likeStatusRepository.existsByReviewIdAndAccountId(reviewId, accountId);
+    public boolean isLiked(Long reviewId, Long accountEntityId) {
+        return likeStatusRepository.existsByReviewIdAndAccountId(reviewId, accountEntityId);
     }
 
     @Cacheable(value = "review:likeCnt", key = "#reviewId", cacheResolver = "cacheResolver")
@@ -47,7 +47,7 @@ public class ReviewLikeCache {
     }
 
     @CachePut(value = "review:likeStatus", key = "#reviewId + ':' + #accountId", cacheResolver = "cacheResolver")
-    public boolean updateLikeStatus(Long reviewId, String accountId, boolean liked) {
+    public boolean updateLikeStatus(Long reviewId, Long accountId, boolean liked) {
         return !liked;
     }
 
@@ -65,16 +65,16 @@ public class ReviewLikeCache {
         return Objects.requireNonNullElse(likeCntFromCache, likeCount);
     }
 
-    public boolean getValidLikeStatus(Long reviewId, String accountId, boolean liked) {
+    public boolean getValidLikeStatus(Long reviewId, Long accountEntityId, boolean liked) {
         Cache cache = reviewCacheManager.getCache("review:likeStatus");
         if (cache == null) {
             return liked;
         }
-        Boolean likeStatusFromCache = cache.get(generateCacheKey(reviewId, accountId), Boolean.class);
+        Boolean likeStatusFromCache = cache.get(generateCacheKey(reviewId, accountEntityId), Boolean.class);
         return Objects.requireNonNullElse(likeStatusFromCache, liked);
     }
 
-    private static String generateCacheKey(Long primaryKey, String secondaryKey) {
+    private static String generateCacheKey(Long primaryKey, Long secondaryKey) {
         return primaryKey + ":" + secondaryKey;
     }
 }
