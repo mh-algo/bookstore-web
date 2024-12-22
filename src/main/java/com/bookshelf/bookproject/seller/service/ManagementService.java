@@ -215,7 +215,7 @@ public class ManagementService {
     // 캐시에 책 데이터가 없다면 레포지토리에서 책을 조회
     // 조회되는 데이터가 없을 경우 api를 통해 책 데이터를 가져온 후 캐시에 저장
     // isbn을 검색해서 책 데이터를 가져오는데 isbn은 고유값이기 때문에 데이터 1개만 반환됨
-    @Cacheable(value = "seller:isbnSearch", key = "#isbn", cacheResolver = "cacheResolver")
+    @Cacheable(value = "seller:isbnSearch", key = "#isbn", unless = "#result.isEmpty()", cacheResolver = "cacheResolver")
     public SearchInfo requestSearchInfo(String isbn) {
         Book book = managementCache.findBookByIsbn(isbn);
         if (!book.isEmpty()) {
@@ -317,8 +317,7 @@ public class ManagementService {
 
     // 책 데이터 검증
     public static boolean validateBookData(SearchInfo searchInfo) {
-        List<BookInfo> items = searchInfo.getItems();
-        if (items == null || items.isEmpty()) {
+        if (searchInfo.isEmpty()) {
             log.warn("유효하지 않은 데이터입니다");
             return false;
         }
@@ -368,7 +367,7 @@ public class ManagementService {
 
     private Seller getSellerByAccountId(String accountId) {
         Account account = managementCache.getAccount(accountId);
-        return account instanceof Seller ? (Seller) account : Seller.builder().build();
+        return account instanceof Seller ? (Seller) account : Seller.empty();
     }
 
     private void saveImages(List<Image> imageList, BookProduct bookProduct) {

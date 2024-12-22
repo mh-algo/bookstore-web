@@ -26,4 +26,8 @@ public class SearchInfo {
     public static SearchInfo empty() {
         return new SearchInfo("", "", "", 0, new ArrayList<>());
     }
+
+    public boolean isEmpty() {
+        return items == null || items.isEmpty();
+    }
 }

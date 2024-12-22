@@ -38,4 +38,8 @@ public class Seller extends Account {
     public void addBankAccount(BankAccount bankAccount) {
         bankAccounts.add(bankAccount);
     }
+
+    public static Seller empty() {
+        return Seller.builder().build();
+    }
 }

@@ -27,7 +27,7 @@ public class ManagementCache {
     @Transactional(readOnly = true)
     public Book findBookByIsbn(String isbn) {
         return bookRepository.findByIsbn(isbn)
-                .orElseGet(() -> Book.builder().build());
+                .orElseGet(Book::empty);
     }
 
     @Cacheable(value = "seller:bookIsbn", key = "#bookInfo.isbn", cacheResolver = "cacheResolver")

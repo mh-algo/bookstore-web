@@ -57,6 +57,10 @@ public class Book extends TimeStamp {
         this.description = description;
     }
 
+    public static Book empty() {
+        return Book.builder().build();
+    }
+
     public boolean isEmpty() {
         return id == null;
     }
