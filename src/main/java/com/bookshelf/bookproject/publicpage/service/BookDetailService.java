@@ -3,7 +3,6 @@ package com.bookshelf.bookproject.publicpage.service;
 import com.bookshelf.bookproject.common.AccountCache;
 import com.bookshelf.bookproject.common.repository.BookProductRepository;
 import com.bookshelf.bookproject.common.repository.ImagesRepository;
-import com.bookshelf.bookproject.publicpage.repository.LikeStatusRepository;
 import com.bookshelf.bookproject.publicpage.repository.ReviewRepository;
 import com.bookshelf.bookproject.domain.Account;
 import com.bookshelf.bookproject.domain.BookProduct;
@@ -32,7 +31,6 @@ public class BookDetailService {
     private final AccountCache accountCache;
     private final ReviewRepository reviewRepository;
     private final ReviewLikeCache reviewLikeCache;
-    private final LikeStatusRepository likeStatusRepository;
 
     @Transactional(readOnly = true)
     public BookDetail getBookDetailInfo(String bookId) {
@@ -103,18 +101,17 @@ public class BookDetailService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
     public List<ReviewList> getReviewList(String bookId, String accountId) {
         long bookIdAsLong = stringToLongId(bookId);
-        List<ReviewListDto> reviewList = reviewRepository.findReviewListByBookId(bookIdAsLong);
+        List<ReviewListDto> reviewList = reviewLikeCache.getReviewList(bookIdAsLong);
 
         Account account = getAccount(accountId);
         if (account == null) {
             return reviewList.stream().map(this::createReviewList).toList();
         } else {
-            Set<Long> likeStatusSet = likeStatusRepository.findReviewIdByBookProductId(bookIdAsLong);
+            Set<Long> likeStatusSet = reviewLikeCache.getLikeStatusSet(bookIdAsLong, account.getId());
             return reviewList.stream().map(reviewInfo ->
-                    createReviewList(reviewInfo, likeStatusSet, account.getId())
+                    createReviewList(reviewInfo, likeStatusSet, accountId)
             ).toList();
         }
     }
@@ -131,7 +128,7 @@ public class BookDetailService {
                 .build();
     }
 
-    private ReviewList createReviewList(ReviewListDto reviewInfo, Set<Long> likeStatusSet, Long accountEntityId) {
+    private ReviewList createReviewList(ReviewListDto reviewInfo, Set<Long> likeStatusSet, String accountId) {
         Long id = reviewInfo.getId();
         return ReviewList.builder()
                 .id(id)
@@ -139,7 +136,7 @@ public class BookDetailService {
                 .rating(reviewInfo.getRating())
                 .context(reviewInfo.getContext())
                 .likeCount(getLikeCount(reviewInfo))
-                .likeStatus(getLikeStatus(likeStatusSet, id, accountEntityId))
+                .likeStatus(getLikeStatus(likeStatusSet, id, accountId))
                 .createdDate(reviewInfo.getCreatedDate())
                 .build();
     }
@@ -148,20 +145,22 @@ public class BookDetailService {
         return reviewLikeCache.getValidLikeCount(review.getId(), review.getLikeCount());
     }
 
-    private boolean getLikeStatus(Set<Long> likeStatusSet, Long reviewId, Long accountEntityId) {
+    private boolean getLikeStatus(Set<Long> likeStatusSet, Long reviewId, String accountId) {
         boolean liked = likeStatusSet.contains(reviewId);
-        return reviewLikeCache.getValidLikeStatus(reviewId, accountEntityId, liked);
+        return reviewLikeCache.getValidLikeStatus(reviewId, accountId, liked);
     }
 
     public ReviewLike toggleLike(Long reviewId, String accountId) {
         Long id = getAccount(accountId).getId();
-        boolean liked = reviewLikeCache.isLiked(reviewId, id);
+        boolean liked = reviewLikeCache.isLiked(reviewId, id, accountId);
         int likeCount = reviewLikeCache.getLikeCount(reviewId);
 
         synchronized (this) {
-            liked = reviewLikeCache.updateLikeStatus(reviewId, id, liked);
+            liked = reviewLikeCache.updateLikeStatus(reviewId, accountId, liked);
             likeCount = reviewLikeCache.updateLikeCount(reviewId, liked, likeCount);
         }
+        reviewLikeCache.saveCacheKeys(reviewId, accountId);
+
         return new ReviewLike(liked, likeCount);
     }
 }

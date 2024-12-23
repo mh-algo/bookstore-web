@@ -15,11 +15,13 @@ public class CustomLikeStatusRepositoryImpl implements CustomLikeStatusRepositor
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Set<Long> findReviewIdByBookProductId(Long bookProductId) {
+    public Set<Long> findReviewId(Long bookProductId, Long accountEntityId) {
         return queryFactory
                 .select(likeStatus.review.id)
                 .from(likeStatus)
-                .where(likeStatus.review.bookProduct.id.eq(bookProductId))
+                .where(
+                        likeStatus.review.bookProduct.id.eq(bookProductId),
+                        likeStatus.account.id.eq(accountEntityId))
                 .fetch()
                 .stream().collect(Collectors.toUnmodifiableSet());
     }

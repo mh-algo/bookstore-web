@@ -23,4 +23,9 @@ public class LikeStatus extends TimeStamp {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accounts_id", nullable = false,  foreignKey = @ForeignKey(name="fk_like_status_accounts"))
     private Account account;
+
+    public LikeStatus(Review review, Account account) {
+        this.review = review;
+        this.account = account;
+    }
 }

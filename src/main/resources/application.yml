@@ -45,3 +45,7 @@ search:
     url: https://openapi.naver.com/v1/search/book_adv.json
     id: ${SEARCH_CLIENT_ID}
     secret: ${SEARCH_CLIENT_SECRET}
+
+schedule:
+  like:
+    cron: 0 0/5 * * * ?

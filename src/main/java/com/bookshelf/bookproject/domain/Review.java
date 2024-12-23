@@ -39,4 +39,12 @@ public class Review extends TimeStamp {
         this.rating = rating;
         this.likeCount = likeCount;
     }
+
+    public static Review empty() {
+        return Review.builder().build();
+    }
+
+    public boolean isEmpty() {
+        return id == null;
+    }
 }
