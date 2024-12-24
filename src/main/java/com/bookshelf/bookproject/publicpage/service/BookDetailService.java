@@ -1,8 +1,6 @@
 package com.bookshelf.bookproject.publicpage.service;
 
 import com.bookshelf.bookproject.common.AccountCache;
-import com.bookshelf.bookproject.common.repository.BookProductRepository;
-import com.bookshelf.bookproject.common.repository.ImagesRepository;
 import com.bookshelf.bookproject.publicpage.repository.ReviewRepository;
 import com.bookshelf.bookproject.domain.Account;
 import com.bookshelf.bookproject.domain.BookProduct;
@@ -14,6 +12,7 @@ import com.bookshelf.bookproject.publicpage.repository.dto.ReviewListDto;
 import com.bookshelf.bookproject.publicpage.service.dto.ReviewLike;
 import com.bookshelf.bookproject.publicpage.service.dto.ReviewList;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,24 +25,22 @@ import static com.bookshelf.bookproject.publicpage.BookServiceUtil.*;
 @Service
 @RequiredArgsConstructor
 public class BookDetailService {
-    private final BookProductRepository bookProductRepository;
-    private final ImagesRepository imagesRepository;
+    private final BookDetailCache bookDetailCache;
     private final AccountCache accountCache;
     private final ReviewRepository reviewRepository;
     private final ReviewLikeCache reviewLikeCache;
 
-    @Transactional(readOnly = true)
     public BookDetail getBookDetailInfo(String bookId) {
         return createBookDetail(getBookDetailById(bookId), getBookSubImages(bookId));
     }
 
     private BookDetailDto getBookDetailById(String bookId) {
-        return bookProductRepository.findBookDetailById(stringToLongId(bookId));
+        return bookDetailCache.getBookDetailById(stringToLongId(bookId));
     }
 
     // 판매자가 저장한 추가 이미지 가져오기
     public List<String> getBookSubImages(String bookId) {
-        return imagesRepository.findSubImageUrlByBookProductId(stringToLongId(bookId));
+        return bookDetailCache.getBookSubImages(stringToLongId(bookId));
     }
 
     private BookDetail createBookDetail(BookDetailDto bookDetailDto, List<String> subImages) {
@@ -77,6 +74,7 @@ public class BookDetailService {
     }
 
     @PreAuthorize("isAuthenticated() and #accountId == authentication.name")
+    @CacheEvict(value = "review:reviewList", key = "T(java.lang.Long).valueOf(#bookId)", cacheResolver = "cacheResolver")
     @Transactional
     public void registerReview(ReviewData reviewData, String accountId, String bookId) {
         Review review = createReview(reviewData, getAccount(accountId), getBookProduct(bookId));
@@ -88,7 +86,7 @@ public class BookDetailService {
     }
 
     private BookProduct getBookProduct(String bookId) {
-        return bookProductRepository.findByBookId(stringToLongId(bookId));
+        return bookDetailCache.getBookProduct(stringToLongId(bookId));
     }
 
     private static Review createReview(ReviewData reviewData, Account account, BookProduct bookProduct) {
@@ -150,6 +148,7 @@ public class BookDetailService {
         return reviewLikeCache.getValidLikeStatus(reviewId, accountId, liked);
     }
 
+    @PreAuthorize("isAuthenticated() and #accountId == authentication.name")
     public ReviewLike toggleLike(Long reviewId, String accountId) {
         Long id = getAccount(accountId).getId();
         boolean liked = reviewLikeCache.isLiked(reviewId, id, accountId);

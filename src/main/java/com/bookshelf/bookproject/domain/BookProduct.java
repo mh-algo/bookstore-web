@@ -62,4 +62,8 @@ public class BookProduct extends TimeStamp {
     public void addImages(Images image) {
         this.images.add(image);
     }
+
+    public static BookProduct empty() {
+        return BookProduct.builder().build();
+    }
 }
