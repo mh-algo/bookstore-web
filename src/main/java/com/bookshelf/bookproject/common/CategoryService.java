@@ -14,20 +14,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static com.bookshelf.bookproject.config.CacheConstants.CACHE_RESOLVER;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
     private final SubSubcategoryRepository subSubcategoryRepository;
 
     // 카테고리 데이터 db로부터 가져옴
-    @Cacheable(value = "allCategories", cacheResolver = "cacheResolver")
+    @Cacheable(value = "allCategories", cacheResolver = CACHE_RESOLVER)
     @Transactional(readOnly = true)
     public Map<Long, CategoryDto> getAllCategories() {
         List<AllCategoryDto> categoriesList = subSubcategoryRepository.findAllCategories();
         return convertCategoryDtoList(categoriesList);
     }
 
-    @Cacheable(value = "category", key = "#id", cacheResolver = "cacheResolver")
+    @Cacheable(value = "category", key = "#id", cacheResolver = CACHE_RESOLVER)
     @Transactional(readOnly = true)
     public SubSubcategory getSubSubcategory(Long id) {
         return subSubcategoryRepository.findSubSubcategoryById(id);

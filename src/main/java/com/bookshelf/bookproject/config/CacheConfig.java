@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Primary;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.bookshelf.bookproject.config.CustomCacheResolver.*;
+import static com.bookshelf.bookproject.config.CacheConstants.*;
 
 @EnableCaching
 @Configuration

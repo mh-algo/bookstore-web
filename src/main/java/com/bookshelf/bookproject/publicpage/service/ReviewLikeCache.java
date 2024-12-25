@@ -25,7 +25,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.bookshelf.bookproject.config.CustomCacheResolver.REVIEW;
+import static com.bookshelf.bookproject.config.CacheConstants.CACHE_RESOLVER;
+import static com.bookshelf.bookproject.config.CacheConstants.REVIEW;
 
 @Slf4j
 @Service
@@ -38,8 +39,8 @@ public class ReviewLikeCache {
     private final ReviewCache reviewCache;
     private CacheManager reviewCacheManager;
 
-    private static final String LIKE_STATUS = "review:likeStatus";
-    private static final String LIKE_COUNT = "review:likeCount";
+    private static final String LIKE_STATUS = REVIEW + ":likeStatus";
+    private static final String LIKE_COUNT = REVIEW + ":likeCount";
 
     private final Set<String> updatedLikeStatus = ConcurrentHashMap.newKeySet();
     private final Set<Long> updatedLikeCounts = ConcurrentHashMap.newKeySet();
@@ -53,13 +54,13 @@ public class ReviewLikeCache {
         }
     }
 
-    @Cacheable(value = "review:reviewList", key = "#bookId", cacheResolver = "cacheResolver")
+    @Cacheable(value = REVIEW + ":reviewList", key = "#bookId", cacheResolver = CACHE_RESOLVER)
     @Transactional(readOnly = true)
     public List<ReviewListDto> getReviewList(Long bookId) {
         return reviewRepository.findReviewListByBookId(bookId);
     }
 
-    @Cacheable(value = "review:likeStatusSet", key = "#bookId + ':' + #accountEntityId", cacheResolver = "cacheResolver")
+    @Cacheable(value = REVIEW + ":likeStatusSet", key = "#bookId + ':' + #accountEntityId", cacheResolver = CACHE_RESOLVER)
     @Transactional(readOnly = true)
     public Set<Long> getLikeStatusSet(Long bookId, Long accountEntityId) {
         return likeStatusRepository.findReviewId(bookId, accountEntityId);
@@ -67,13 +68,13 @@ public class ReviewLikeCache {
 
 
 
-    @Cacheable(value = LIKE_STATUS, key = "#reviewId + ':' + #accountId", cacheResolver = "cacheResolver")
+    @Cacheable(value = LIKE_STATUS, key = "#reviewId + ':' + #accountId", cacheResolver = CACHE_RESOLVER)
     @Transactional(readOnly = true)
     public boolean isLiked(Long reviewId, Long accountEntityId, String accountId) {
         return likeStatusRepository.existsByReviewIdAndAccountId(reviewId, accountEntityId);
     }
 
-    @Cacheable(value = LIKE_COUNT, key = "#reviewId", cacheResolver = "cacheResolver")
+    @Cacheable(value = LIKE_COUNT, key = "#reviewId", cacheResolver = CACHE_RESOLVER)
     @Transactional(readOnly = true)
     public int getLikeCount(Long reviewId) {
         Review review = getReview(reviewId);
@@ -84,12 +85,12 @@ public class ReviewLikeCache {
         return reviewCache.getReviewById(reviewId);
     }
 
-    @CachePut(value = LIKE_STATUS, key = "#reviewId + ':' + #accountId", cacheResolver = "cacheResolver")
+    @CachePut(value = LIKE_STATUS, key = "#reviewId + ':' + #accountId", cacheResolver = CACHE_RESOLVER)
     public boolean updateLikeStatus(Long reviewId, String accountId, boolean liked) {
         return !liked;
     }
 
-    @CachePut(value = LIKE_COUNT, key = "#reviewId", cacheResolver = "cacheResolver")
+    @CachePut(value = LIKE_COUNT, key = "#reviewId", cacheResolver = CACHE_RESOLVER)
     public int updateLikeCount(Long reviewId, boolean liked, int likeCount) {
         updatedLikeCounts.add(reviewId);
         return liked ? likeCount + 1 : likeCount - 1;

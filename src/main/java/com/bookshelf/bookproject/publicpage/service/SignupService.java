@@ -20,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.bookshelf.bookproject.config.CacheConstants.ACCOUNT;
+import static com.bookshelf.bookproject.config.CacheConstants.CACHE_RESOLVER;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -48,7 +51,7 @@ public class SignupService {
      *
      * @param signup 저장할 {@link Signup} 객체 (회원 가입 정보)
      */
-    @CacheEvict(value = "account:accountInfo", key = "#signup.username", cacheResolver = "cacheResolver")
+    @CacheEvict(value = ACCOUNT + ":accountInfo", key = "#signup.username", cacheResolver = CACHE_RESOLVER)
     @Transactional
     public void saveUserAccount(Signup signup) {
         User user = toUser(signup);
@@ -64,7 +67,7 @@ public class SignupService {
      *
      * @param signupSeller 저장할 {@link SignupSeller} 객체 (판매자 가입 정보)
      */
-    @CacheEvict(value = "account:accountInfo", key = "#signupSeller.username", cacheResolver = "cacheResolver")
+    @CacheEvict(value = ACCOUNT + ":accountInfo", key = "#signupSeller.username", cacheResolver = CACHE_RESOLVER)
     @Transactional
     public void saveSellerAccount(SignupSeller signupSeller) {
         Seller seller = toSeller(signupSeller);
@@ -189,7 +192,7 @@ public class SignupService {
      *
      * @return 조회한 은행 이름 리스트
      */
-    @Cacheable(value = "bankNames", cacheResolver = "cacheResolver")
+    @Cacheable(value = "bankNames", cacheResolver = CACHE_RESOLVER)
     @Transactional(readOnly = true)
     public List<String> getBankNames() {
         return bankRepository.findAllBankNames();

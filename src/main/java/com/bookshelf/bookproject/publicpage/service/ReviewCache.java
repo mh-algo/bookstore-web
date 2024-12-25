@@ -7,12 +7,15 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.bookshelf.bookproject.config.CacheConstants.CACHE_RESOLVER;
+import static com.bookshelf.bookproject.config.CacheConstants.REVIEW;
+
 @Service
 @RequiredArgsConstructor
 public class ReviewCache {
     private final ReviewRepository reviewRepository;
 
-    @Cacheable(value = "review", key = "#id", unless = "#result.isEmpty()", cacheResolver = "cacheResolver")
+    @Cacheable(value = REVIEW, key = "#id", unless = "#result.isEmpty()", cacheResolver = CACHE_RESOLVER)
     @Transactional(readOnly = true)
     public Review getReviewById(Long id) {
         return reviewRepository.findById(id).orElse(Review.empty());

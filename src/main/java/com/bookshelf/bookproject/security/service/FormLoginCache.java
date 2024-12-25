@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.bookshelf.bookproject.config.CacheConstants.ACCOUNT;
+import static com.bookshelf.bookproject.config.CacheConstants.CACHE_RESOLVER;
+
 @Service
 @RequiredArgsConstructor
 public class FormLoginCache {
@@ -20,7 +23,7 @@ public class FormLoginCache {
         return accountCache.getAccount(accountId);
     }
 
-    @Cacheable(value = "account:roleInfo", key = "#accountId", cacheResolver = "cacheResolver")
+    @Cacheable(value = ACCOUNT + ":roleInfo", key = "#accountId", cacheResolver = CACHE_RESOLVER)
     @Transactional(readOnly = true)
     public List<String> getRoles(String accountId) {
         return accountRepository.findRolesByAccountId(accountId);

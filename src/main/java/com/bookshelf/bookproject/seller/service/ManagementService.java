@@ -32,6 +32,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static com.bookshelf.bookproject.config.CacheConstants.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -206,7 +208,7 @@ public class ManagementService {
     }
 
     // 캐시에 책 데이터가 없다면 api를 통해 책 데이터를 가져온 후 캐시에 저장
-    @Cacheable(value = "seller:bookSearch", key = "#bookName + ':' + #page", cacheResolver = "cacheResolver")
+    @Cacheable(value = SELLER + ":bookSearch", key = "#bookName + ':' + #page", cacheResolver = CACHE_RESOLVER)
     public String requestBookDataAsJson(String bookName, int page) {
         URI uri = generateBookSearchUriByName(bookName, page);
         return requestBookDataFromNaver(uri);
@@ -215,7 +217,7 @@ public class ManagementService {
     // 캐시에 책 데이터가 없다면 레포지토리에서 책을 조회
     // 조회되는 데이터가 없을 경우 api를 통해 책 데이터를 가져온 후 캐시에 저장
     // isbn을 검색해서 책 데이터를 가져오는데 isbn은 고유값이기 때문에 데이터 1개만 반환됨
-    @Cacheable(value = "seller:isbnSearch", key = "#isbn", unless = "#result.isEmpty()", cacheResolver = "cacheResolver")
+    @Cacheable(value = SELLER + ":isbnSearch", key = "#isbn", unless = "#result.isEmpty()", cacheResolver = CACHE_RESOLVER)
     public SearchInfo requestSearchInfo(String isbn) {
         Book book = managementCache.findBookByIsbn(isbn);
         if (!book.isEmpty()) {
@@ -327,8 +329,8 @@ public class ManagementService {
     // 입력 데이터 저장
     @PreAuthorize("hasRole('SELLER') and #accountId == authentication.name")
     @Transactional
-    @CacheEvict(value = {"bookList:category", "bookList:#{#registerInfo.getSelectedCategory().getSubSubcategoryId()}"},
-            allEntries = true, cacheResolver = "cacheResolver")
+    @CacheEvict(value = {BOOK_LIST + ":category", BOOK_LIST + ":#{#registerInfo.getSelectedCategory().getSubSubcategoryId()}"},
+            allEntries = true, cacheResolver = CACHE_RESOLVER)
     public void registerProduct(RegisterInfo registerInfo, List<BookInfo> bookInfo, String accountId) {
         BookProduct bookProduct = createBookProduct(
                 registerInfo,

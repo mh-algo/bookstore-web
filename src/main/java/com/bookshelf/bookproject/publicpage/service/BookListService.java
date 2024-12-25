@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.bookshelf.bookproject.config.CacheConstants.BOOK_LIST;
+import static com.bookshelf.bookproject.config.CacheConstants.CACHE_RESOLVER;
 import static com.bookshelf.bookproject.publicpage.BookServiceUtil.*;
 
 @Service
@@ -22,7 +24,7 @@ public class BookListService {
     private static final int PAGE_SIZE = 10;
     private final BookProductRepository bookProductRepository;
 
-    @Cacheable(value = "bookList:category", key = "#pageable.pageNumber", cacheResolver = "cacheResolver")
+    @Cacheable(value = BOOK_LIST + ":category", key = "#pageable.pageNumber", cacheResolver = CACHE_RESOLVER)
     public Page<BookList> getBookListPage(Pageable pageable) {
         Page<BookListDto> page = getBooks(pageable);
         List<BookList> bookList = page.getContent().stream()
@@ -35,7 +37,7 @@ public class BookListService {
         return bookProductRepository.findAllBooks(createRequestPageable(pageable));
     }
 
-    @Cacheable(value = "bookList:#{#categoryId}", key = "#pageable.pageNumber", cacheResolver = "cacheResolver")
+    @Cacheable(value = BOOK_LIST + ":#{#categoryId}", key = "#pageable.pageNumber", cacheResolver = CACHE_RESOLVER)
     public Page<BookList> getBookListPageByCategory(Pageable pageable, String categoryId) {
         Page<BookListDto> page = getBooksByCategory(pageable, categoryId);
         List<BookList> bookList = page.getContent().stream()

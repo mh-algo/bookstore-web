@@ -17,20 +17,23 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.bookshelf.bookproject.config.CacheConstants.CACHE_RESOLVER;
+import static com.bookshelf.bookproject.config.CacheConstants.SELLER;
+
 @Service
 @RequiredArgsConstructor
 public class ManagementCache {
     private final BookRepository bookRepository;
     private final AccountCache accountCache;
 
-    @Cacheable(value = "seller:bookIsbn", key = "#isbn", unless = "#result.empty", cacheResolver = "cacheResolver")
+    @Cacheable(value = SELLER + ":bookIsbn", key = "#isbn", unless = "#result.empty", cacheResolver = CACHE_RESOLVER)
     @Transactional(readOnly = true)
     public Book findBookByIsbn(String isbn) {
         return bookRepository.findByIsbn(isbn)
                 .orElseGet(Book::empty);
     }
 
-    @Cacheable(value = "seller:bookIsbn", key = "#bookInfo.isbn", cacheResolver = "cacheResolver")
+    @Cacheable(value = SELLER + ":bookIsbn", key = "#bookInfo.isbn", cacheResolver = CACHE_RESOLVER)
     @Transactional
     public Book findOrSaveBook(BookInfo bookInfo) {
         return bookRepository.findByIsbn(bookInfo.getIsbn())

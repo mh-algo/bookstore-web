@@ -7,12 +7,15 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.bookshelf.bookproject.config.CacheConstants.ACCOUNT;
+import static com.bookshelf.bookproject.config.CacheConstants.CACHE_RESOLVER;
+
 @Service
 @RequiredArgsConstructor
 public class AccountCache {
     private final AccountRepository accountRepository;
 
-    @Cacheable(value = "account:accountInfo", key = "#accountId", cacheResolver = "cacheResolver")
+    @Cacheable(value = ACCOUNT + ":accountInfo", key = "#accountId", cacheResolver = CACHE_RESOLVER)
     @Transactional(readOnly = true)
     public Account getAccount(String accountId) {
         return accountRepository.findByAccountId(accountId);

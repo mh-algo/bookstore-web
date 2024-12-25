@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Set;
 
+import static com.bookshelf.bookproject.config.CacheConstants.CACHE_RESOLVER;
+import static com.bookshelf.bookproject.config.CacheConstants.REVIEW;
 import static com.bookshelf.bookproject.publicpage.BookServiceUtil.*;
 
 @Service
@@ -74,7 +76,7 @@ public class BookDetailService {
     }
 
     @PreAuthorize("isAuthenticated() and #accountId == authentication.name")
-    @CacheEvict(value = "review:reviewList", key = "T(java.lang.Long).valueOf(#bookId)", cacheResolver = "cacheResolver")
+    @CacheEvict(value = REVIEW + ":reviewList", key = "T(java.lang.Long).valueOf(#bookId)", cacheResolver = CACHE_RESOLVER)
     @Transactional
     public void registerReview(ReviewData reviewData, String accountId, String bookId) {
         Review review = createReview(reviewData, getAccount(accountId), getBookProduct(bookId));

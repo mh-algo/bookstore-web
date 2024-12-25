@@ -11,12 +11,9 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import java.lang.reflect.Parameter;
 import java.util.*;
 
-public class CustomCacheResolver implements CacheResolver {
-    public static final String ACCOUNT = "account";
-    public static final String SELLER = "seller";
-    public static final String BOOK_LIST = "bookList";
-    public static final String REVIEW = "review";
+import static com.bookshelf.bookproject.config.CacheConstants.*;
 
+public class CustomCacheResolver implements CacheResolver {
     private final Map<String, CacheManager> cacheManagers;
     private final CacheManager defaultCacheManager;
 
