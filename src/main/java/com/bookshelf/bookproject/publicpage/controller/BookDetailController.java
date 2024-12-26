@@ -9,6 +9,8 @@ import com.bookshelf.bookproject.publicpage.service.dto.ReviewList;
 import com.bookshelf.bookproject.security.dto.AccountAuth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,7 +19,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -28,11 +29,12 @@ public class BookDetailController {
 
     @GetMapping("/{bookId}")
     public String bookDetail(@PathVariable String bookId, @ModelAttribute ReviewData reviewData, Model model,
-                             @AuthenticationPrincipal AccountAuth accountAuth) {
+                             @AuthenticationPrincipal AccountAuth accountAuth,
+                             Pageable pageable) {
         addBookDetail(bookId, model);
 
-        List<ReviewList> reviewList = bookDetailService.getReviewList(bookId, getAccountId(accountAuth));
-        model.addAttribute("reviewList", reviewList);
+        Page<ReviewList> reviewPage = bookDetailService.getReviewList(pageable, bookId, getAccountId(accountAuth));
+        model.addAttribute("reviewPage", reviewPage);
         return "public-page/book-detail";
     }
 

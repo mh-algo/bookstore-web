@@ -1,6 +1,7 @@
 package com.bookshelf.bookproject.publicpage.service;
 
 import com.bookshelf.bookproject.common.AccountCache;
+import com.bookshelf.bookproject.common.CustomPage;
 import com.bookshelf.bookproject.publicpage.repository.ReviewRepository;
 import com.bookshelf.bookproject.domain.Account;
 import com.bookshelf.bookproject.domain.BookProduct;
@@ -13,6 +14,10 @@ import com.bookshelf.bookproject.publicpage.service.dto.ReviewLike;
 import com.bookshelf.bookproject.publicpage.service.dto.ReviewList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +36,9 @@ public class BookDetailService {
     private final AccountCache accountCache;
     private final ReviewRepository reviewRepository;
     private final ReviewLikeCache reviewLikeCache;
+    private final ReviewCache reviewCache;
+
+    private static final int PAGE_SIZE = 20;
 
     public BookDetail getBookDetailInfo(String bookId) {
         return createBookDetail(getBookDetailById(bookId), getBookSubImages(bookId));
@@ -76,7 +84,7 @@ public class BookDetailService {
     }
 
     @PreAuthorize("isAuthenticated() and #accountId == authentication.name")
-    @CacheEvict(value = REVIEW + ":reviewList", key = "T(java.lang.Long).valueOf(#bookId)", cacheResolver = CACHE_RESOLVER)
+    @CacheEvict(value = REVIEW + ":#{#bookId}", allEntries = true, cacheResolver = CACHE_RESOLVER)
     @Transactional
     public void registerReview(ReviewData reviewData, String accountId, String bookId) {
         Review review = createReview(reviewData, getAccount(accountId), getBookProduct(bookId));
@@ -101,19 +109,34 @@ public class BookDetailService {
                 .build();
     }
 
-    public List<ReviewList> getReviewList(String bookId, String accountId) {
-        long bookIdAsLong = stringToLongId(bookId);
-        List<ReviewListDto> reviewList = reviewLikeCache.getReviewList(bookIdAsLong);
-
+    public Page<ReviewList> getReviewList(Pageable pageable, String bookId, String accountId) {
+        Page<ReviewListDto> page = getReviewList(pageable, bookId);
         Account account = getAccount(accountId);
-        if (account == null) {
-            return reviewList.stream().map(this::createReviewList).toList();
-        } else {
-            Set<Long> likeStatusSet = reviewLikeCache.getLikeStatusSet(bookIdAsLong, account.getId());
-            return reviewList.stream().map(reviewInfo ->
-                    createReviewList(reviewInfo, likeStatusSet, accountId)
-            ).toList();
-        }
+
+        List<ReviewList> reviewList = (account == null)
+                ? page.getContent().stream()
+                        .map(this::createReviewList)
+                        .toList()
+                : page.getContent().stream()
+                        .map(reviewInfo -> createReviewList(
+                                reviewInfo,
+                                getLikeStatusSet(bookId, account.getId()),
+                                accountId)
+                        ).toList();
+
+        return new CustomPage<>(new PageImpl<>(reviewList, page.getPageable(), page.getTotalElements()));
+    }
+
+    private Page<ReviewListDto> getReviewList(Pageable pageable, String bookId) {
+        return reviewCache.getReviewList(createRequestPageable(pageable), stringToLongId(bookId));
+    }
+
+    private static Pageable createRequestPageable(Pageable pageable) {
+        return PageRequest.of(pageable.getPageNumber(), PAGE_SIZE, pageable.getSort());
+    }
+
+    private Set<Long> getLikeStatusSet(String bookId, Long accountEntityId) {
+        return reviewLikeCache.getLikeStatusSet(stringToLongId(bookId), accountEntityId);
     }
 
     private ReviewList createReviewList(ReviewListDto reviewInfo) {

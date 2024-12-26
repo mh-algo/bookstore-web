@@ -2,8 +2,13 @@ package com.bookshelf.bookproject.publicpage.repository.querydsl;
 
 import com.bookshelf.bookproject.publicpage.repository.dto.ReviewListDto;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.dsl.Wildcard;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 
@@ -15,8 +20,8 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ReviewListDto> findReviewListByBookId(Long bookId) {
-        return createReviewListDto(
+    public Page<ReviewListDto> findReviewListByBookId(Pageable pageable, Long bookProductId) {
+        List<ReviewListDto> reviewList = createReviewListDto(
                 queryFactory
                         .select(
                                 review.id,
@@ -27,10 +32,19 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
                                 review.createdDate)
                         .from(review)
                         .join(review.account, account)
-                        .where(review.bookProduct.id.eq(bookId))
+                        .where(review.bookProduct.id.eq(bookProductId))
                         .orderBy(review.likeCount.desc(), review.createdDate.desc())
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
                         .fetch()
         );
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(Wildcard.count)
+                .from(review)
+                .where(review.bookProduct.id.eq(bookProductId));
+
+        return PageableExecutionUtils.getPage(reviewList, pageable, countQuery::fetchOne);
     }
 
     private static List<ReviewListDto> createReviewListDto(List<Tuple> reviewList) {

@@ -20,7 +20,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,19 +53,11 @@ public class ReviewLikeCache {
         }
     }
 
-    @Cacheable(value = REVIEW + ":reviewList", key = "#bookId", cacheResolver = CACHE_RESOLVER)
-    @Transactional(readOnly = true)
-    public List<ReviewListDto> getReviewList(Long bookId) {
-        return reviewRepository.findReviewListByBookId(bookId);
-    }
-
     @Cacheable(value = REVIEW + ":likeStatusSet", key = "#bookId + ':' + #accountEntityId", cacheResolver = CACHE_RESOLVER)
     @Transactional(readOnly = true)
     public Set<Long> getLikeStatusSet(Long bookId, Long accountEntityId) {
         return likeStatusRepository.findReviewId(bookId, accountEntityId);
     }
-
-
 
     @Cacheable(value = LIKE_STATUS, key = "#reviewId + ':' + #accountId", cacheResolver = CACHE_RESOLVER)
     @Transactional(readOnly = true)
