@@ -204,16 +204,16 @@ function searchBooks(page = 1) {
                     listItem.innerHTML = `
                         <div class="row g-0">
                             <div class="col-md-4">
-                                <img src="${book.image}" class="img-fluid rounded-start" alt="Book Cover">
+                                <img src="${escapeHTML(book.image)}" class="img-fluid rounded-start" alt="Book Cover">
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body">
-                                    <h5 class="card-title">${title.mainTitle}</h5>
-                                    <p class="card-text"><small class="text-muted">${title.subTitle}</small></p>
-                                    <p class="card-text"><strong>저자:</strong> ${replaceCaretWithSlash(book.author)}</p>
-                                    <p class="card-text"><strong>출판사:</strong> ${book.publisher}</p>
-                                    <p class="card-text"><strong>출판일:</strong> ${formatDate(book.pubdate)}</p>
-                                    <p class="card-text"><strong>ISBN:</strong> ${book.isbn}</p>
+                                    <h5 class="card-title">${escapeHTML(title.mainTitle)}</h5>
+                                    <p class="card-text"><small class="text-muted">${escapeHTML(title.subTitle)}</small></p>
+                                    <p class="card-text"><strong>저자:</strong> ${escapeHTML(replaceCaretWithSlash(book.author))}</p>
+                                    <p class="card-text"><strong>출판사:</strong> ${escapeHTML(book.publisher)}</p>
+                                    <p class="card-text"><strong>출판일:</strong> ${escapeHTML(formatDate(book.pubdate))}</p>
+                                    <p class="card-text"><strong>ISBN:</strong> ${escapeHTML(book.isbn)}</p>
                                 </div>
                             </div>
                         </div>
