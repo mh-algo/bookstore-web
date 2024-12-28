@@ -47,6 +47,23 @@ public class BookDetailController {
         return accountAuth == null ? "" : accountAuth.getAccountId();
     }
 
+    @ResponseBody
+    @GetMapping("/{bookId}/api/review")
+    public ResponseEntity<ApiResponse<Page<ReviewList>>> loadReviewPage(@PathVariable String bookId,
+                                 @AuthenticationPrincipal AccountAuth accountAuth,
+                                 Pageable pageable) {
+        Page<ReviewList> reviewPage = bookDetailService.getReviewList(pageable, bookId, getAccountId(accountAuth));
+        if (reviewPage.getContent().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ApiResponse<>(
+                            HttpStatus.NOT_FOUND.value(),
+                            "Review with page " + (pageable.getPageNumber()+1) + " not found.",
+                            reviewPage)
+            );
+        }
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", reviewPage));
+    }
+
     @PostMapping("/{bookId}/review")
     public String saveReview(@PathVariable String bookId,
                                  @Valid @ModelAttribute ReviewData reviewData,
@@ -63,6 +80,7 @@ public class BookDetailController {
         return "redirect:/books/" + bookId;
     }
 
+    @ResponseBody
     @PostMapping("/{bookId}/review/like")
     public ResponseEntity<ApiResponse<ReviewLike>> likeReview(@PathVariable String bookId,
                                                   @RequestBody Map<String, Long> payload,

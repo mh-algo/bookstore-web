@@ -128,17 +128,17 @@ function toggleLikeBtn(button) {
         body: JSON.stringify({reviewId: reviewId})
     })
         .then(response => response.json())
-        .then(data => {
-            if (data.status === 403) {
+        .then(response => {
+            if (response.status === 403) {
                 alert("로그인 후 시도해주세요.");
             }
 
-            if (data.status === 200) {
+            if (response.status === 200) {
                 const like = document.getElementsByClassName('like-count').namedItem(reviewId);
-                like.textContent = data.data.likeCount;
+                like.textContent = response.data.likeCount;
 
                 const icon = button.querySelector('i'); // 아이콘 엘리먼트
-                if (data.data.liked === true) {
+                if (response.data.liked === true) {
                     button.setAttribute('data-liked', 'true');
                     button.classList.add('liked');
                     icon.classList.remove('far'); // 비활성화 아이콘 클래스 제거
@@ -154,4 +154,126 @@ function toggleLikeBtn(button) {
         .catch(error => {
             console.error("Fetch Error:", error);
         });
+}
+
+function loadReviews(page) {
+    const reviewList = document.getElementById('review-list');
+    reviewList.innerHTML = '';
+
+    const pathParts = window.location.pathname.split('/');
+    const bookId = pathParts[2];
+
+    return fetch(`/books/${bookId}/api/review?page=${page}`, {
+        method: "GET",
+        headers: {"Accept": "application/json"}
+    })
+        .then(response => response.json())
+        .then(response => {
+            const reviews = response.data.content
+            if (reviews.length > 0) {
+                reviews.forEach(review => {
+                    const accountId = escapeHTML(review.accountId);
+                    const createdDate = escapeHTML(formatDate(review.createdDate));
+                    const rating = escapeHTML(review.rating);
+                    const likeStatus = escapeHTML(review.likeStatus);
+                    const id = escapeHTML(review.id);
+                    const likeCount = escapeHTML(review.likeCount);
+                    const context = escapeHTML(review.context);
+
+                    const reviewItem = `
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong class="me-2">${accountId}</strong>
+                                    <span class="text-muted me-2">${createdDate}</span>
+                                    <div class="star-rating star" data-rating="${rating}">
+                                        ${'☆'.repeat(5 - rating) + '★'.repeat(rating)}
+                                    </div>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm like-btn ${likeStatus ? 'liked' : ''}"
+                                    data-review-id="${id}" onclick="toggleLikeBtn(this)">
+                                        <i class="fa-thumbs-up ${likeStatus ? 'fas' : 'far'}"></i></button>
+                                    <span class="like-count" name="${id}">${likeCount}</span>
+                                </div>
+                            </div>
+                            <p class="mt-2 mb-0">${context}</p>
+                        </li>
+                        `;
+
+                    reviewList.innerHTML += reviewItem;
+                });
+                return response.data;
+            }
+        })
+        .catch(error => {
+            console.error("Fetch Error:", error);
+            throw error;
+        });
+}
+
+function generatePagination(data) {
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = '';
+
+    const pageNumber = escapeHTML(data.pageable.pageNumber);
+    const totalPages = escapeHTML(data.totalPages);
+
+    pagination.innerHTML += `
+                <li class="page-item ${pageNumber === 1 ? 'disabled' : ''}">
+                    <a class="page-link" onclick="goToPage(${pageNumber - 1}, ${totalPages})">❮</a>
+                </li>
+            `;
+
+    if (pageNumber > 4) {
+        pagination.innerHTML += `
+                <li class="page-item"><a class="page-link" onclick="goToPage(1, ${totalPages})">1</a></li>
+                <li class="page-item disabled"><a class="page-link">...</a></li>
+                `;
+    }
+
+    const startPage = Math.max(1, pageNumber - 3);
+    const endPage = Math.min(totalPages, pageNumber + 3);
+
+    for (let i = startPage; i <= endPage; i++) {
+        pagination.innerHTML += `
+                <li class="page-item ${i === pageNumber ? 'active' : ''}">
+                    <a class="page-link" onclick="goToPage(${i}, ${totalPages})">${i}</a>
+                </li>
+                `;
+    }
+
+    if (pageNumber + 3 < totalPages) {
+        pagination.innerHTML += `
+                <li class="page-item disabled"><a class="page-link">...</a></li>
+                <li class="page-item"><a class="page-link" onclick="goToPage(${totalPages}, ${totalPages})">${totalPages}</a></li>
+                `;
+    }
+
+    // Next page button
+    pagination.innerHTML += `
+                <li class="page-item ${pageNumber === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" onclick="goToPage(${pageNumber + 1}, ${totalPages})">❯</a>
+                </li>
+            `;
+
+}
+
+function goToPage(page, totalPages) {
+    if (page < 1 || page > totalPages) return; // Limit page range
+    loadReviews(page)
+        .then(data => generatePagination(data))
+        .catch(error => {
+            console.error("Error fetching data:", error);
+        })
+}
+
+function formatDate(date) {
+    const year = date[0];
+    const month = String(date[1]).padStart(2, '0'); // 0-based
+    const day = String(date[2]).padStart(2, '0');
+    const hours = String(date[3]).padStart(2, '0');
+    const minutes = String(date[4]).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
 }

@@ -170,12 +170,12 @@
             <ul id="pagination" class="pagination" th:object="${reviewPage}" th:if="${!reviewPage.content.isEmpty()}">
                 <!-- Previous Page Button -->
                 <li class="page-item" th:classappend="*{pageable.pageNumber == 1} ? 'disabled'">
-                    <a class="page-link" th:href="@{/books/{bookid}(bookid=${bookId}, page=*{pageable.pageNumber - 1})}">❮</a>
+                    <a class="page-link" th:onclick="|goToPage(*{pageable.pageNumber - 1}, *{totalPages})|">❮</a>
                 </li>
 
                 <!-- Start Pages with "..." -->
                 <li th:if="*{pageable.pageNumber > 4}" class="page-item">
-                    <a class="page-link" th:href="@{/books/{bookid}(bookid=${bookId}, page=1)}">1</a>
+                    <a class="page-link" th:onclick="|goToPage(1, *{totalPages})|">1</a>
                 </li>
                 <li th:if="*{pageable.pageNumber > 4}" class="page-item disabled">
                     <a class="page-link">...</a>
@@ -186,7 +186,7 @@
                           T(java.lang.Math).max(1, pageable.pageNumber - 3),
                           T(java.lang.Math).min(totalPages, pageable.pageNumber + 3))}"
                     class="page-item" th:classappend="${i == reviewPage.pageable.pageNumber} ? 'active'">
-                    <a class="page-link" th:href="@{/books/{bookid}(bookid=${bookId}, page=${i})}" th:text="${i}"></a>
+                    <a class="page-link" th:onclick="|goToPage(${i}, *{totalPages})|" th:text="${i}"></a>
                 </li>
 
                 <!-- End Pages with "..." -->
@@ -194,19 +194,19 @@
                     <a class="page-link">...</a>
                 </li>
                 <li th:if="*{pageable.pageNumber + 3 < totalPages}" class="page-item">
-                    <a class="page-link" th:href="@{/books/{bookid}(bookid=${bookId}, page=*{totalPages})}" th:text="*{totalPages}"></a>
+                    <a class="page-link" th:onclick="|goToPage(*{totalPages}, *{totalPages})|" th:text="*{totalPages}"></a>
                 </li>
 
                 <!-- Next Page Button -->
                 <li class="page-item" th:classappend="*{pageable.pageNumber == totalPages} ? 'disabled'">
-                    <a class="page-link" th:href="@{/books/{bookid}(bookid=${bookId}, page=*{pageable.pageNumber + 1})}">❯</a>
+                    <a class="page-link" th:onclick="|goToPage(*{pageable.pageNumber + 1}, *{totalPages})|">❯</a>
                 </li>
             </ul>
         </div>
     </div>
 </div>
 </main>
-
+<script src="/js/utils.js"></script>
 <script src="/js/book-detail.js"></script>
 </body>
 </html>

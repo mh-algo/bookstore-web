@@ -38,7 +38,7 @@ public class BookDetailService {
     private final ReviewLikeCache reviewLikeCache;
     private final ReviewCache reviewCache;
 
-    private static final int PAGE_SIZE = 20;
+    private static final int PAGE_SIZE = 10;
 
     public BookDetail getBookDetailInfo(String bookId) {
         return createBookDetail(getBookDetailById(bookId), getBookSubImages(bookId));
