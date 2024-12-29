@@ -1,25 +1,21 @@
 package com.bookshelf.bookproject.publicpage.controller;
 
-import com.bookshelf.bookproject.common.ApiResponse;
 import com.bookshelf.bookproject.publicpage.controller.dto.ReviewData;
 import com.bookshelf.bookproject.publicpage.service.BookDetailService;
 import com.bookshelf.bookproject.publicpage.service.dto.BookDetail;
-import com.bookshelf.bookproject.publicpage.service.dto.ReviewLike;
 import com.bookshelf.bookproject.publicpage.service.dto.ReviewList;
 import com.bookshelf.bookproject.security.dto.AccountAuth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import static com.bookshelf.bookproject.publicpage.BookServiceUtil.getAccountId;
 
 @Controller
 @RequestMapping("/books")
@@ -28,44 +24,24 @@ public class BookDetailController {
     private final BookDetailService bookDetailService;
 
     @GetMapping("/{bookId}")
-    public String bookDetail(@PathVariable String bookId, @ModelAttribute ReviewData reviewData, Model model,
+    public String bookDetail(@PathVariable Long bookId, @ModelAttribute ReviewData reviewData, Model model,
                              @AuthenticationPrincipal AccountAuth accountAuth,
                              Pageable pageable) {
         addBookDetail(bookId, model);
 
-        Page<ReviewList> reviewPage = bookDetailService.getReviewList(pageable, bookId, getAccountId(accountAuth));
+        String accountId = getAccountId(accountAuth);
+        Page<ReviewList> reviewPage = bookDetailService.getReviewList(pageable, bookId, accountId);
         model.addAttribute("reviewPage", reviewPage);
         return "public-page/book-detail";
     }
 
-    private void addBookDetail(String bookId, Model model) {
+    private void addBookDetail(Long bookId, Model model) {
         BookDetail bookDetail = bookDetailService.getBookDetailInfo(bookId);
         model.addAttribute("bookDetail", bookDetail);
     }
 
-    private static String getAccountId(AccountAuth accountAuth) {
-        return accountAuth == null ? "" : accountAuth.getAccountId();
-    }
-
-    @ResponseBody
-    @GetMapping("/{bookId}/api/review")
-    public ResponseEntity<ApiResponse<Page<ReviewList>>> loadReviewPage(@PathVariable String bookId,
-                                 @AuthenticationPrincipal AccountAuth accountAuth,
-                                 Pageable pageable) {
-        Page<ReviewList> reviewPage = bookDetailService.getReviewList(pageable, bookId, getAccountId(accountAuth));
-        if (reviewPage.getContent().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new ApiResponse<>(
-                            HttpStatus.NOT_FOUND.value(),
-                            "Review with page " + (pageable.getPageNumber()+1) + " not found.",
-                            reviewPage)
-            );
-        }
-        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", reviewPage));
-    }
-
-    @PostMapping("/{bookId}/review")
-    public String saveReview(@PathVariable String bookId,
+    @PostMapping("/{bookId}/reviews")
+    public String saveReview(@PathVariable Long bookId,
                                  @Valid @ModelAttribute ReviewData reviewData,
                                  BindingResult bindingResult,
                                  @AuthenticationPrincipal AccountAuth accountAuth) {
@@ -78,18 +54,5 @@ public class BookDetailController {
         }
 
         return "redirect:/books/" + bookId;
-    }
-
-    @ResponseBody
-    @PostMapping("/{bookId}/review/like")
-    public ResponseEntity<ApiResponse<ReviewLike>> likeReview(@PathVariable String bookId,
-                                                  @RequestBody Map<String, Long> payload,
-                                                  @AuthenticationPrincipal AccountAuth accountAuth) {
-        if (accountAuth == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                    new ApiResponse<>(HttpStatus.FORBIDDEN.value(), "Access Denied", ReviewLike.empty()));
-        }
-        ReviewLike reviewId = bookDetailService.toggleLike(payload.get("reviewId"), accountAuth.getAccountId());
-        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", reviewId));
     }
 }

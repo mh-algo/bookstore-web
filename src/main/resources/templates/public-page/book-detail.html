@@ -105,7 +105,7 @@
     <!-- Review Section -->
     <div class="mt-5">
         <h5 class="fw-bold">리뷰 작성</h5>
-        <form class="mb-4" th:action="@{/books/{bookId}/review(bookId=${bookDetail.id})}" method="POST" onsubmit="return reviewSubmitEvent()">
+        <form class="mb-4" th:action="@{/books/{bookId}/reviews(bookId=${bookDetail.id})}" method="POST" onsubmit="return reviewSubmitEvent()">
             <div class="mb-3">
                 <div class="mb-3">
                     <label class="form-label">별점</label>
@@ -150,15 +150,18 @@
             <li class="list-group-item" th:each="review : ${reviewPage.content}" th:object="${review}">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <strong class="me-2" th:text="*{accountId}">계정 아이디</strong><span class="text-muted me-2" th:text="*{#temporals.format(createdDate, 'yyyy-MM-dd HH:mm')}">작성 날짜</span>
-                        <div class="star-rating star" th:data-rating="*{rating}">
-                            ★★★★★
-                        </div>
+                        <strong class="me-2" th:text="*{accountId}">계정 아이디</strong>
+                        <span class="text-muted me-2" th:text="*{#temporals.format(createdDate, 'yyyy-MM-dd HH:mm')}">작성 날짜</span>
+                        <div class="star-rating star" th:data-rating="*{rating}">★★★★★</div>
                     </div>
                     <div>
                         <button class="btn btn-sm like-btn" th:classappend="*{likeStatus}?'liked'" th:data-review-id="*{id}" onclick="toggleLikeBtn(this)">
                             <i class="fa-thumbs-up" th:classappend="*{likeStatus}?'fas':'far'"></i></button>
                         <span class="like-count" th:name="*{id}" th:text="*{likeCount}">좋아요 수</span>
+                        <!-- 삭제 버튼 -->
+                        <button class="btn btn-sm btn-danger ms-2" th:if="*{reviewOwner}" th:data-review-id="*{id}" onclick="deleteReview(this)">삭제</button>
+                        <!-- 수정 버튼 -->
+                        <button class="btn btn-sm btn-primary ms-2" th:if="*{reviewOwner}" th:data-review-id="*{id}" onclick="editReview(this)">수정</button>
                     </div>
                 </div>
                 <p class="mt-2 mb-0" th:text="*{context}">리뷰 내용</p>

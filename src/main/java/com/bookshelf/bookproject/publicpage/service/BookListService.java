@@ -38,7 +38,7 @@ public class BookListService {
     }
 
     @Cacheable(value = BOOK_LIST + ":#{#categoryId}", key = "#pageable.pageNumber", cacheResolver = CACHE_RESOLVER)
-    public Page<BookList> getBookListPageByCategory(Pageable pageable, String categoryId) {
+    public Page<BookList> getBookListPageByCategory(Pageable pageable, Long categoryId) {
         Page<BookListDto> page = getBooksByCategory(pageable, categoryId);
         List<BookList> bookList = page.getContent().stream()
                 .map(BookListService::createBookList).toList();
@@ -46,8 +46,8 @@ public class BookListService {
         return new CustomPage<>(new PageImpl<>(bookList, page.getPageable(), page.getTotalElements()));
     }
 
-    private Page<BookListDto> getBooksByCategory(Pageable pageable, String categoryId) {
-        return bookProductRepository.findBooksByCategory(createRequestPageable(pageable), stringToLongId(categoryId));
+    private Page<BookListDto> getBooksByCategory(Pageable pageable, Long categoryId) {
+        return bookProductRepository.findBooksByCategory(createRequestPageable(pageable), categoryId);
     }
 
     private static Pageable createRequestPageable(Pageable pageable) {

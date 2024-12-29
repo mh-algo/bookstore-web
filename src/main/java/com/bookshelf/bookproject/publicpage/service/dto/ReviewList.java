@@ -15,4 +15,5 @@ public class ReviewList {
     private final Integer likeCount;
     private final boolean likeStatus;
     private final LocalDateTime createdDate;
+    private final boolean reviewOwner;
 }

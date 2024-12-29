@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
-import static com.bookshelf.bookproject.publicpage.BookServiceUtil.validateStringId;
-
 @Controller
 @RequiredArgsConstructor
 public class BookListController {
@@ -29,17 +27,14 @@ public class BookListController {
     }
 
     @GetMapping("/books/list")
-    public String list(@RequestParam(value = "category", required = false) String categoryId, Pageable pageable, Model model) {
-        if (validateStringId(categoryId)) {
-            return addBooks(model, pageable, categoryId);
-        }
-        return "redirect:/books/list";
+    public String list(@RequestParam(value = "category", required = false) Long categoryId, Pageable pageable, Model model) {
+        addBooks(model, pageable, categoryId);
+        return "public-page/book-list";
     }
 
-    private String addBooks(Model model, Pageable pageable, String category) {
+    private void addBooks(Model model, Pageable pageable, Long category) {
         Page<BookList> booksPage = category == null ?
                 bookListService.getBookListPage(pageable) : bookListService.getBookListPageByCategory(pageable, category);
         model.addAttribute("booksPage", booksPage);
-        return "public-page/book-list";
     }
 }

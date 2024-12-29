@@ -40,6 +40,10 @@ public class Review extends TimeStamp {
         this.likeCount = likeCount;
     }
 
+    public void updateContext(String context) {
+        this.context = context;
+    }
+
     public static Review empty() {
         return Review.builder().build();
     }

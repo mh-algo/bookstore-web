@@ -1,3 +1,10 @@
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+
+const pathParts = window.location.pathname.split('/');
+const bookId = pathParts[2];
+const safeBookId = encodeURIComponent(bookId);
+
 function getStock() {
     const stockDisplay = document.getElementById('stock');
     return parseInt(stockDisplay.textContent);
@@ -96,7 +103,7 @@ for (const ratingElement of ratingElements) {
 
 // review submit 검증
 function reviewSubmitEvent() {
-    const reviewText = document.getElementById('reviewText')
+    const reviewContext = document.getElementById('reviewText').value
     const rating = document.querySelector('input[name="rating"]:checked')?.value || 0;
 
     if (rating === 0) {
@@ -104,7 +111,7 @@ function reviewSubmitEvent() {
         return false;
     }
 
-    if (!reviewText.trim()) {
+    if (!reviewContext.trim()) {
         alert('리뷰 내용을 작성해주세요.');
         return false;
     }
@@ -113,14 +120,10 @@ function reviewSubmitEvent() {
 }
 
 function toggleLikeBtn(button) {
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-    const pathParts = window.location.pathname.split('/');
-    const bookId = pathParts[2];
     const reviewId = button.getAttribute('data-review-id');
 
-    fetch(`/books/${bookId}/review/like`, {
-        method: "POST",
+    fetch(`/books/${safeBookId}/reviews/like`, {
+        method: "PATCH",
         headers: {
             "Content-Type": "application/json",
             [csrfHeader]: csrfToken
@@ -129,7 +132,7 @@ function toggleLikeBtn(button) {
     })
         .then(response => response.json())
         .then(response => {
-            if (response.status === 403) {
+            if (response.status === 401) {
                 alert("로그인 후 시도해주세요.");
             }
 
@@ -159,11 +162,12 @@ function toggleLikeBtn(button) {
 function loadReviews(page) {
     const reviewList = document.getElementById('review-list');
     reviewList.innerHTML = '';
-
     const pathParts = window.location.pathname.split('/');
     const bookId = pathParts[2];
 
-    return fetch(`/books/${bookId}/api/review?page=${page}`, {
+    const safePage = encodeURIComponent(page)
+
+    return fetch(`/books/${safeBookId}/reviews?page=${safePage}`, {
         method: "GET",
         headers: {"Accept": "application/json"}
     })
@@ -180,7 +184,7 @@ function loadReviews(page) {
                     const likeCount = escapeHTML(review.likeCount);
                     const context = escapeHTML(review.context);
 
-                    const reviewItem = `
+                    let reviewItem = `
                         <li class="list-group-item">
                             <div class="d-flex justify-content-between">
                                 <div>
@@ -195,6 +199,15 @@ function loadReviews(page) {
                                     data-review-id="${id}" onclick="toggleLikeBtn(this)">
                                         <i class="fa-thumbs-up ${likeStatus ? 'fas' : 'far'}"></i></button>
                                     <span class="like-count" name="${id}">${likeCount}</span>
+                                    `;
+                    if (review.reviewOwner) {
+                        reviewItem += `
+                                    <button class="btn btn-sm btn-danger ms-2" data-review-id="${id}" onclick="deleteReview(this)">삭제</button>
+                                    <button class="btn btn-sm btn-primary ms-2" data-review-id="${id}" onclick="editReview(this)">수정</button>
+                                    `;
+                    }
+
+                    reviewItem += `
                                 </div>
                             </div>
                             <p class="mt-2 mb-0">${context}</p>
@@ -276,4 +289,118 @@ function formatDate(date) {
     const minutes = String(date[4]).padStart(2, '0');
 
     return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
+// 리뷰 삭제
+function deleteReview(button) {
+    const reviewId = button.getAttribute('data-review-id');
+    const safeReviewId = encodeURIComponent(reviewId)
+
+    if (confirm('정말로 삭제하시겠습니까?')) {
+        fetch(`/books/${safeBookId}/reviews/${safeReviewId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                [csrfHeader]: csrfToken
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('리뷰가 삭제되었습니다.');
+                    goToPage(1,1);
+                } else {
+                    alert('리뷰 삭제에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('삭제 중 오류 발생:', error);
+            });
+    }
+}
+
+// 리뷰 수정
+function editReview(button) {
+    const reviewId = button.getAttribute('data-review-id');
+    const reviewItem = button.closest('li');
+    const contextElement = reviewItem.querySelector('p');
+    const currentContext = contextElement.textContent;
+
+    // 기존 버튼 영역을 숨기기
+    const buttonContainer = button.parentElement;
+    buttonContainer.style.display = 'none';
+
+    // 수정 폼 생성
+    const editForm = document.createElement('div');
+
+    // textarea 생성 및 내용 설정
+    const textarea = document.createElement('textarea');
+    textarea.className = 'form-control mb-2';
+    textarea.textContent = currentContext; // XSS 공격 방지
+
+    const btn = document.createElement('div');
+    btn.className = 'd-flex justify-content-end';
+
+    // 저장 버튼 생성
+    const saveButton = document.createElement('button');
+    saveButton.className = 'btn btn-sm btn-success ms-2';
+    saveButton.textContent = '저장';
+
+    // 취소 버튼 생성
+    const cancelButton = document.createElement('button');
+    cancelButton.className = 'btn btn-sm btn-secondary ms-2';
+    cancelButton.textContent = '취소';
+
+    // 수정 폼에 요소 추가
+    editForm.appendChild(textarea);
+    btn.appendChild(saveButton);
+    btn.appendChild(cancelButton);
+    editForm.appendChild(btn);
+
+    // 기존 컨텍스트 요소를 수정 폼으로 대체
+    contextElement.replaceWith(editForm);
+
+    // 저장 버튼 이벤트
+    editForm.querySelector('.btn-success').addEventListener('click', () => {
+        const updatedContext = editForm.querySelector('textarea').value;
+        const safeReviewId = encodeURIComponent(reviewId)
+
+        if (!updatedContext.trim()) {
+            alert('리뷰 내용을 작성해주세요.');
+            return;
+        }
+
+        fetch(`/books/${safeBookId}/reviews/${safeReviewId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify({ context: updatedContext }),
+        })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 200) {
+                    alert('리뷰가 수정되었습니다.');
+                    const updatedContextElement = document.createElement('p');
+                    updatedContextElement.className = 'mt-2 mb-0';
+                    updatedContextElement.textContent = response.data;
+                    editForm.replaceWith(updatedContextElement);
+                    buttonContainer.removeAttribute('style'); // style 속성 제거
+                } else {
+                    alert('리뷰 수정에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('수정 중 오류 발생:', error);
+            });
+    });
+
+    // 취소 버튼 이벤트
+    editForm.querySelector('.btn-secondary').addEventListener('click', () => {
+        const originalContextElement = document.createElement('p');
+        originalContextElement.className = 'mt-2 mb-0';
+        originalContextElement.textContent = currentContext;
+        editForm.replaceWith(originalContextElement);
+        buttonContainer.removeAttribute('style'); // style 속성 제거
+    });
 }

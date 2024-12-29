@@ -1,5 +1,7 @@
 package com.bookshelf.bookproject.publicpage;
 
+import com.bookshelf.bookproject.security.dto.AccountAuth;
+
 public final class BookServiceUtil {
     public static String getImageUrl(String imageUrl, String defaultImageUrl) {
         return imageUrl == null || imageUrl.isBlank() ? defaultImageUrl : imageUrl;
@@ -33,5 +35,10 @@ public final class BookServiceUtil {
     // 존재한다면 숫자로 이루어져있을 경우에만 유효
     public static long stringToLongId(String id) {
         return validateStringId(id) ? Long.parseLong(id) : -1L;
+    }
+
+    // 계정 아이디 가져오기
+    public static String getAccountId(AccountAuth accountAuth) {
+        return accountAuth == null ? "" : accountAuth.getAccountId();
     }
 }
