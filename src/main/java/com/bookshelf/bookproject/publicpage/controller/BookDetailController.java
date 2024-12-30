@@ -15,7 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import static com.bookshelf.bookproject.publicpage.BookServiceUtil.getAccountId;
+import static com.bookshelf.bookproject.publicpage.BookServiceUtils.getAccountId;
 
 @Controller
 @RequestMapping("/books")
@@ -42,9 +42,9 @@ public class BookDetailController {
 
     @PostMapping("/{bookId}/reviews")
     public String saveReview(@PathVariable Long bookId,
-                                 @Valid @ModelAttribute ReviewData reviewData,
-                                 BindingResult bindingResult,
-                                 @AuthenticationPrincipal AccountAuth accountAuth) {
+                             @Valid @ModelAttribute ReviewData reviewData,
+                             BindingResult bindingResult,
+                             @AuthenticationPrincipal AccountAuth accountAuth) {
         if (accountAuth == null) {
             return "redirect:/login";
         }

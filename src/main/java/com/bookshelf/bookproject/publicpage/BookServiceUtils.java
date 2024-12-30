@@ -2,7 +2,7 @@ package com.bookshelf.bookproject.publicpage;
 
 import com.bookshelf.bookproject.security.dto.AccountAuth;
 
-public final class BookServiceUtil {
+public final class BookServiceUtils {
     public static String getImageUrl(String imageUrl, String defaultImageUrl) {
         return imageUrl == null || imageUrl.isBlank() ? defaultImageUrl : imageUrl;
     }

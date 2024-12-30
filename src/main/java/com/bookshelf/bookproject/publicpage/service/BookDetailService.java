@@ -2,10 +2,13 @@ package com.bookshelf.bookproject.publicpage.service;
 
 import com.bookshelf.bookproject.common.AccountCache;
 import com.bookshelf.bookproject.common.CustomPage;
+import com.bookshelf.bookproject.common.exception.AccessDeniedException;
+import com.bookshelf.bookproject.common.exception.SaveFailedException;
+import com.bookshelf.bookproject.common.repository.BookProductRepository;
+import com.bookshelf.bookproject.domain.*;
+import com.bookshelf.bookproject.publicpage.repository.CartProductRepository;
+import com.bookshelf.bookproject.publicpage.repository.CartRepository;
 import com.bookshelf.bookproject.publicpage.repository.ReviewRepository;
-import com.bookshelf.bookproject.domain.Account;
-import com.bookshelf.bookproject.domain.BookProduct;
-import com.bookshelf.bookproject.domain.Review;
 import com.bookshelf.bookproject.publicpage.controller.dto.ReviewData;
 import com.bookshelf.bookproject.publicpage.repository.dto.BookDetailDto;
 import com.bookshelf.bookproject.publicpage.service.dto.BookDetail;
@@ -20,16 +23,18 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.bookshelf.bookproject.config.CacheConstants.CACHE_RESOLVER;
 import static com.bookshelf.bookproject.config.CacheConstants.REVIEW;
-import static com.bookshelf.bookproject.publicpage.BookServiceUtil.*;
+import static com.bookshelf.bookproject.publicpage.BookServiceUtils.*;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +44,9 @@ public class BookDetailService {
     private final ReviewRepository reviewRepository;
     private final ReviewLikeCache reviewLikeCache;
     private final ReviewCache reviewCache;
+    private final CartRepository cartRepository;
+    private final BookProductRepository bookProductRepository;
+    private final CartProductRepository cartProductRepository;
     private final EntityManager em;
 
     private static final int PAGE_SIZE = 10;
@@ -231,5 +239,36 @@ public class BookDetailService {
 
     private boolean validateReviewOwner(String accountId, Review review) {
         return Objects.equals(review.getAccount().getId(), getAccount(accountId).getId());
+    }
+
+    @PreAuthorize("isAuthenticated() and #accountId == authentication.name")
+    @Transactional
+    public void saveBookToCart(Long bookId, Integer quantity, String accountId) {
+        if (getAccount(accountId) instanceof User user) {
+            CartProduct cartProduct = createCartProduct(bookId, quantity, createCart(user));
+            if (cartProduct.isEmpty()) {
+                throw new SaveFailedException("저장 실패");
+            }
+        } else {
+            throw new AccessDeniedException("판매 회원이 아닌 일반 회원만 이용할 수 있습니다.");
+        }
+    }
+
+    private CartProduct createCartProduct(Long bookId, Integer quantity, Cart cart) {
+        Optional<BookProduct> bookProduct = bookProductRepository.findById(bookId);
+        if (bookProduct.isEmpty()) {
+            throw new SaveFailedException("저장 실패");
+        }
+
+        CartProduct cartProduct = new CartProduct(cart, bookProduct.get(), quantity);
+        return cartProductRepository.save(cartProduct);
+    }
+
+    private Cart createCart(User user) {
+        Cart cart = cartRepository.save(new Cart(user));
+        if (cart.isEmpty()) {
+            throw new SaveFailedException("저장 실패");
+        }
+        return cart;
     }
 }

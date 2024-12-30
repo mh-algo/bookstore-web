@@ -16,7 +16,7 @@ import java.util.List;
 
 import static com.bookshelf.bookproject.config.CacheConstants.BOOK_LIST;
 import static com.bookshelf.bookproject.config.CacheConstants.CACHE_RESOLVER;
-import static com.bookshelf.bookproject.publicpage.BookServiceUtil.*;
+import static com.bookshelf.bookproject.publicpage.BookServiceUtils.*;
 
 @Service
 @RequiredArgsConstructor

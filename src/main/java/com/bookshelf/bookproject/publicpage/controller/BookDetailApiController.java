@@ -1,6 +1,7 @@
 package com.bookshelf.bookproject.publicpage.controller;
 
 import com.bookshelf.bookproject.common.ApiResponse;
+import com.bookshelf.bookproject.common.exception.UnAuthenticationException;
 import com.bookshelf.bookproject.publicpage.service.BookDetailService;
 import com.bookshelf.bookproject.publicpage.service.dto.ReviewLike;
 import com.bookshelf.bookproject.publicpage.service.dto.ReviewList;
@@ -15,15 +16,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-import static com.bookshelf.bookproject.publicpage.BookServiceUtil.getAccountId;
+import static com.bookshelf.bookproject.publicpage.BookServiceUtils.getAccountId;
 
 @RestController
-@RequestMapping("/books/{bookId}/reviews")
+@RequestMapping("/books/{bookId}")
 @RequiredArgsConstructor
 public class BookDetailApiController {
     private final BookDetailService bookDetailService;
 
-    @GetMapping
+    @GetMapping("/reviews")
     public ResponseEntity<ApiResponse<Page<ReviewList>>> loadReviewPage(@PathVariable Long bookId,
                                                                         @AuthenticationPrincipal AccountAuth accountAuth,
                                                                         Pageable pageable) {
@@ -39,7 +40,7 @@ public class BookDetailApiController {
         return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", reviewPage));
     }
 
-    @PutMapping("/{reviewId}")
+    @PutMapping("/reviews/{reviewId}")
     public ResponseEntity<ApiResponse<String>> updateReview(@PathVariable Long bookId,
                                                             @PathVariable Long reviewId,
                                                             @RequestBody Map<String, String> payload,
@@ -59,7 +60,7 @@ public class BookDetailApiController {
         return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", updatedContext));
     }
 
-    @DeleteMapping("/{reviewId}")
+    @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<ApiResponse<String>> deleteReview(@PathVariable Long bookId,
                                                             @PathVariable Long reviewId,
                                                             @AuthenticationPrincipal AccountAuth accountAuth) {
@@ -77,7 +78,7 @@ public class BookDetailApiController {
         return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success"));
     }
 
-    @PatchMapping("/like")
+    @PatchMapping("/reviews/like")
     public ResponseEntity<ApiResponse<ReviewLike>> likeReview(@PathVariable String bookId,
                                                               @RequestBody Map<String, Long> payload,
                                                               @AuthenticationPrincipal AccountAuth accountAuth) {
@@ -87,5 +88,16 @@ public class BookDetailApiController {
         }
         ReviewLike reviewId = bookDetailService.toggleLike(payload.get("reviewId"), getAccountId(accountAuth));
         return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Success", reviewId));
+    }
+
+    @PostMapping("/cart")
+    public ResponseEntity<String> addBookToCart(@PathVariable Long bookId,
+                                                             @RequestBody Map<String, Integer> payload,
+                                                             @AuthenticationPrincipal AccountAuth accountAuth) {
+        if (accountAuth == null) {
+            throw new UnAuthenticationException("로그인 후 시도해주세요.");
+        }
+        bookDetailService.saveBookToCart(bookId, payload.get("quantity"), getAccountId(accountAuth));
+        return ResponseEntity.ok("장바구니에 저장했습니다.");
     }
 }

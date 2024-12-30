@@ -404,3 +404,30 @@ function editReview(button) {
         buttonContainer.removeAttribute('style'); // style 속성 제거
     });
 }
+
+function addBookToCart() {
+    const quantity = document.getElementById('quantity')?.value || 1;
+
+    fetch(`/books/${safeBookId}/cart`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            [csrfHeader]: csrfToken
+        },
+        body: JSON.stringify({ quantity: quantity })
+    })
+        .then(response => {
+            if (response.ok || response.status === 403 || response.status === 500){
+                response.text().then(message => alert(message));
+            } else if (response.status === 401) {
+                response.text().then(message => {
+                    if (confirm(message)) {
+                        window.location.href = '/login';
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.error('저장 중 오류 발생:', error);
+        });
+}
