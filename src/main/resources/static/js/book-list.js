@@ -29,15 +29,17 @@ function addBookToCart(button) {
         },
         body: JSON.stringify({ quantity: quantity })
     })
+        .then(response => response.json())
         .then(response => {
-            if (response.ok || response.status === 403 || response.status === 500){
-                response.text().then(message => alert(message));
-            } else if (response.status === 401) {
-                response.text().then(message => {
-                    if (confirm(message)) {
-                        window.location.href = '/login';
-                    }
-                });
+            const status = response.status;
+            const message = response.message;
+
+            if (status === 200 || status === 403 || status === 500) {
+                alert(message);
+            } else if (status === 401) {
+                if (confirm(message)) {
+                    window.location.href = '/login';
+                }
             }
         })
         .catch(error => {

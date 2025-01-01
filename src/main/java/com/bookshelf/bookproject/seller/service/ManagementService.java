@@ -1,6 +1,7 @@
 package com.bookshelf.bookproject.seller.service;
 
 import com.bookshelf.bookproject.common.CategoryService;
+import com.bookshelf.bookproject.common.exception.InvalidApiResponseException;
 import com.bookshelf.bookproject.common.repository.BookProductRepository;
 import com.bookshelf.bookproject.common.repository.ImagesRepository;
 import com.bookshelf.bookproject.domain.*;
@@ -16,10 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -226,8 +224,11 @@ public class ManagementService {
         try {
             URI uri = generateBookSearchUriByIsbn(isbn);
             return objectMapper.readValue(requestBookDataFromNaver(uri), SearchInfo.class);
+        } catch (InvalidApiResponseException e) {
+            log.error(e.getMessage(), e);
+            return SearchInfo.empty();
         } catch (JsonProcessingException e) {
-            log.warn("json 변환 실패: {}", e.getMessage(), e);
+            log.error("json 변환 실패: {}", e.getMessage(), e);
             return SearchInfo.empty();
         }
     }
@@ -271,6 +272,10 @@ public class ManagementService {
                 String.class
         );
 
+        HttpStatusCode status = response.getStatusCode();
+        if (status != HttpStatus.OK) {
+            throw new InvalidApiResponseException("NAVER API response error: " + status.value());
+        }
         return response.getBody();
     }
 

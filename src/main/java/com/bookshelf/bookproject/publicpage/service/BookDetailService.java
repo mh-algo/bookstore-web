@@ -4,6 +4,7 @@ import com.bookshelf.bookproject.common.AccountCache;
 import com.bookshelf.bookproject.common.CustomPage;
 import com.bookshelf.bookproject.common.exception.AccessDeniedException;
 import com.bookshelf.bookproject.common.exception.SaveFailedException;
+import com.bookshelf.bookproject.common.exception.UnAuthenticationException;
 import com.bookshelf.bookproject.common.repository.BookProductRepository;
 import com.bookshelf.bookproject.domain.*;
 import com.bookshelf.bookproject.publicpage.repository.CartProductRepository;
@@ -15,6 +16,7 @@ import com.bookshelf.bookproject.publicpage.service.dto.BookDetail;
 import com.bookshelf.bookproject.publicpage.repository.dto.ReviewListDto;
 import com.bookshelf.bookproject.publicpage.service.dto.ReviewLike;
 import com.bookshelf.bookproject.publicpage.service.dto.ReviewList;
+import com.bookshelf.bookproject.security.dto.AccountAuth;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -137,6 +139,10 @@ public class BookDetailService {
                                 accountId)
                         ).toList();
 
+        if (reviewList.isEmpty()) {
+            throw new IllegalArgumentException("Review with page " + (pageable.getPageNumber()+1) + " not found.");
+        }
+
         return new CustomPage<>(new PageImpl<>(reviewList, page.getPageable(), page.getTotalElements()));
     }
 
@@ -195,7 +201,9 @@ public class BookDetailService {
 
     // 좋아요 버튼 누름
     @PreAuthorize("isAuthenticated() and #accountId == authentication.name")
-    public ReviewLike toggleLike(Long reviewId, String accountId) {
+    public ReviewLike toggleLike(Long reviewId, AccountAuth accountAuth) {
+        validateAuthentication(accountAuth);
+        String accountId = accountAuth.getAccountId();
         Long id = getAccount(accountId).getId();
         boolean liked = reviewLikeCache.isLiked(reviewId, id, accountId);
         int likeCount = reviewLikeCache.getLikeCount(reviewId);
@@ -212,25 +220,28 @@ public class BookDetailService {
     @PreAuthorize("isAuthenticated() and #accountId == authentication.name")
     @CacheEvict(value = REVIEW + ":#{#bookId}", allEntries = true, cacheResolver = CACHE_RESOLVER)
     @Transactional
-    public String updateReview(Long bookId, Long reviewId, String context, String accountId) {
+    public String updateReview(Long bookId, Long reviewId, String context, AccountAuth accountAuth) {
+        validateAuthentication(accountAuth);
         Review review = reviewRepository.findById(reviewId).orElseGet(Review::empty);
-        if (validateReviewId(reviewId, review) && validateReviewOwner(accountId, review)) {
+        if (validateReviewId(reviewId, review) && validateReviewOwner(accountAuth.getAccountId(), review)) {
             review.updateContext(context);
             return review.getContext();
+        } else {
+            throw new AccessDeniedException("Access Denied");
         }
-        return null;
     }
 
     @PreAuthorize("isAuthenticated() and #accountId == authentication.name")
     @CacheEvict(value = REVIEW + ":#{#bookId}", allEntries = true, cacheResolver = CACHE_RESOLVER)
     @Transactional
-    public boolean deleteReview(Long bookId, Long reviewId, String accountId) {
+    public void deleteReview(Long bookId, Long reviewId, AccountAuth accountAuth) {
+        validateAuthentication(accountAuth);
         Review review = reviewRepository.findById(reviewId).orElseGet(Review::empty);
-        if (validateReviewId(reviewId, review) && validateReviewOwner(accountId, review)) {
+        if (validateReviewId(reviewId, review) && validateReviewOwner(accountAuth.getAccountId(), review)) {
             em.remove(review);
-            return true;
+        } else {
+            throw new AccessDeniedException("Access Denied");
         }
-        return false;
     }
 
     private static boolean validateReviewId(Long reviewId, Review review) {
@@ -243,8 +254,9 @@ public class BookDetailService {
 
     @PreAuthorize("isAuthenticated() and #accountId == authentication.name")
     @Transactional
-    public void saveBookToCart(Long bookId, Integer quantity, String accountId) {
-        if (getAccount(accountId) instanceof User user) {
+    public void saveBookToCart(Long bookId, Integer quantity, AccountAuth accountAuth) {
+        validateAuthentication(accountAuth);
+        if (getAccount(accountAuth.getAccountId()) instanceof User user) {
             CartProduct cartProduct = createCartProduct(bookId, quantity, createCart(user));
             if (cartProduct.isEmpty()) {
                 throw new SaveFailedException("저장 실패");
@@ -270,5 +282,11 @@ public class BookDetailService {
             throw new SaveFailedException("저장 실패");
         }
         return cart;
+    }
+
+    private static void validateAuthentication(AccountAuth accountAuth) {
+        if (accountAuth == null) {
+            throw new UnAuthenticationException("로그인 후 시도해주세요.");
+        }
     }
 }

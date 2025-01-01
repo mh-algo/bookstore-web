@@ -184,7 +184,8 @@ function searchBooks(page = 1) {
         fetch('/seller/register/search-book', {
             method: 'POST',
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept': 'application/json',
                 [csrfHeader]: csrfToken
             },
             body: new URLSearchParams({
@@ -192,67 +193,70 @@ function searchBooks(page = 1) {
                 page:page.toString() // 페이지 번호를 추가
             }),
         })
-            .then(response => response.json())
-            .then(data => {
-                // 검색 결과를 화면에 표시
-                if (data.items && data.items.length > 0) {
-                data.items.forEach(book => {
-                    const listItem = document.createElement('li');
-                    listItem.classList.add('list-group-item');
-                    listItem.className = "card mb-3 shadow-sm";
-                    const title = splitTitleByParentheses(book.title)
-                    listItem.innerHTML = `
-                        <div class="row g-0">
-                            <div class="col-md-4">
-                                <img src="${escapeHTML(book.image)}" class="img-fluid rounded-start" alt="Book Cover">
-                            </div>
-                            <div class="col-md-8">
-                                <div class="card-body">
-                                    <h5 class="card-title">${escapeHTML(title.mainTitle)}</h5>
-                                    <p class="card-text"><small class="text-muted">${escapeHTML(title.subTitle)}</small></p>
-                                    <p class="card-text"><strong>저자:</strong> ${escapeHTML(replaceCaretWithSlash(book.author))}</p>
-                                    <p class="card-text"><strong>출판사:</strong> ${escapeHTML(book.publisher)}</p>
-                                    <p class="card-text"><strong>출판일:</strong> ${escapeHTML(formatDate(book.pubdate))}</p>
-                                    <p class="card-text"><strong>ISBN:</strong> ${escapeHTML(book.isbn)}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+            .then(response => {
+                if (response.ok) {
+                    response.json()
+                        .then(data => {
+                            // 검색 결과를 화면에 표시
+                            if (data.items && data.items.length > 0) {
+                                data.items.forEach(book => {
+                                    const listItem = document.createElement('li');
+                                    listItem.classList.add('list-group-item');
+                                    listItem.className = "card mb-3 shadow-sm";
+                                    const title = splitTitleByParentheses(book.title)
+                                    listItem.innerHTML = `
+                                        <div class="row g-0">
+                                            <div class="col-md-4">
+                                                <img src="${escapeHTML(book.image)}" class="img-fluid rounded-start" alt="Book Cover">
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">${escapeHTML(title.mainTitle)}</h5>
+                                                    <p class="card-text"><small class="text-muted">${escapeHTML(title.subTitle)}</small></p>
+                                                    <p class="card-text"><strong>저자:</strong> ${escapeHTML(replaceCaretWithSlash(book.author))}</p>
+                                                    <p class="card-text"><strong>출판사:</strong> ${escapeHTML(book.publisher)}</p>
+                                                    <p class="card-text"><strong>출판일:</strong> ${escapeHTML(formatDate(book.pubdate))}</p>
+                                                    <p class="card-text"><strong>ISBN:</strong> ${escapeHTML(book.isbn)}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
 
-                    listItem.onclick = function () {
-                        selectBook(book);
-                    };
+                                    listItem.onclick = function () {
+                                        selectBook(book);
+                                    };
 
-                    searchResults.appendChild(listItem);
-                });
+                                    searchResults.appendChild(listItem);
+                                });
 
-                // 다음 페이지가 있는 경우에만 다음 버튼을 동적으로 추가
-                const start = data.start;
-                const display = data.display;
-                const total = data.total;
+                                // 다음 페이지가 있는 경우에만 다음 버튼을 동적으로 추가
+                                const start = data.start;
+                                const display = data.display;
+                                const total = data.total;
 
-                if (start + display <= total) {
-                    if (!document.getElementById("nextButton")) {
-                        const nextButton = document.createElement("button");
-                        nextButton.id = "nextButton";
-                        nextButton.className = "btn btn-primary";
-                        nextButton.type = "button";
-                        nextButton.textContent = "다음";
-                        nextButton.onclick = function () {
-                            currentPage++; // 페이지 번호 증가
-                            searchBooks(currentPage); // 다음 페이지 검색 요청
-                        };
-                        nextButtonContainer.appendChild(nextButton);
-                    }
-                } else {
-                    // 검색 결과가 없을 경우 다음 버튼을 제거
-                    removeNextButtonIfExists();
+                                if (start + display <= total) {
+                                    if (!document.getElementById("nextButton")) {
+                                        const nextButton = document.createElement("button");
+                                        nextButton.id = "nextButton";
+                                        nextButton.className = "btn btn-primary";
+                                        nextButton.type = "button";
+                                        nextButton.textContent = "다음";
+                                        nextButton.onclick = function () {
+                                            currentPage++; // 페이지 번호 증가
+                                            searchBooks(currentPage); // 다음 페이지 검색 요청
+                                        };
+                                        nextButtonContainer.appendChild(nextButton);
+                                    }
+                                } else {
+                                    // 검색 결과가 없을 경우 다음 버튼을 제거
+                                    removeNextButtonIfExists();
+                                }
+                            } else {
+                                displayNoResultsMessage(searchResults);
+                            }
+                        })
                 }
-            } else {
-                    displayNoResultsMessage(searchResults);
-                }
-            })
-            .catch(error => console.error('Error:', error));
+            }).catch(error => console.error('Error:', error));
     }
 }
 

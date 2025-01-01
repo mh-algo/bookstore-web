@@ -100,6 +100,7 @@ public class ManagementController {
         return categoryMap;
     }
 
+    @ResponseBody
     @PostMapping("/register/search-book")
     public ResponseEntity<String> searchBook(@RequestParam String bookName, @RequestParam Integer page) {
         String response = managementService.requestBookDataAsJson(bookName, page);

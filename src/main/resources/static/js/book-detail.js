@@ -126,16 +126,13 @@ function toggleLikeBtn(button) {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
+            'Accept': 'application/json',
             [csrfHeader]: csrfToken
         },
         body: JSON.stringify({reviewId: reviewId})
     })
         .then(response => response.json())
         .then(response => {
-            if (response.status === 401) {
-                alert("로그인 후 시도해주세요.");
-            }
-
             if (response.status === 200) {
                 const like = document.getElementsByClassName('like-count').namedItem(reviewId);
                 like.textContent = response.data.likeCount;
@@ -152,6 +149,8 @@ function toggleLikeBtn(button) {
                     icon.classList.remove('fas'); // 활성화 아이콘 클래스 제거
                     icon.classList.add('far'); // 비활성화 아이콘 클래스 추가
                 }
+            } else if (response.status === 401) {
+                alert(response.message);
             }
         })
         .catch(error => {
@@ -162,8 +161,6 @@ function toggleLikeBtn(button) {
 function loadReviews(page) {
     const reviewList = document.getElementById('review-list');
     reviewList.innerHTML = '';
-    const pathParts = window.location.pathname.split('/');
-    const bookId = pathParts[2];
 
     const safePage = encodeURIComponent(page)
 
@@ -173,8 +170,8 @@ function loadReviews(page) {
     })
         .then(response => response.json())
         .then(response => {
-            const reviews = response.data.content
-            if (reviews.length > 0) {
+            if (response.status === 200) {
+                const reviews = response.data.content
                 reviews.forEach(review => {
                     const accountId = escapeHTML(review.accountId);
                     const createdDate = escapeHTML(formatDate(review.createdDate));
@@ -301,12 +298,14 @@ function deleteReview(button) {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 [csrfHeader]: csrfToken
             }
         })
+            .then(response => response.json())
             .then(response => {
-                if (response.ok) {
-                    alert('리뷰가 삭제되었습니다.');
+                if (response.status === 200) {
+                    alert(response.message);
                     goToPage(1,1);
                 } else {
                     alert('리뷰 삭제에 실패했습니다.');
@@ -373,6 +372,7 @@ function editReview(button) {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 [csrfHeader]: csrfToken
             },
             body: JSON.stringify({ context: updatedContext }),
@@ -380,10 +380,10 @@ function editReview(button) {
             .then(response => response.json())
             .then(response => {
                 if (response.status === 200) {
-                    alert('리뷰가 수정되었습니다.');
+                    alert(response.message);
                     const updatedContextElement = document.createElement('p');
                     updatedContextElement.className = 'mt-2 mb-0';
-                    updatedContextElement.textContent = response.data;
+                    updatedContextElement.textContent = response.data.context;
                     editForm.replaceWith(updatedContextElement);
                     buttonContainer.removeAttribute('style'); // style 속성 제거
                 } else {
@@ -412,19 +412,22 @@ function addBookToCart() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
             [csrfHeader]: csrfToken
         },
         body: JSON.stringify({ quantity: quantity })
     })
+        .then(response => response.json())
         .then(response => {
-            if (response.ok || response.status === 403 || response.status === 500){
-                response.text().then(message => alert(message));
-            } else if (response.status === 401) {
-                response.text().then(message => {
-                    if (confirm(message)) {
-                        window.location.href = '/login';
-                    }
-                });
+            const status = response.status;
+            const message = response.message;
+
+            if (status === 200 || status === 403 || status === 500) {
+                alert(message);
+            } else if (status === 401) {
+                if (confirm(message)) {
+                    window.location.href = '/login';
+                }
             }
         })
         .catch(error => {
