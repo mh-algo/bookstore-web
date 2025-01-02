@@ -101,24 +101,6 @@ for (const ratingElement of ratingElements) {
     calculateRating(ratingElement, ratingValue)
 }
 
-// review submit 검증
-function reviewSubmitEvent() {
-    const reviewContext = document.getElementById('reviewText').value
-    const rating = document.querySelector('input[name="rating"]:checked')?.value || 0;
-
-    if (rating === 0) {
-        alert('별점을 입력해주세요.');
-        return false;
-    }
-
-    if (!reviewContext.trim()) {
-        alert('리뷰 내용을 작성해주세요.');
-        return false;
-    }
-
-    return true;
-}
-
 function toggleLikeBtn(button) {
     const reviewId = button.getAttribute('data-review-id');
 
@@ -286,6 +268,58 @@ function formatDate(date) {
     const minutes = String(date[4]).padStart(2, '0');
 
     return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
+// review 검증
+function validateReview(rating, reviewContext) {
+    if (rating === 0) {
+        alert('별점을 입력해주세요.');
+        return false;
+    }
+
+    if (!reviewContext.trim()) {
+        alert('리뷰 내용을 작성해주세요.');
+        return false;
+    }
+
+    return true;
+}
+
+// 리뷰 등록
+function submitReview() {
+    const ratingElement = document.querySelector('input[name="rating"]:checked');
+    const reviewElement = document.getElementById('reviewText');
+    const rating = ratingElement?.value || 0;
+    const reviewContext = reviewElement.value;
+
+    if (validateReview(rating, reviewContext)) {
+        fetch(`/books/${safeBookId}/reviews`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify({
+                rating: rating,
+                context: reviewContext
+            })
+        })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 200) {
+                    alert(response.message);
+                    ratingElement.checked = false;
+                    reviewElement.value = '';
+                    goToPage(1, 1);
+                } else {
+                    alert('리뷰 등록에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('등록 중 오류 발생:', error);
+            });
+    }
 }
 
 // 리뷰 삭제

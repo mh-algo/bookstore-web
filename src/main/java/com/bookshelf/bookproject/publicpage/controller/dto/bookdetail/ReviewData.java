@@ -1,4 +1,4 @@
-package com.bookshelf.bookproject.publicpage.controller.dto;
+package com.bookshelf.bookproject.publicpage.controller.dto.bookdetail;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

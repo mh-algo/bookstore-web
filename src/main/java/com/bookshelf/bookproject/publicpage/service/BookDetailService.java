@@ -10,7 +10,7 @@ import com.bookshelf.bookproject.domain.*;
 import com.bookshelf.bookproject.publicpage.repository.CartProductRepository;
 import com.bookshelf.bookproject.publicpage.repository.CartRepository;
 import com.bookshelf.bookproject.publicpage.repository.ReviewRepository;
-import com.bookshelf.bookproject.publicpage.controller.dto.ReviewData;
+import com.bookshelf.bookproject.publicpage.controller.dto.bookdetail.ReviewData;
 import com.bookshelf.bookproject.publicpage.repository.dto.BookDetailDto;
 import com.bookshelf.bookproject.publicpage.service.dto.BookDetail;
 import com.bookshelf.bookproject.publicpage.repository.dto.ReviewListDto;
@@ -25,7 +25,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,8 +99,9 @@ public class BookDetailService {
     @PreAuthorize("isAuthenticated() and #accountId == authentication.name")
     @CacheEvict(value = REVIEW + ":#{#bookId}", allEntries = true, cacheResolver = CACHE_RESOLVER)
     @Transactional
-    public void registerReview(ReviewData reviewData, String accountId, Long bookId) {
-        Review review = createReview(reviewData, getAccount(accountId), getBookProduct(bookId));
+    public void registerReview(ReviewData reviewData, AccountAuth accountAuth, Long bookId) {
+        validateAuthentication(accountAuth);
+        Review review = createReview(reviewData, getAccount(accountAuth.getAccountId()), getBookProduct(bookId));
         reviewRepository.save(review);
     }
 

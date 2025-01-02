@@ -1,10 +1,15 @@
 package com.bookshelf.bookproject.publicpage.controller;
 
 import com.bookshelf.bookproject.common.ApiResponse;
+import com.bookshelf.bookproject.publicpage.controller.dto.bookdetail.ReviewContext;
+import com.bookshelf.bookproject.publicpage.controller.dto.bookdetail.ReviewData;
+import com.bookshelf.bookproject.publicpage.controller.dto.bookdetail.ReviewId;
+import com.bookshelf.bookproject.publicpage.controller.dto.bookdetail.ReviewQuantity;
 import com.bookshelf.bookproject.publicpage.service.BookDetailService;
 import com.bookshelf.bookproject.publicpage.service.dto.ReviewLike;
 import com.bookshelf.bookproject.publicpage.service.dto.ReviewList;
 import com.bookshelf.bookproject.security.dto.AccountAuth;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,36 +35,44 @@ public class BookDetailApiController {
         return ResponseEntity.ok(ApiResponse.success(reviewPage));
     }
 
+    @PostMapping("/reviews")
+    public ResponseEntity<ApiResponse<Void>> saveReview(@PathVariable Long bookId,
+                             @Valid @RequestBody ReviewData reviewData,
+                             @AuthenticationPrincipal AccountAuth accountAuth) {
+        bookDetailService.registerReview(reviewData, accountAuth, bookId);
+        return ResponseEntity.ok(ApiResponse.success("리뷰가 등록되었습니다."));
+    }
+
     @PutMapping("/reviews/{reviewId}")
-    public ResponseEntity<ApiResponse<Map<String, String>>> updateReview(@PathVariable Long bookId,
+    public ResponseEntity<ApiResponse<ReviewContext>> updateReview(@PathVariable Long bookId,
                                                             @PathVariable Long reviewId,
-                                                            @RequestBody Map<String, String> payload,
+                                                            @Valid @RequestBody ReviewContext review,
                                                             @AuthenticationPrincipal AccountAuth accountAuth) {
-        String updatedContext = bookDetailService.updateReview(bookId, reviewId, payload.get("context"), accountAuth);
-        return ResponseEntity.ok(ApiResponse.success("리뷰가 수정되었습니다.", Map.of("context", updatedContext)));
+        String updatedContext = bookDetailService.updateReview(bookId, reviewId, review.getContext(), accountAuth);
+        return ResponseEntity.ok(ApiResponse.success("리뷰가 수정되었습니다.", ReviewContext.of(updatedContext)));
     }
 
     @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<ApiResponse<Void>> deleteReview(@PathVariable Long bookId,
-                                                            @PathVariable Long reviewId,
-                                                            @AuthenticationPrincipal AccountAuth accountAuth) {
+                                                          @PathVariable Long reviewId,
+                                                          @AuthenticationPrincipal AccountAuth accountAuth) {
         bookDetailService.deleteReview(bookId, reviewId, accountAuth);
         return ResponseEntity.ok(ApiResponse.success("리뷰가 삭제되었습니다."));
     }
 
     @PatchMapping("/reviews/like")
     public ResponseEntity<ApiResponse<ReviewLike>> likeReview(@PathVariable String bookId,
-                                                              @RequestBody Map<String, Long> payload,
+                                                              @Valid @RequestBody ReviewId review,
                                                               @AuthenticationPrincipal AccountAuth accountAuth) {
-        ReviewLike reviewId = bookDetailService.toggleLike(payload.get("reviewId"), accountAuth);
+        ReviewLike reviewId = bookDetailService.toggleLike(review.getReviewId(), accountAuth);
         return ResponseEntity.ok(ApiResponse.success(reviewId));
     }
 
     @PostMapping("/cart")
     public ResponseEntity<ApiResponse<Void>> addBookToCart(@PathVariable Long bookId,
-                                                             @RequestBody Map<String, Integer> payload,
-                                                             @AuthenticationPrincipal AccountAuth accountAuth) {
-        bookDetailService.saveBookToCart(bookId, payload.get("quantity"), accountAuth);
+                                                           @Valid @RequestBody ReviewQuantity review,
+                                                           @AuthenticationPrincipal AccountAuth accountAuth) {
+        bookDetailService.saveBookToCart(bookId, review.getQuantity(), accountAuth);
         return ResponseEntity.ok(ApiResponse.success("장바구니에 저장했습니다."));
     }
 }
