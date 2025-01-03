@@ -68,7 +68,7 @@ function quantityBlurEvent(quantity) {
 }
 
 function reviewInputEvent(reviewText) {
-    const charCount = document.getElementById('charCount');
+    const charCount = reviewText.parentElement.querySelector('span');
     const currentLength = reviewText.value.length;
     const maxChars = reviewText.getAttribute('maxlength');
 
@@ -368,7 +368,13 @@ function editReview(button) {
     // textarea 생성 및 내용 설정
     const textarea = document.createElement('textarea');
     textarea.className = 'form-control mb-2';
-    textarea.textContent = currentContext; // XSS 공격 방지
+    textarea.textContent = currentContext;
+    textarea.maxLength = 500;
+    textarea.oninput = () => reviewInputEvent(textarea);
+
+    const charCount = document.createElement('div');
+    charCount.className = 'text-end small text-muted';
+    charCount.innerHTML = `<span>0</span> / 500`;
 
     const btn = document.createElement('div');
     btn.className = 'd-flex justify-content-end';
@@ -385,6 +391,7 @@ function editReview(button) {
 
     // 수정 폼에 요소 추가
     editForm.appendChild(textarea);
+    editForm.appendChild(charCount);
     btn.appendChild(saveButton);
     btn.appendChild(cancelButton);
     editForm.appendChild(btn);
@@ -409,7 +416,7 @@ function editReview(button) {
                 'Accept': 'application/json',
                 [csrfHeader]: csrfToken
             },
-            body: JSON.stringify({ context: updatedContext }),
+            body: JSON.stringify({context: updatedContext}),
         })
             .then(response => response.json())
             .then(response => {
