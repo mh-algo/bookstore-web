@@ -139,11 +139,15 @@ public class BookDetailService {
                                 accountId)
                         ).toList();
 
-        if (reviewList.isEmpty()) {
+        return new CustomPage<>(new PageImpl<>(reviewList, page.getPageable(), page.getTotalElements()));
+    }
+
+    public Page<ReviewList> getReviewListApi(Pageable pageable, Long bookId, String accountId) {
+        Page<ReviewList> reviewList = getReviewList(pageable, bookId, accountId);
+        if (reviewList.getContent().isEmpty()) {
             throw new IllegalArgumentException("Review with page " + (pageable.getPageNumber()+1) + " not found.");
         }
-
-        return new CustomPage<>(new PageImpl<>(reviewList, page.getPageable(), page.getTotalElements()));
+        return reviewList;
     }
 
     private Page<ReviewListDto> getReviewList(Pageable pageable, Long bookId) {

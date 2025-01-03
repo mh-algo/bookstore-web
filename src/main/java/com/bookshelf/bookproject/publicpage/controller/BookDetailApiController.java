@@ -17,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 import static com.bookshelf.bookproject.publicpage.BookServiceUtils.getAccountId;
 
 @RestController
@@ -31,7 +29,7 @@ public class BookDetailApiController {
     public ResponseEntity<ApiResponse<Page<ReviewList>>> loadReviewPage(@PathVariable Long bookId,
                                                                         @AuthenticationPrincipal AccountAuth accountAuth,
                                                                         Pageable pageable) {
-        Page<ReviewList> reviewPage = bookDetailService.getReviewList(pageable, bookId, getAccountId(accountAuth));
+        Page<ReviewList> reviewPage = bookDetailService.getReviewListApi(pageable, bookId, getAccountId(accountAuth));
         return ResponseEntity.ok(ApiResponse.success(reviewPage));
     }
 
